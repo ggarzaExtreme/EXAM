@@ -73,12 +73,16 @@ exports.handler = async (event) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // 1. Fetch the session and verify instructor owns it
+    // 1. Fetch the ACTIVE session and verify instructor owns it.
+    // The is_active filter is required: class_ids are reusable across ended
+    // sessions, so without it this query can match multiple rows and .single()
+    // errors — which would make the session impossible to end.
     const { data: session, error: sessionError } = await supabase
       .from('class_sessions')
       .select('id, quiz_type, is_active')
       .eq('class_id', class_id)
       .eq('instructor_id', decoded.userId)
+      .eq('is_active', true)
       .single();
 
     if (sessionError || !session) {
@@ -96,7 +100,7 @@ exports.handler = async (event) => {
       .eq('session_id', session.id);
 
     let finalStats = {
-      total_questions_presented: new Set(),
+      total_questions_presented: 0,
       total_responses: allResponses ? allResponses.length : 0,
       correct_final: allResponses ? allResponses.filter(r => r.is_correct).length : 0,
       accuracy_rate: 0,

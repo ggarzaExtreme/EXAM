@@ -1008,6 +1008,12 @@
             document.getElementById('inclassStudentName').textContent = studentName;
             document.getElementById('inclassSessionId').textContent = classId;
 
+            // Reset sub-displays (may hold state from a previous session)
+            document.getElementById('waitingForQuestion').style.display = 'block';
+            document.getElementById('questionDisplay').style.display = 'none';
+            document.getElementById('sessionEndedDisplay').style.display = 'none';
+            document.getElementById('inclassFeedbackScreen').style.display = 'none';
+
             startPolling();
         }
 

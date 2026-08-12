@@ -155,20 +155,23 @@ function convertToCSV(data) {
     'Responses'
   ];
 
+  // Quote a value for CSV, escaping embedded double quotes
+  const csvQuote = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
+
   // CSV rows
   const rows = data.map(row => [
     row.id,
     row.created_at ? new Date(row.created_at).toISOString() : '',
-    `"${row.name || ''}"`,
-    row.email || '',
+    csvQuote(row.name),
+    csvQuote(row.email),
     row.score,
     row.total_questions ? Math.round((row.correct_answers / row.total_questions) * 100) : '',
     row.total_questions,
     row.correct_answers,
     row.duration_minutes || '',
-    row.section || '',
-    row.topic_scores ? `"${JSON.stringify(row.topic_scores)}"` : '',
-    row.responses ? `"${JSON.stringify(row.responses).replace(/"/g, '""')}"` : ''
+    csvQuote(row.section),
+    row.topic_scores ? csvQuote(JSON.stringify(row.topic_scores)) : '',
+    row.responses ? csvQuote(JSON.stringify(row.responses)) : ''
   ]);
 
   // Combine headers and rows

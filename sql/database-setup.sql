@@ -69,7 +69,7 @@ CREATE TABLE class_sessions (
 
   -- Session metadata
   instructor_id UUID NOT NULL REFERENCES auth.users(id),
-  quiz_type TEXT NOT NULL,              -- 'fabric', 'switch', 'custom_inclass'
+  quiz_type TEXT NOT NULL,              -- 'fabric' or 'switch' (must have a matching quiz_data_*.js file)
   session_name TEXT,
 
   -- Question flow control

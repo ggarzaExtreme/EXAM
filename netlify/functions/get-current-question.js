@@ -83,7 +83,7 @@ exports.handler = async (event) => {
     // 3. Load quiz data and find the question
     let quizData;
     try {
-      quizData = require(`../quiz/quiz_data_${session.quiz_type}.js`);
+      quizData = require(`../quiz_data_${session.quiz_type}.js`);
     } catch (err) {
       console.error(`Quiz data file not found: quiz_data_${session.quiz_type}.js`, err);
       return {
@@ -93,7 +93,7 @@ exports.handler = async (event) => {
       };
     }
 
-    const question = quizData.find(q => q.id === session.current_question_id);
+    const question = quizData.find(q => q.id === parseInt(session.current_question_id));
     if (!question) {
       return {
         statusCode: 404,
@@ -102,13 +102,21 @@ exports.handler = async (event) => {
       };
     }
 
-    // 4. Return question data (WITHOUT correct answer)
+    // 4. Return question data (WITHOUT correct answer or feedback)
+    // Strip out isCorrect and feedback from options for security
+    const safeOptions = question.options.map(opt => {
+      if (typeof opt === 'string') {
+        return opt;
+      }
+      return { text: opt.text };
+    });
+
     const questionData = {
       id: question.id,
-      text: question.question,
+      question: question.question,
       topic: question.topic,
-      options: question.options
-      // NOTE: correctAnswer is NOT included - only revealed after student submits
+      options: safeOptions
+      // NOTE: isCorrect and feedback are NOT included - only revealed after student submits
     };
 
     return {

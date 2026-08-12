@@ -79,7 +79,7 @@ exports.handler = async (event) => {
     // Dynamically require the appropriate quiz data file
     let quizData;
     try {
-      quizData = require(`../quiz/quiz_data_${session.quiz_type}.js`);
+      quizData = require(`../quiz_data_${session.quiz_type}.js`);
     } catch (err) {
       console.error(`Quiz data file not found: quiz_data_${session.quiz_type}.js`, err);
       return {
@@ -89,7 +89,7 @@ exports.handler = async (event) => {
       };
     }
 
-    const question = quizData.find(q => q.id === question_id);
+    const question = quizData.find(q => q.id === parseInt(question_id));
     if (!question) {
       return {
         statusCode: 404,
@@ -99,7 +99,15 @@ exports.handler = async (event) => {
     }
 
     // 4. Check if answer is correct
-    const is_correct = selected_option === question.correctAnswer;
+    // Find which option has isCorrect: true and get its letter (A, B, C, D)
+    let correctAnswer = null;
+    question.options.forEach((option, index) => {
+      if (option.isCorrect === true) {
+        correctAnswer = String.fromCharCode(65 + index);
+      }
+    });
+
+    const is_correct = selected_option === correctAnswer;
 
     // 5. Get attempt number (how many times has this student tried this question?)
     const { data: previousAttempts, error: attemptError } = await supabase

@@ -601,9 +601,9 @@
                     <div class="question-text" id="inclassQuestionText"></div>
                     <div class="options" id="inclassOptionsContainer"></div>
                     <button class="btn" id="inclassSubmitBtn" onclick="submitInClassAnswer()" style="width: 100%; margin-top: 20px;">Submit Answer</button>
-                    <div class="feedback-screen" id="inclasFeedbackScreen">
-                        <div class="feedback-header" id="inclasFeedbackHeader"></div>
-                        <div class="feedback-text" id="inclasFeedbackText"></div>
+                    <div class="feedback-screen" id="inclassFeedbackScreen">
+                        <div class="feedback-header" id="inclassFeedbackHeader"></div>
+                        <div class="feedback-text" id="inclassFeedbackText"></div>
                         <div class="attempt-info" id="attemptInfo"></div>
                     </div>
                 </div>
@@ -1027,7 +1027,7 @@
 
             document.getElementById('inclassQuestionCounter').textContent = `Question: ${questionData.id}`;
             document.getElementById('inclassTopicBadge').textContent = questionData.topic || 'General Knowledge';
-            document.getElementById('inclassQuestionText').textContent = questionData.text;
+            document.getElementById('inclassQuestionText').textContent = questionData.question;
 
             const optionsContainer = document.getElementById('inclassOptionsContainer');
             optionsContainer.innerHTML = '';
@@ -1036,15 +1036,16 @@
                 const label = String.fromCharCode(65 + index);
                 const optionDiv = document.createElement('label');
                 optionDiv.className = 'option';
+                const optionText = typeof option === 'string' ? option : option.text;
                 optionDiv.innerHTML = `
                     <input type="radio" name="answer" value="${index}">
-                    <span>${label}. ${option}</span>
+                    <span>${label}. ${optionText}</span>
                 `;
                 optionDiv.addEventListener('change', () => selectAnswer(index));
                 optionsContainer.appendChild(optionDiv);
             });
 
-            document.getElementById('inclasFeedbackScreen').style.display = 'none';
+            document.getElementById('inclassFeedbackScreen').style.display = 'none';
             document.getElementById('inclassSubmitBtn').textContent = 'Submit Answer';
             document.getElementById('inclassSubmitBtn').disabled = false;
             updateAttemptDisplay();
@@ -1064,7 +1065,7 @@
                 // Allow retry if incorrect
                 answerSubmitted = false;
                 selectedAnswer = null;
-                document.getElementById('inclasFeedbackScreen').style.display = 'none';
+                document.getElementById('inclassFeedbackScreen').style.display = 'none';
                 document.querySelectorAll('#inclassOptionsContainer input[type="radio"]').forEach(r => r.checked = false);
                 document.getElementById('inclassSubmitBtn').textContent = 'Submit Answer';
                 updateAttemptDisplay();
@@ -1113,9 +1114,9 @@
         }
 
         function displayFeedback(isCorrect, explanation, attemptNumber) {
-            const feedbackScreen = document.getElementById('inclasFeedbackScreen');
-            const feedbackHeader = document.getElementById('inclasFeedbackHeader');
-            const feedbackText = document.getElementById('inclasFeedbackText');
+            const feedbackScreen = document.getElementById('inclassFeedbackScreen');
+            const feedbackHeader = document.getElementById('inclassFeedbackHeader');
+            const feedbackText = document.getElementById('inclassFeedbackText');
             const attemptInfo = document.getElementById('attemptInfo');
 
             feedbackHeader.className = 'feedback-header ' + (isCorrect ? 'feedback-correct' : 'feedback-incorrect');

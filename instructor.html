@@ -630,6 +630,8 @@
         let activeClassId = null;
         let activeQuizType = null;
         let livePollingInterval = null;
+        let quizData = null;
+        let currentQuestionIndex = -1;
 
         async function login() {
             const email = document.getElementById('email').value.trim();
@@ -771,6 +773,43 @@
             document.getElementById('liveSessionContainer').style.display = 'block';
             document.getElementById('activeClassId').textContent = activeClassId;
             document.getElementById('activeQuizType').textContent = activeQuizType;
+
+            // Load quiz data for this quiz type
+            loadQuizData(activeQuizType);
+            currentQuestionIndex = -1;
+        }
+
+        async function loadQuizData(quizType) {
+            try {
+                const fileName = {
+                    'fabric': 'quiz_data_fabric_engine.js',
+                    'switch': 'quiz_data_switch_engine.js',
+                    'custom_inclass': 'quiz_data_custom_inclass.js'
+                }[quizType];
+
+                if (!fileName) {
+                    console.error('Unknown quiz type:', quizType);
+                    return;
+                }
+
+                const response = await fetch(fileName + '?t=' + Date.now());
+                if (!response.ok) throw new Error('Failed to load quiz data');
+                const code = await response.text();
+
+                if (typeof window.quizData !== 'undefined') {
+                    delete window.quizData;
+                }
+
+                new Function(code)();
+
+                if (!window.quizData || !Array.isArray(window.quizData)) {
+                    throw new Error('Quiz data not properly loaded');
+                }
+
+                quizData = window.quizData;
+            } catch (error) {
+                console.error('Error loading quiz data:', error);
+            }
         }
 
         async function refreshInClassData() {
@@ -844,22 +883,114 @@
         }
 
         async function nextQuestion() {
-            // TODO: Implement via advance-question API
-            alert('Question navigation will be implemented in the next phase');
+            if (!quizData || currentQuestionIndex >= quizData.length - 1) {
+                alert('No more questions');
+                return;
+            }
+
+            currentQuestionIndex++;
+            const nextQuestion = quizData[currentQuestionIndex];
+
+            try {
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/advance-question', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: sessionToken,
+                        class_id: activeClassId,
+                        next_question_id: nextQuestion.id
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    alert('Error advancing question: ' + (result.error || 'Unknown error'));
+                    currentQuestionIndex--;
+                    return;
+                }
+
+                // Question advanced successfully, refreshInClassData will show the new question
+            } catch (error) {
+                console.error('Error advancing question:', error);
+                alert('Failed to advance question: ' + error.message);
+                currentQuestionIndex--;
+            }
         }
 
         async function previousQuestion() {
-            alert('Question navigation will be implemented in the next phase');
+            if (currentQuestionIndex <= 0) {
+                alert('No previous questions');
+                return;
+            }
+
+            currentQuestionIndex--;
+            const prevQuestion = quizData[currentQuestionIndex];
+
+            try {
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/advance-question', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: sessionToken,
+                        class_id: activeClassId,
+                        next_question_id: prevQuestion.id
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    alert('Error going to previous question: ' + (result.error || 'Unknown error'));
+                    currentQuestionIndex++;
+                    return;
+                }
+
+                // Question updated successfully
+            } catch (error) {
+                console.error('Error going to previous question:', error);
+                alert('Failed to go to previous question: ' + error.message);
+                currentQuestionIndex++;
+            }
         }
 
         async function endSession() {
-            if (confirm('Are you sure you want to end this session?')) {
-                // TODO: Implement via end-class-session API
+            if (!confirm('Are you sure you want to end this session? Students will see "Session Ended".')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/end-class-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: sessionToken,
+                        class_id: activeClassId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    alert('Error ending session: ' + (result.error || 'Unknown error'));
+                    return;
+                }
+
+                // Session ended successfully
                 activeSessionId = null;
                 activeClassId = null;
+                quizData = null;
+                currentQuestionIndex = -1;
+
                 document.getElementById('createSessionContainer').style.display = 'block';
                 document.getElementById('liveSessionContainer').style.display = 'none';
+
                 if (livePollingInterval) clearInterval(livePollingInterval);
+
+                alert('Session ended. Final stats: ' + JSON.stringify(result.final_stats, null, 2));
+            } catch (error) {
+                console.error('Error ending session:', error);
+                alert('Failed to end session: ' + error.message);
             }
         }
 

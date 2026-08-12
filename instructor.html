@@ -205,14 +205,29 @@
             border: none;
             border-bottom: 3px solid transparent;
             color: #666;
+            font-size: 15px;
+            font-family: inherit;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
 
+        .tab-btn:hover {
+            color: #5B059C;
+        }
+
         .tab-btn.active {
             color: #5B059C;
             border-bottom-color: #5B059C;
+        }
+
+        /* Tab panels: only the active one is shown */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .dashboard-header {
@@ -481,33 +496,12 @@
             <!-- Dashboard Screen -->
             <div class="screen" id="dashboardScreen">
                 <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('historical')">📊 Historical Data</button>
-                    <button class="tab-btn" onclick="switchTab('inclass')">🎓 In-Class Live</button>
+                    <button class="tab-btn active" id="inclassTabBtn" onclick="switchTab('inclass')">🎓 In-Class Live Sessions</button>
+                    <button class="tab-btn" id="historicalTabBtn" onclick="switchTab('historical')">📊 Student Submissions</button>
                 </div>
 
-                <!-- Historical Tab -->
-                <div id="historicalTab" class="tab-content active">
-                    <div class="dashboard-header">
-                        <h2 style="color: #333;">Student Submissions</h2>
-                        <div class="controls">
-                            <select id="quizSelect" onchange="changeQuiz()">
-                                <option value="">Select Quiz...</option>
-                                <option value="pretraining">Pre-Class Assessment</option>
-                                <option value="post_class">Post-Class Review</option>
-                                <option value="fabric">Fabric Engine In-Class</option>
-                                <option value="switch">Switch Engine In-Class</option>
-                            </select>
-
-                            <button class="btn" style="width: auto; padding: 8px 20px;" onclick="refreshData()">Refresh</button>
-                        </div>
-                    </div>
-
-                    <div id="responseContainer" class="responses-grid"></div>
-                    <div id="noData" class="no-data">Select a quiz to see submissions</div>
-                </div>
-
-                <!-- In-Class Tab -->
-                <div id="inclassTab" class="tab-content">
+                <!-- In-Class Live Tab -->
+                <div id="inclassSection" class="tab-content active">
                     <div class="dashboard-header">
                         <h2 style="color: #333;">In-Class Live Sessions</h2>
                         <div class="controls">
@@ -578,6 +572,27 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Student Submissions Tab -->
+                <div id="historicalSection" class="tab-content">
+                    <div class="dashboard-header">
+                        <h2 style="color: #333;">Student Submissions</h2>
+                        <div class="controls">
+                            <select id="quizSelect" onchange="changeQuiz()">
+                                <option value="">Select Quiz...</option>
+                                <option value="pretraining">Pre-Class Assessment</option>
+                                <option value="post_class">Post-Class Review</option>
+                                <option value="fabric">Fabric Engine In-Class</option>
+                                <option value="switch">Switch Engine In-Class</option>
+                            </select>
+
+                            <button class="btn" style="width: auto; padding: 8px 20px;" onclick="refreshData()">Refresh</button>
+                        </div>
+                    </div>
+
+                    <div id="responseContainer" class="responses-grid"></div>
+                    <div id="noData" class="no-data">Select a quiz to see submissions</div>
+                </div>
             </div>
         </div>
     </div>
@@ -621,7 +636,7 @@
         let sessionToken = null;
         let currentQuiz = null;
         let autoRefreshInterval = null;
-        let currentTab = 'historical';
+        let currentTab = 'inclass';
         let activeSessionId = null;
         let activeClassId = null;
         let activeQuizType = null;
@@ -690,18 +705,17 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            event.target.classList.add('active');
-            document.getElementById(tab + 'Tab').classList.add('active');
+            document.getElementById('inclassTabBtn').classList.toggle('active', tab === 'inclass');
+            document.getElementById('historicalTabBtn').classList.toggle('active', tab === 'historical');
+            document.getElementById('inclassSection').classList.toggle('active', tab === 'inclass');
+            document.getElementById('historicalSection').classList.toggle('active', tab === 'historical');
 
-            if (livePollingInterval) clearInterval(livePollingInterval);
-
+            // Refresh the newly shown tab immediately (its poll loop takes over from here)
             if (tab === 'inclass') {
-                // Start polling for in-class data
-                livePollingInterval = setInterval(refreshInClassData, 3000);
                 refreshInClassData();
+            } else if (currentQuiz) {
+                refreshData();
             }
         }
 
@@ -989,7 +1003,7 @@
                 document.getElementById('createSessionContainer').style.display = 'block';
                 document.getElementById('liveSessionContainer').style.display = 'none';
 
-                if (livePollingInterval) clearInterval(livePollingInterval);
+                // (live polling interval keeps running — it no-ops until a new session is created)
 
                 alert('Session ended. Final stats: ' + JSON.stringify(result.final_stats, null, 2));
             } catch (error) {
@@ -1057,9 +1071,19 @@
         }
 
         function startAutoRefresh() {
+            // One interval per tab; each only fires while its tab is visible
+            // and its prerequisite exists (a selected quiz / an active session)
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
             autoRefreshInterval = setInterval(() => {
                 if (currentTab === 'historical' && currentQuiz && sessionToken) {
                     refreshData();
+                }
+            }, 3000);
+
+            if (livePollingInterval) clearInterval(livePollingInterval);
+            livePollingInterval = setInterval(() => {
+                if (currentTab === 'inclass') {
+                    refreshInClassData();
                 }
             }, 3000);
         }

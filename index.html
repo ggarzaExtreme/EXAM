@@ -80,6 +80,10 @@
             background: rgba(255,255,255,0.3);
         }
 
+        .header-link.hidden {
+            display: none;
+        }
+
         .content {
             padding: 40px 30px;
         }
@@ -597,6 +601,10 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
 
+        .quiz-screen .header-link {
+            display: none !important;
+        }
+
         @media (max-width: 600px) {
             .header h1 {
                 font-size: 20px;
@@ -606,6 +614,10 @@
                 position: static;
                 margin-top: 15px;
                 display: block;
+            }
+
+            .header-link.hidden {
+                display: none;
             }
 
             .content {
@@ -717,7 +729,7 @@
                     <div class="student-info-text">
                         Student: <strong id="currentStudentName">Anonymous</strong> | Class: <strong id="currentClassType">Pretraining</strong>
                     </div>
-                    <button class="btn btn-secondary btn-small" onclick="openStudentInfoModal()">Change</button>
+                    <button class="btn btn-secondary btn-small" onclick="showRestartModal()">← Back to Start</button>
                 </div>
 
                 <div class="progress-bar">
@@ -787,6 +799,19 @@
             <div class="modal-buttons">
                 <button class="btn btn-cancel" onclick="closeFinishModal()">Continue Quiz</button>
                 <button class="btn" onclick="finishQuiz()">Yes, Finish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restart Modal -->
+    <div class="modal-overlay" id="restartModal">
+        <div class="modal-content">
+            <h3>Return to Start?</h3>
+            <p>What would you like to do?</p>
+            <div class="modal-buttons" style="flex-direction: column; gap: 10px; margin-top: 20px;">
+                <button class="btn" onclick="restartWithAnswers()" style="width: 100%;">Keep Answers & Go to Results</button>
+                <button class="btn btn-secondary" onclick="restartFresh()" style="width: 100%;">Clear Answers & Retake</button>
+                <button class="btn btn-cancel" onclick="closeRestartModal()" style="width: 100%;">Continue Quiz</button>
             </div>
         </div>
     </div>
@@ -934,6 +959,9 @@
             document.getElementById('studentInfoScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
 
+            // Hide instructor dashboard link during quiz
+            document.querySelector('.header-link').classList.add('hidden');
+
             quizStartTime = new Date();
             currentQuestion = 0;
             responses = new Array(quizData.length).fill(null);
@@ -951,6 +979,34 @@
             }
 
             loadQuestion();
+        }
+
+        function showRestartModal() {
+            document.getElementById('restartModal').classList.add('active');
+        }
+
+        function closeRestartModal() {
+            document.getElementById('restartModal').classList.remove('active');
+        }
+
+        function restartWithAnswers() {
+            document.getElementById('restartModal').classList.remove('active');
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            showResults();
+            window.scrollTo(0, 0);
+        }
+
+        function restartFresh() {
+            localStorage.removeItem(STORAGE_KEY);
+            responses = [];
+            topicScores = {};
+            currentQuestion = 0;
+            document.getElementById('restartModal').classList.remove('active');
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            showResults();
+            window.scrollTo(0, 0);
         }
 
         function openStudentInfoModal() {
@@ -1035,6 +1091,11 @@
             document.getElementById('feedbackScreen').style.display = 'none';
             document.getElementById('feedbackScreen').className = 'feedback-screen';
 
+            // Display feedback if this question was previously answered
+            if (currentResponse) {
+                displayFeedback(actualQuestionIndex, currentResponse.selectedIndex);
+            }
+
             document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
             document.getElementById('nextBtn').style.display = currentQuestion < totalQuestions - 1 ? 'inline-block' : 'none';
 
@@ -1070,23 +1131,9 @@
             window.scrollTo(0, 0);
         }
 
-        function selectOption(selectedIndex) {
-            // Determine actual question index based on retry mode
-            let actualQuestionIndex = currentQuestion;
-            if (retryMode === 'wrong-answers-only') {
-                actualQuestionIndex = wrongAnswerIndices[currentQuestion];
-            }
-
+        function displayFeedback(actualQuestionIndex, selectedIndex) {
             const question = quizData[actualQuestionIndex];
             const isCorrect = question.options[selectedIndex].isCorrect;
-
-            responses[actualQuestionIndex] = {
-                selectedIndex: selectedIndex,
-                isCorrect: isCorrect,
-                selectedText: question.options[selectedIndex].text
-            };
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
 
             const feedbackScreen = document.getElementById('feedbackScreen');
             const feedbackHeader = document.getElementById('feedbackHeader');
@@ -1110,6 +1157,27 @@
             }
 
             feedbackScreen.style.display = 'block';
+        }
+
+        function selectOption(selectedIndex) {
+            // Determine actual question index based on retry mode
+            let actualQuestionIndex = currentQuestion;
+            if (retryMode === 'wrong-answers-only') {
+                actualQuestionIndex = wrongAnswerIndices[currentQuestion];
+            }
+
+            const question = quizData[actualQuestionIndex];
+            const isCorrect = question.options[selectedIndex].isCorrect;
+
+            responses[actualQuestionIndex] = {
+                selectedIndex: selectedIndex,
+                isCorrect: isCorrect,
+                selectedText: question.options[selectedIndex].text
+            };
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+
+            displayFeedback(actualQuestionIndex, selectedIndex);
         }
 
         function previousQuestion() {
@@ -1314,6 +1382,7 @@
             currentQuestion = 0;
             document.getElementById('resultsScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
+            document.querySelector('.header-link').classList.add('hidden');
             loadQuestion();
             window.scrollTo(0, 0);
         }
@@ -1329,6 +1398,7 @@
 
             document.getElementById('resultsScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
+            document.querySelector('.header-link').classList.add('hidden');
             quizStartTime = new Date();
             responses = new Array(quizData.length).fill(null);
             loadQuestion();
@@ -1341,6 +1411,7 @@
             wrongAnswerIndices = [];
             document.getElementById('resultsScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
+            document.querySelector('.header-link').classList.add('hidden');
             quizStartTime = new Date();
             loadQuestion();
             window.scrollTo(0, 0);

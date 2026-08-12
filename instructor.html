@@ -529,6 +529,10 @@
                         </div>
                     </div>
 
+                    <!-- Status banner: lives outside both containers so it stays
+                         visible whether or not a session is active -->
+                    <div id="liveStatusMsg" style="display: none; margin-bottom: 20px; padding: 12px 15px; border-radius: 6px; font-size: 14px;"></div>
+
                     <div id="createSessionContainer">
                         <div class="info-box" style="background: #F0EDFF; border-left: 4px solid #5B059C; padding: 20px; border-radius: 6px; text-align: center;">
                             <h3 style="color: #5B059C; margin-bottom: 10px;">No Active Session</h3>
@@ -559,7 +563,6 @@
                                 <button class="btn btn-secondary" id="nextQuestionBtn" onclick="nextQuestion()">▶ Start Quiz (Q1)</button>
                                 <button class="btn" style="background: #ef4444;" id="endSessionBtn" onclick="endSession()">End Session</button>
                             </div>
-                            <div id="liveStatusMsg" style="display: none; margin-top: 15px; padding: 12px 15px; border-radius: 6px; font-size: 14px;"></div>
                         </div>
 
                         <div class="answer-distribution">
@@ -895,7 +898,7 @@
                     return;
                 }
 
-                setLiveStatus(null);
+                restoreLiveContext();
                 displayAnswerDistribution(result.answer_distribution);
                 displayRetryStats(result.retry_stats, result.participation);
                 document.getElementById('currentQuestionDisplay').textContent =
@@ -907,21 +910,42 @@
             }
         }
 
+        // 'info' messages describe the current state (e.g. which question is
+        // live) and persist until replaced. Errors/warnings are transient
+        // overlays: once a refresh succeeds, the info message returns.
+        let liveContextMsg = null;
+
         function setLiveStatus(message, type) {
             const el = document.getElementById('liveStatusMsg');
+            const kind = type || 'info';
+
             if (!message) {
+                liveContextMsg = null;
                 el.style.display = 'none';
                 return;
             }
+            if (kind === 'info') {
+                liveContextMsg = message;
+            }
+
             const palette = {
                 error: { bg: '#F8D7DA', fg: '#721C24' },
                 warn:  { bg: '#FFF3CD', fg: '#856404' },
                 info:  { bg: '#D1E7DD', fg: '#155724' }
-            }[type || 'info'];
+            }[kind];
             el.style.background = palette.bg;
             el.style.color = palette.fg;
             el.textContent = message;
             el.style.display = 'block';
+        }
+
+        // Called after a successful refresh: drop a stale error, keep context
+        function restoreLiveContext() {
+            if (liveContextMsg) {
+                setLiveStatus(liveContextMsg, 'info');
+            } else {
+                document.getElementById('liveStatusMsg').style.display = 'none';
+            }
         }
 
         // Clears the per-question panels so stats from the previous question

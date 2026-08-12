@@ -628,6 +628,7 @@
                     <div class="question-text" id="inclassQuestionText"></div>
                     <div class="options" id="inclassOptionsContainer"></div>
                     <button class="btn" id="inclassSubmitBtn" onclick="submitInClassAnswer()" style="width: 100%; margin-top: 20px;">Submit Answer</button>
+                    <div id="answerStatusMsg" style="display: none; margin-top: 12px; padding: 12px 15px; background: #FFF3CD; color: #856404; border-radius: 6px; font-size: 14px;"></div>
                     <div class="feedback-screen" id="inclassFeedbackScreen">
                         <div class="feedback-header" id="inclassFeedbackHeader"></div>
                         <div class="feedback-text" id="inclassFeedbackText"></div>
@@ -669,7 +670,8 @@
         let currentQuestionId = null;
         let currentAttemptNumber = 1;
         let selectedAnswer = null;
-        let answerSubmitted = false;
+        let questionLocked = false;      // true once answered correctly
+        let lastSubmittedOption = null;  // letter of the most recent submission
 
         const STORAGE_KEY = 'networkingAssessmentData';
         const quizDataFiles = {
@@ -722,7 +724,8 @@
             classId = null;
             sessionId = null;
             selectedAnswer = null;
-            answerSubmitted = false;
+            questionLocked = false;
+            lastSubmittedOption = null;
             currentAttemptNumber = 1;
             sessionWasActive = false;
 
@@ -1080,7 +1083,8 @@
                     // Instructor hasn't started the first question yet
                     currentQuestionId = null;
                     selectedAnswer = null;
-                    answerSubmitted = false;
+                    questionLocked = false;
+                    lastSubmittedOption = null;
                     currentAttemptNumber = 1;
                     document.getElementById('waitingForQuestion').style.display = 'block';
                     document.getElementById('questionDisplay').style.display = 'none';
@@ -1094,7 +1098,6 @@
                     // New question available
                     currentQuestionId = data.current_question_id;
                     selectedAnswer = null;
-                    answerSubmitted = false;
                     currentAttemptNumber = 1;
                     setCheckStatus(null);
                     document.getElementById('nextQuestionBtn').textContent = 'Next Question →';
@@ -1134,38 +1137,63 @@
                 optionsContainer.appendChild(optionDiv);
             });
 
+            // Fresh question: clear all per-question answer state
+            lastSubmittedOption = null;
+            questionLocked = false;
             document.getElementById('inclassFeedbackScreen').style.display = 'none';
             document.getElementById('inclassSubmitBtn').textContent = 'Submit Answer';
             document.getElementById('inclassSubmitBtn').disabled = false;
+            setAnswerStatus(null);
             updateAttemptDisplay();
         }
 
         function selectAnswer(index) {
             selectedAnswer = index;
+            setAnswerStatus(null);
+        }
+
+        function setAnswerStatus(message) {
+            const el = document.getElementById('answerStatusMsg');
+            if (!message) {
+                el.style.display = 'none';
+                return;
+            }
+            el.textContent = message;
+            el.style.display = 'block';
+        }
+
+        // Disables the options once the question has been answered correctly
+        function lockOptions() {
+            questionLocked = true;
+            document.querySelectorAll('#inclassOptionsContainer .option').forEach(label => {
+                label.classList.add('disabled');
+                const input = label.querySelector('input');
+                if (input) input.disabled = true;
+            });
         }
 
         async function submitInClassAnswer() {
+            if (questionLocked) return;
+
             if (selectedAnswer === null) {
-                alert('Please select an answer');
+                setAnswerStatus('Please choose an answer first.');
                 return;
             }
 
-            if (answerSubmitted) {
-                // Previous answer was wrong — reset the UI for a retry
-                // (when the answer is correct the button is disabled, so this
-                // branch only runs after an incorrect submission)
-                answerSubmitted = false;
-                selectedAnswer = null;
-                currentAttemptNumber = currentAttemptNumber + 1;
-                document.getElementById('inclassFeedbackScreen').style.display = 'none';
-                document.querySelectorAll('#inclassOptionsContainer input[type="radio"]').forEach(r => r.checked = false);
-                document.getElementById('inclassSubmitBtn').textContent = 'Submit Answer';
-                updateAttemptDisplay();
+            const optionLetter = String.fromCharCode(65 + selectedAnswer);
+
+            // A wrong answer leaves the button as "Submit Answer" so students can
+            // simply pick a different option and submit again. Guard against
+            // re-submitting the identical choice, which would just burn an attempt.
+            if (optionLetter === lastSubmittedOption) {
+                setAnswerStatus('You already submitted ' + optionLetter + '. Pick a different option and submit again.');
                 return;
             }
 
             const submitBtn = document.getElementById('inclassSubmitBtn');
             submitBtn.disabled = true;  // prevent double-submit while request is in flight
+            submitBtn.textContent = 'Submitting...';
+            setAnswerStatus(null);
             setCheckStatus(null);       // clear any stale "not yet" message
 
             try {
@@ -1175,7 +1203,7 @@
                     body: JSON.stringify({
                         class_id: classId,
                         question_id: currentQuestionId,
-                        selected_option: String.fromCharCode(65 + selectedAnswer),
+                        selected_option: optionLetter,
                         time_spent_seconds: 0,
                         name: studentName,
                         email: studentEmail
@@ -1185,29 +1213,32 @@
                 const data = await response.json();
 
                 if (!data.success) {
-                    alert('Error submitting answer: ' + (data.error || 'Unknown error'));
+                    setAnswerStatus('Could not submit: ' + (data.error || 'unknown error') + '. Please try again.');
                     submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Answer';
                     return;
                 }
 
+                lastSubmittedOption = optionLetter;
                 currentAttemptNumber = data.attempt_number;
                 displayFeedback(data.is_correct, data.explanation, data.attempt_number);
-                answerSubmitted = true;
 
                 if (data.is_correct) {
                     submitBtn.textContent = '✓ Answered correctly';
-                    // stays disabled — click "Next Question" below when the
-                    // instructor moves on
+                    lockOptions();  // button stays disabled too
                 } else {
-                    submitBtn.textContent = 'Try Again';
+                    // Stay on "Submit Answer" — choosing another option and
+                    // submitting sends the new answer directly
+                    submitBtn.textContent = 'Submit Answer';
                     submitBtn.disabled = false;
                 }
 
                 updateAttemptDisplay();
             } catch (error) {
                 console.error('Submission error:', error);
-                alert('Failed to submit answer: ' + error.message);
+                setAnswerStatus("Couldn't reach the server. Please try again.");
                 submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Answer';
             }
         }
 
@@ -1222,7 +1253,7 @@
             feedbackText.textContent = explanation;
 
             if (!isCorrect) {
-                attemptInfo.textContent = `Attempt ${attemptNumber}. Try again!`;
+                attemptInfo.textContent = `Attempt ${attemptNumber} recorded. Try again — pick another option and submit.`;
             } else {
                 attemptInfo.textContent = `Great! Correct on attempt ${attemptNumber}.`;
             }

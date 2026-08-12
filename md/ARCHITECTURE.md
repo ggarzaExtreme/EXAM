@@ -132,7 +132,9 @@
 
 Instructor-driven question flow with per-question, per-attempt tracking.
 Uses two additional tables (`class_sessions`, `question_responses`) and five
-functions. No WebSockets — students poll every 3 seconds.
+functions. No WebSockets and no background polling on the student side —
+the instructor announces transitions verbally, and students fetch the current
+question on demand with a "Next Question" button (one API call per click).
 
 ### Session lifecycle
 
@@ -146,20 +148,22 @@ functions. No WebSockets — students poll every 3 seconds.
    attempt tracking.
 3. **Advance** — instructor calls `advance-question` to set
    `current_question_id`; the response includes stats for the question just
-   left. Students' next poll of `get-current-question` picks up the new
-   question. The payload strips `isCorrect`/`feedback` — grading is
-   server-side only.
+   left. Students pick up the new question by clicking "Next Question"
+   (one `get-current-question` call; if the instructor hasn't advanced, a
+   lightweight "not yet" message shows and nothing changes). The payload
+   strips `isCorrect`/`feedback` — grading is server-side only.
 4. **Answer** — students call `submit-question-response`. The server loads the
    bundled quiz data, grades the answer, computes `attempt_number`, and stores
    one row per attempt. Wrong answers can be retried until correct
    (`final_answer = TRUE` on the correct attempt).
-5. **Monitor** — the dashboard polls `get-submissions` with
-   `mode: 'inclass_live'` every 3s: per-option answer distribution (with the
-   correct option flagged), first-attempt/retry breakdown, and students still
-   working.
+5. **Monitor** — the dashboard auto-refreshes `get-submissions` with
+   `mode: 'inclass_live'` at a configurable interval (3/5/10/30s, default 5s;
+   toggleable off for manual-Refresh-only mode — the preference persists in
+   localStorage): per-option answer distribution (with the correct option
+   flagged), first-attempt/retry breakdown, and students still working.
 6. **End** — `end-class-session` sets `is_active = FALSE` and returns final
-   stats. Students' polls get a 404 and show "Session Ended"; the class ID is
-   freed for reuse.
+   stats. A student's next question-check gets a 404 and shows
+   "Session Ended"; the class ID is freed for reuse.
 
 ### Quiz Data Bundling
 

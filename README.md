@@ -8,8 +8,9 @@ Quiz system with two modes — self-paced full assessments (pre/post class) and 
 Students → index.html (mode selection)
    ├── Full Assessment (pre/post class): all questions client-side,
    │     one submission at the end → submit-responses
-   └── In-Class Live Quiz: joins by class ID, polls every 3s for the
-         current question → get-current-question / submit-question-response
+   └── In-Class Live Quiz: joins by class ID, fetches the current question
+         on demand ("Next Question" button) → get-current-question /
+         submit-question-response
 
 Instructors → instructor.html
    ├── Historical tab: past submissions → get-submissions
@@ -32,7 +33,8 @@ All API calls → Netlify Functions → Supabase (PostgreSQL + RLS)
 **In-class live mode**
 - Instructor creates a session with a simple class ID (e.g. `class7`)
 - Students join by class ID; anonymous students get a generated participant ID
-- Instructor advances questions; students poll every 3 seconds
+- Instructor advances questions; students click "Next Question" to fetch them
+  (one API call per click — no background polling)
 - Retry-until-correct: wrong answers can be retried, every attempt is recorded
 - Live instructor view: answer distribution per option, first-attempt/retry
   stats, students still working
@@ -62,7 +64,7 @@ netlify/functions/
 ├── get-submissions.js          Historical submissions + in-class live stats
 ├── export-submissions.js       CSV export
 ├── create-class-session.js     Create (or resume) an in-class session
-├── get-current-question.js     Student polling endpoint (answers stripped)
+├── get-current-question.js     Current-question fetch (answers stripped)
 ├── submit-question-response.js Per-question answer submission with retries
 ├── advance-question.js         Instructor moves the session to a question
 └── end-class-session.js        End session, return final stats

@@ -221,6 +221,14 @@
             border-bottom-color: #5B059C;
         }
 
+        .poll-controls {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 8px;
+        }
+
         /* Tab panels: only the active one is shown */
         .tab-content {
             display: none;
@@ -498,6 +506,17 @@
                 <div class="tabs">
                     <button class="tab-btn active" id="inclassTabBtn" onclick="switchTab('inclass')">🎓 In-Class Live Sessions</button>
                     <button class="tab-btn" id="historicalTabBtn" onclick="switchTab('historical')">📊 Student Submissions</button>
+                    <div class="poll-controls">
+                        <label for="autoRefreshToggle" style="font-size: 13px; color: #555; font-weight: 600; cursor: pointer;">
+                            <input type="checkbox" id="autoRefreshToggle" checked onchange="updatePollingSettings()" style="cursor: pointer; margin-right: 4px; vertical-align: middle;">Auto-refresh
+                        </label>
+                        <select id="pollIntervalSelect" onchange="updatePollingSettings()" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; font-family: inherit;">
+                            <option value="3000">every 3s</option>
+                            <option value="5000" selected>every 5s</option>
+                            <option value="10000">every 10s</option>
+                            <option value="30000">every 30s</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- In-Class Live Tab -->
@@ -1070,25 +1089,58 @@
             }).join('');
         }
 
+        const POLL_SETTINGS_KEY = 'dashboardPollSettings';
+
+        function getPollSettings() {
+            return {
+                enabled: document.getElementById('autoRefreshToggle').checked,
+                interval: parseInt(document.getElementById('pollIntervalSelect').value, 10)
+            };
+        }
+
+        function restorePollSettings() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(POLL_SETTINGS_KEY));
+                if (!saved) return;
+                document.getElementById('autoRefreshToggle').checked = saved.enabled !== false;
+                const select = document.getElementById('pollIntervalSelect');
+                if ([...select.options].some(o => o.value === String(saved.interval))) {
+                    select.value = String(saved.interval);
+                }
+            } catch (e) { /* corrupted setting — keep defaults */ }
+        }
+
+        function updatePollingSettings() {
+            localStorage.setItem(POLL_SETTINGS_KEY, JSON.stringify(getPollSettings()));
+            startAutoRefresh();
+        }
+
         function startAutoRefresh() {
             // One interval per tab; each only fires while its tab is visible
-            // and its prerequisite exists (a selected quiz / an active session)
-            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            // and its prerequisite exists (a selected quiz / an active session).
+            // The Refresh buttons always work regardless of these settings.
+            if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
+            if (livePollingInterval) { clearInterval(livePollingInterval); livePollingInterval = null; }
+
+            const settings = getPollSettings();
+            if (!settings.enabled) return;  // manual mode: Refresh buttons only
+
             autoRefreshInterval = setInterval(() => {
                 if (currentTab === 'historical' && currentQuiz && sessionToken) {
                     refreshData();
                 }
-            }, 3000);
+            }, settings.interval);
 
-            if (livePollingInterval) clearInterval(livePollingInterval);
             livePollingInterval = setInterval(() => {
                 if (currentTab === 'inclass') {
                     refreshInClassData();
                 }
-            }, 3000);
+            }, settings.interval);
         }
 
         window.addEventListener('load', () => {
+            restorePollSettings();
+
             const savedToken = sessionStorage.getItem('instructorToken');
             if (savedToken) {
                 sessionToken = savedToken;

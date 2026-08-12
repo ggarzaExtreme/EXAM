@@ -116,7 +116,7 @@ POST /.netlify/functions/create-class-session
 // 409 if ANOTHER instructor has an active session with this class_id
 ```
 
-### Get Current Question (student polling, every 3s)
+### Get Current Question (student, on demand via "Next Question" button)
 ```javascript
 POST /.netlify/functions/get-current-question
 { class_id: 'class7' }

@@ -619,8 +619,8 @@
 
                 <!-- Waiting State -->
                 <div id="waitingForQuestion" class="waiting-indicator">
-                    <div class="waiting-spinner"></div>
-                    <p>Waiting for instructor to start...</p>
+                    <p>Waiting for the instructor to start the quiz.</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 8px;">When your instructor says the quiz has begun, click the button below.</p>
                 </div>
 
                 <!-- Question State -->
@@ -633,6 +633,12 @@
                         <div class="feedback-text" id="inclassFeedbackText"></div>
                         <div class="attempt-info" id="attemptInfo"></div>
                     </div>
+                </div>
+
+                <!-- Next Question controls (on-demand check; no background polling) -->
+                <div id="inclassCheckControls" style="margin-top: 20px;">
+                    <div id="checkStatusMsg" style="display: none; padding: 12px 15px; background: #FFF3CD; color: #856404; border-radius: 6px; margin-bottom: 12px; font-size: 14px;"></div>
+                    <button class="btn btn-secondary" id="nextQuestionBtn" onclick="checkForNextQuestion()" style="width: 100%;">Check for Question</button>
                 </div>
 
                 <!-- Session Ended -->
@@ -662,7 +668,6 @@
         let classId = null;
         let currentQuestionId = null;
         let currentAttemptNumber = 1;
-        let pollingInterval = null;
         let selectedAnswer = null;
         let answerSubmitted = false;
 
@@ -719,11 +724,7 @@
             selectedAnswer = null;
             answerSubmitted = false;
             currentAttemptNumber = 1;
-
-            if (pollingInterval) {
-                clearInterval(pollingInterval);
-                pollingInterval = null;
-            }
+            sessionWasActive = false;
 
             document.getElementById('modeSelectionScreen').classList.add('active');
             document.getElementById('studentInfoScreen').classList.remove('active');
@@ -1013,25 +1014,40 @@
             document.getElementById('questionDisplay').style.display = 'none';
             document.getElementById('sessionEndedDisplay').style.display = 'none';
             document.getElementById('inclassFeedbackScreen').style.display = 'none';
-
-            startPolling();
-        }
-
-        function startPolling() {
-            if (pollingInterval) {
-                clearInterval(pollingInterval);
-            }
+            document.getElementById('inclassCheckControls').style.display = 'block';
+            document.getElementById('nextQuestionBtn').textContent = 'Check for Question';
+            setCheckStatus(null);
 
             sessionWasActive = false;
-
-            // Poll immediately, then every 3 seconds
-            pollForQuestion();
-            pollingInterval = setInterval(pollForQuestion, 3000);
+            checkForQuestion(false);  // one initial check on join
         }
 
         let sessionWasActive = false;
 
-        async function pollForQuestion() {
+        function setCheckStatus(message) {
+            const msg = document.getElementById('checkStatusMsg');
+            if (!message) {
+                msg.style.display = 'none';
+                return;
+            }
+            msg.textContent = message;
+            msg.style.display = 'block';
+        }
+
+        // Button handler: one on-demand check, briefly debounced
+        async function checkForNextQuestion() {
+            const btn = document.getElementById('nextQuestionBtn');
+            btn.disabled = true;
+            try {
+                await checkForQuestion(true);
+            } finally {
+                setTimeout(() => { btn.disabled = false; }, 1000);
+            }
+        }
+
+        // Fetches the session's current question once. No background polling —
+        // the instructor announces transitions and students click the button.
+        async function checkForQuestion(fromButton) {
             try {
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/get-current-question', {
                     method: 'POST',
@@ -1042,9 +1058,6 @@
                 const data = await response.json();
 
                 if (!data.session_active) {
-                    clearInterval(pollingInterval);
-                    pollingInterval = null;
-
                     if (!sessionWasActive) {
                         // Never saw an active session — this is a bad/unknown class ID,
                         // not an ended session. Send the student back to the join screen.
@@ -1056,6 +1069,7 @@
 
                     document.getElementById('waitingForQuestion').style.display = 'none';
                     document.getElementById('questionDisplay').style.display = 'none';
+                    document.getElementById('inclassCheckControls').style.display = 'none';
                     document.getElementById('sessionEndedDisplay').style.display = 'block';
                     return;
                 }
@@ -1063,29 +1077,36 @@
                 sessionWasActive = true;
 
                 if (!data.current_question_id) {
-                    // Still waiting for instructor to start
-                    if (currentQuestionId !== null) {
-                        // Question was cleared, reset UI
-                        currentQuestionId = null;
-                        selectedAnswer = null;
-                        answerSubmitted = false;
-                        currentAttemptNumber = 1;
-                        document.getElementById('waitingForQuestion').style.display = 'block';
-                        document.getElementById('questionDisplay').style.display = 'none';
+                    // Instructor hasn't started the first question yet
+                    currentQuestionId = null;
+                    selectedAnswer = null;
+                    answerSubmitted = false;
+                    currentAttemptNumber = 1;
+                    document.getElementById('waitingForQuestion').style.display = 'block';
+                    document.getElementById('questionDisplay').style.display = 'none';
+                    if (fromButton) {
+                        setCheckStatus("The instructor hasn't started the quiz yet — try again in a moment.");
                     }
                     return;
                 }
 
-                // Question changed
                 if (data.current_question_id !== currentQuestionId) {
+                    // New question available
                     currentQuestionId = data.current_question_id;
                     selectedAnswer = null;
                     answerSubmitted = false;
                     currentAttemptNumber = 1;
+                    setCheckStatus(null);
+                    document.getElementById('nextQuestionBtn').textContent = 'Next Question →';
                     displayQuestion(data.question_data);
+                } else if (fromButton) {
+                    setCheckStatus("The instructor hasn't moved to the next question yet.");
                 }
             } catch (error) {
-                console.error('Polling error:', error);
+                console.error('Question check error:', error);
+                if (fromButton) {
+                    setCheckStatus("Couldn't reach the server — please try again.");
+                }
             }
         }
 
@@ -1145,6 +1166,7 @@
 
             const submitBtn = document.getElementById('inclassSubmitBtn');
             submitBtn.disabled = true;  // prevent double-submit while request is in flight
+            setCheckStatus(null);       // clear any stale "not yet" message
 
             try {
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/submit-question-response', {
@@ -1173,8 +1195,9 @@
                 answerSubmitted = true;
 
                 if (data.is_correct) {
-                    submitBtn.textContent = 'Waiting for next question...';
-                    // stays disabled — polling will re-enable it when a new question arrives
+                    submitBtn.textContent = '✓ Answered correctly';
+                    // stays disabled — click "Next Question" below when the
+                    // instructor moves on
                 } else {
                     submitBtn.textContent = 'Try Again';
                     submitBtn.disabled = false;

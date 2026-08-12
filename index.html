@@ -696,11 +696,11 @@
                             <label for="class-postclass">Post-Class Review/Feedback</label>
                         </div>
                         <div class="radio-option">
-                            <input type="radio" id="class-fabric" name="class_type" value="fabric_engine">
+                            <input type="radio" id="class-fabric" name="class_type" value="fabric">
                             <label for="class-fabric">In-Class Quiz - Fabric Engine</label>
                         </div>
                         <div class="radio-option">
-                            <input type="radio" id="class-switch" name="class_type" value="switch_engine">
+                            <input type="radio" id="class-switch" name="class_type" value="switch">
                             <label for="class-switch">In-Class Quiz - Switch Engine</label>
                         </div>
                     </div>
@@ -814,10 +814,10 @@
         </div>
     </div>
 
-    <script src="quiz_data_pre_class.js"></script>
     <script>
         let currentQuestion = 0;
         let responses = [];
+        let quizData = [];
         let topicScores = {};
         let questionOptions = {};
         let quizStartTime = null;
@@ -830,13 +830,29 @@
         const STUDENT_EMAIL_KEY = 'quiz_student_email';
         const CLASS_TYPE_KEY = 'quiz_class_type';
 
-        // Map class_type to quiz_table
-        const classTypeToTable = {
-            'pretraining': 'submissions_pretraining_assessment',
-            'post_class': 'submissions_post_class_review',
-            'fabric_engine': 'submissions_inclass_fabric_engine',
-            'switch_engine': 'submissions_inclass_switch_engine'
+        // Map class_type to quiz data file
+        const quizDataFiles = {
+            'pretraining': 'quiz_data_pre_class.js',
+            'post_class': 'quiz_data_post_class.js',
+            'fabric': 'quiz_data_fabric_engine.js',
+            'switch': 'quiz_data_switch_engine.js'
         };
+
+        // Load quiz data file dynamically
+        async function loadQuizDataFile(classType) {
+            const fileName = quizDataFiles[classType];
+            if (!fileName) {
+                throw new Error('Unknown class type: ' + classType);
+            }
+
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = fileName;
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error('Failed to load ' + fileName));
+                document.head.appendChild(script);
+            });
+        }
 
         // Fisher-Yates shuffle algorithm
         function shuffleArray(array) {
@@ -859,10 +875,15 @@
             if (studentEmail) {
                 document.getElementById('studentEmail').value = studentEmail;
             }
-            document.getElementById('class-' + (classType === 'pretraining' ? 'pretraining' : classType.replace('_', '-'))).checked = true;
+            // Map classType to radio button ID (all use 'class-' + classType)
+            const radioId = 'class-' + classType;
+            const radioBtn = document.getElementById(radioId);
+            if (radioBtn) {
+                radioBtn.checked = true;
+            }
         }
 
-        function startQuiz() {
+        async function startQuiz() {
             const nameInput = document.getElementById('studentName').value.trim();
             const emailInput = document.getElementById('studentEmail').value.trim();
             const classInput = document.querySelector('input[name="class_type"]:checked').value;
@@ -881,13 +902,21 @@
             localStorage.setItem(STUDENT_EMAIL_KEY, studentEmail);
             localStorage.setItem(CLASS_TYPE_KEY, classType);
 
+            // Load quiz data file dynamically
+            try {
+                await loadQuizDataFile(classType);
+            } catch (error) {
+                alert('Failed to load quiz: ' + error.message);
+                return;
+            }
+
             // Update display
             document.getElementById('currentStudentName').textContent = studentName;
             const classLabels = {
                 'pretraining': 'Pretraining',
                 'post_class': 'Post-Class Review',
-                'fabric_engine': 'Fabric Engine',
-                'switch_engine': 'Switch Engine'
+                'fabric': 'Fabric Engine',
+                'switch': 'Switch Engine'
             };
             document.getElementById('currentClassType').textContent = classLabels[classType] || classType;
 

@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Networking Fundamentals Assessment - Extreme Networks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-logo {
+            height: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .header-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .header-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header-link.hidden {
+            display: none;
+        }
+
+        .header-link.home-link {
+            right: auto;
+            left: 20px;
+        }
+
+        .header-link.instructor-link {
+            right: 20px;
+        }
+
+        .header-link.hidden {
+            display: none;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Welcome/Info Screen */
+        .info-box {
+            background: #F0EDFF;
+            border-left: 4px solid #5B059C;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            color: #5B059C;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E8E3FF;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus {
+            outline: none;
+            border-color: #5B059C;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #E8E3FF;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover {
+            border-color: #5B059C;
+            background: #F9FAFF;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 40px;
+            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(91, 5, 156, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #F0EDFF;
+            color: #5B059C;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 20px rgba(91, 5, 156, 0.2);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Quiz Screen */
+        .quiz-screen {
+            display: none;
+        }
+
+        .student-info-bar {
+            background: #F0EDFF;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .student-info-text {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .student-info-text strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .btn-small {
+            padding: 6px 16px;
+            font-size: 12px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-counter {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            background: #F0EDFF;
+            color: #5B059C;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .options {
+            margin: 30px 0;
+        }
+
+        .option {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin: 12px 0;
+            text-align: left;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .option:hover:not(.disabled) {
+            border-color: #667eea;
+            background: #f9faff;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .feedback-screen {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #F0EDFF;
+            border-left: 4px solid #5B059C;
+            border-radius: 6px;
+        }
+
+        .feedback-header {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .feedback-correct {
+            color: #22c55e;
+        }
+
+        .feedback-incorrect {
+            color: #ef4444;
+        }
+
+        .feedback-text {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .resource-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(91, 5, 156, 0.2);
+        }
+
+        .resource-label {
+            font-weight: 600;
+            color: #5B059C;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .resource-link {
+            color: #5B059C;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .resource-link:hover {
+            color: #20004C;
+            text-decoration: underline;
+        }
+
+        .question-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* Results Screen */
+        .results-screen {
+            display: none;
+        }
+
+        .score-display {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .score-circle {
+            display: inline-block;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            color: white;
+            font-size: 60px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .score-text {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .readiness-message {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .readiness-message.ready {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .readiness-message.review-needed {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .readiness-message.not-ready {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .topic-results {
+            margin: 40px 0;
+        }
+
+        .topic-results h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .topic-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .topic-name {
+            min-width: 150px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .topic-score {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .topic-percentage {
+            font-weight: 600;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .topic-bar {
+            width: 150px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .topic-bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .topic-row.strong .topic-bar-fill {
+            background: #22c55e;
+        }
+
+        .topic-row.medium .topic-bar-fill {
+            background: #f59e0b;
+        }
+
+        .topic-row.weak .topic-bar-fill {
+            background: #ef4444;
+        }
+
+        .recommendations {
+            background: #F0EDFF;
+            border-left: 4px solid #5B059C;
+            padding: 25px;
+            border-radius: 6px;
+            margin: 40px 0;
+        }
+
+        .recommendations h3 {
+            color: #5B059C;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .recommendations ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .recommendations li {
+            margin-bottom: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .button-group .btn {
+            margin-top: 0;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-screen .header-link {
+            display: none !important;
+        }
+
+        /* ===== COMPREHENSIVE STYLE IMPROVEMENTS ===== */
+
+        /* Better spacing and typography */
+        body {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        /* Action bar for results/review screens */
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .action-bar .btn {
+            padding: 12px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .action-bar .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        /* Improved button styling */
+        .btn {
+            padding: 14px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(91, 5, 156, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #f0edff;
+            color: #5B059C;
+            border: 2px solid #e0d4ff;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e0ff;
+            border-color: #d4c4ff;
+            box-shadow: 0 10px 25px rgba(91, 5, 156, 0.2);
+        }
+
+        /* Better form styling */
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-group label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"] {
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus {
+            outline: none;
+            border-color: #5B059C;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(91, 5, 156, 0.1);
+        }
+
+        /* Better radio options */
+        .radio-option {
+            padding: 16px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .radio-option:hover {
+            border-color: #5B059C;
+            background: #f9f5ff;
+            box-shadow: 0 4px 12px rgba(91, 5, 156, 0.1);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Card-based design for answer review */
+        .answer-review-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .answer-review-card:hover {
+            border-color: #5B059C;
+            box-shadow: 0 4px 16px rgba(91, 5, 156, 0.1);
+        }
+
+        .answer-review-card .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+            gap: 20px;
+        }
+
+        .answer-review-card .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .answer-review-card .status-correct {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .answer-review-card .status-incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .answer-review-card .status-skipped {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* Better progress visualization */
+        .progress-bar {
+            height: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #e5e7eb;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            transition: width 0.4s ease;
+        }
+
+        /* Better score display */
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            font-weight: 700;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            color: white;
+            box-shadow: 0 15px 40px rgba(91, 5, 156, 0.3);
+        }
+
+        /* Better info boxes */
+        .info-box {
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            border-left: 4px solid #5B059C;
+            padding: 24px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #5B059C;
+            margin-top: 0;
+        }
+
+        /* Better modal styling */
+        .modal-content {
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-content h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .modal-buttons {
+            gap: 12px;
+        }
+
+        .modal-buttons .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+        }
+
+        /* Better feedback styling */
+        .feedback-screen {
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid #5B059C;
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            margin-top: 30px;
+        }
+
+        .feedback-header {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .feedback-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        /* Better question styling in quiz */
+        .question-text {
+            font-size: 20px;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        /* Better option styling */
+        .option {
+            padding: 18px 20px;
+            margin: 14px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .option:hover:not(.disabled) {
+            border-color: #667eea;
+            background: #f9faff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 14px;
+        }
+
+        /* Better student info bar */
+        .student-info-bar {
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            padding: 18px 22px;
+            border-radius: 10px;
+            margin-bottom: 28px;
+            border: 1px solid #e0d4ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .student-info-text {
+            font-size: 15px;
+            color: #555;
+        }
+
+        .student-info-text strong {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        /* Better topic badge */
+        .topic-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            color: #5B059C;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid #e0d4ff;
+        }
+
+        /* Better recommendations */
+        .recommendations {
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            border-left: 4px solid #5B059C;
+            padding: 28px;
+            border-radius: 12px;
+            margin: 40px 0;
+            border: 1px solid #e0d4ff;
+        }
+
+        .recommendations h3 {
+            color: #5B059C;
+            margin-top: 0;
+        }
+
+        .recommendations ul {
+            margin-left: 24px;
+        }
+
+        .recommendations li {
+            margin-bottom: 12px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Better readiness message */
+        .readiness-message {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 18px 22px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #999;
+        }
+
+        .readiness-message.ready {
+            background: #dcfce7;
+            color: #166534;
+            border-left-color: #22c55e;
+        }
+
+        .readiness-message.review-needed {
+            background: #fef3c7;
+            color: #92400e;
+            border-left-color: #f59e0b;
+        }
+
+        .readiness-message.not-ready {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left-color: #ef4444;
+        }
+
+        /* ===== END STYLE IMPROVEMENTS ===== */
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .header-link {
+                position: static;
+                margin-top: 15px;
+                display: block;
+            }
+
+            .header-link.hidden {
+                display: none;
+            }
+
+            .content {
+                padding: 25px 15px;
+            }
+
+            .question-text {
+                font-size: 16px;
+            }
+
+            .option {
+                padding: 15px;
+                font-size: 14px;
+            }
+
+            .score-circle {
+                width: 120px;
+                height: 120px;
+                font-size: 40px;
+            }
+
+            .topic-score {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .topic-bar {
+                width: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+
+            .radio-option {
+                flex-direction: column;
+                text-align: left;
+            }
+
+            .radio-option input[type="radio"] {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="javascript:void(0)" class="header-link home-link hidden" onclick="showHomeConfirmation()">← Home</a>
+            <a href="instructor.html" class="header-link instructor-link">Instructor Dashboard →</a>
+            <div class="header-logo">🔷 Extreme Networks</div>
+            <h1>Networking Fundamentals Assessment</h1>
+        </div>
+
+        <div class="content">
+            <!-- Student Information Screen -->
+            <div class="screen active" id="studentInfoScreen">
+                <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Before We Begin</h2>
+
+                <div class="form-group">
+                    <label for="studentName">Full Name</label>
+                    <input type="text" id="studentName" placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="studentEmail">Email (optional)</label>
+                    <input type="email" id="studentEmail" placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label>Which class are you taking?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="class-pretraining" name="class_type" value="pretraining" checked>
+                            <label for="class-pretraining">Pre-Class Knowledge Assessment</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="class-postclass" name="class_type" value="post_class">
+                            <label for="class-postclass">Post-Class Review/Feedback</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="class-fabric" name="class_type" value="fabric">
+                            <label for="class-fabric">In-Class Quiz - Fabric Engine</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="class-switch" name="class_type" value="switch">
+                            <label for="class-switch">In-Class Quiz - Switch Engine</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <button class="btn" onclick="startQuiz()">Start Assessment</button>
+                </div>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div class="screen" id="quizScreen">
+                <div class="student-info-bar">
+                    <div class="student-info-text">
+                        Student: <strong id="currentStudentName">Anonymous</strong> | Class: <strong id="currentClassType">Pretraining</strong>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="openStudentInfoModal()">Edit Info</button>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="question-counter" id="questionCounter"></div>
+                <span class="topic-badge" id="topicBadge"></span>
+
+                <div class="question-nav">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">← Previous</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display: none;">Next →</button>
+                    <button class="btn btn-secondary" id="finishBtn" onclick="showFinishWarning()">Finish Assessment</button>
+                </div>
+
+                <div class="question-text" id="questionText"></div>
+
+                <div class="options" id="optionsContainer"></div>
+
+                <div class="feedback-screen" id="feedbackScreen">
+                    <div class="feedback-header" id="feedbackHeader"></div>
+                    <div class="feedback-text" id="feedbackText"></div>
+                    <div class="resource-section" id="resourceSection"></div>
+                </div>
+            </div>
+
+            <!-- Answer Review Screen -->
+            <div class="screen" id="reviewScreen">
+                <h2 style="text-align: center; margin-bottom: 10px;">Answer Review</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 30px;">Review all your answers and feedback below.</p>
+
+                <div class="action-bar" style="margin-bottom: 40px;">
+                    <button class="btn btn-secondary" onclick="goToResultsFromReview()">← Back to Results</button>
+                    <button class="btn" onclick="showHomeConfirmation()" style="margin-left: auto;">← Home</button>
+                </div>
+
+                <div id="reviewContainer"></div>
+            </div>
+
+            <!-- Results Screen -->
+            <div class="screen" id="resultsScreen">
+                <h2 style="text-align: center; margin-bottom: 30px;">Assessment Results</h2>
+
+                <div class="action-bar">
+                    <button class="btn" onclick="reviewAnswers()">📋 Review Answers</button>
+                    <button class="btn btn-secondary" onclick="retakeQuizFresh()">🔄 Retake Quiz</button>
+                    <button class="btn" onclick="submitResults()" style="margin-left: auto;">✓ Submit Results</button>
+                </div>
+
+                <div class="score-display">
+                    <div class="score-circle" id="scoreCircle">0%</div>
+                    <div class="score-text" id="scoreText"></div>
+                    <div class="readiness-message" id="readinessMessage"></div>
+                </div>
+
+                <div class="topic-results">
+                    <h3>Performance by Topic</h3>
+                    <div id="topicResultsList"></div>
+                </div>
+
+                <div class="recommendations" id="recommendationsBox">
+                    <h3>Review Recommendations</h3>
+                    <ul id="recommendationsList"></ul>
+                </div>
+
+                <div class="topic-results">
+                    <h3>Learning Resources by Topic</h3>
+                    <div id="topicReferencesContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Finish Modal -->
+    <div class="modal-overlay" id="finishModal">
+        <div class="modal-content">
+            <h3>Finish Assessment?</h3>
+            <p id="finishModalText">You still have unanswered questions. If you finish now, your score will be calculated based only on the questions you've answered so far.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeFinishModal()">Continue Quiz</button>
+                <button class="btn" onclick="finishQuiz()">Yes, Finish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Confirmation Modal -->
+    <div class="modal-overlay" id="homeModal">
+        <div class="modal-content">
+            <h3>Return to Home?</h3>
+            <p>Your current progress will be saved. You can edit your name, email, or class selection.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeHomeConfirmation()">Cancel</button>
+                <button class="btn" onclick="goHome()">Yes, Go Home</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Info Change Modal -->
+    <div class="modal-overlay" id="studentInfoModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <h3>Update Student Information</h3>
+            <div style="margin: 20px 0; text-align: left;">
+                <div style="margin-bottom: 15px;">
+                    <label for="modalStudentName" style="display: block; color: #333; font-weight: 600; margin-bottom: 5px;">Full Name</label>
+                    <input type="text" id="modalStudentName" placeholder="Enter your full name" style="width: 100%; padding: 10px; border: 2px solid #E8E3FF; border-radius: 6px; font-size: 14px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="modalStudentEmail" style="display: block; color: #333; font-weight: 600; margin-bottom: 5px;">Email (optional)</label>
+                    <input type="email" id="modalStudentEmail" placeholder="Enter your email" style="width: 100%; padding: 10px; border: 2px solid #E8E3FF; border-radius: 6px; font-size: 14px;">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeStudentInfoModal()">Cancel</button>
+                <button class="btn" onclick="saveStudentInfo()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        let currentQuestion = 0;
+        let responses = [];
+        let topicScores = {};
+        let questionOptions = {};
+        let quizStartTime = null;
+        let studentName = '';
+        let studentEmail = '';
+        let classType = 'pretraining';
+        let retryMode = 'normal'; // 'normal', 'wrong-answers-only', 'fresh', 'with-answers'
+        let wrongAnswerIndices = []; // Track indices of wrong answers for review mode
+
+        const STORAGE_KEY = 'networkingAssessmentData';
+        const STUDENT_NAME_KEY = 'quiz_student_name';
+        const STUDENT_EMAIL_KEY = 'quiz_student_email';
+        const CLASS_TYPE_KEY = 'quiz_class_type';
+
+        // Map class_type to quiz data file
+        const quizDataFiles = {
+            'pretraining': 'quiz_data_pre_class.js',
+            'post_class': 'quiz_data_post_class.js',
+            'fabric': 'quiz_data_fabric_engine.js',
+            'switch': 'quiz_data_switch_engine.js'
+        };
+
+        // Load quiz data file dynamically
+        async function loadQuizDataFile(classType) {
+            const fileName = quizDataFiles[classType];
+            if (!fileName) {
+                throw new Error('Unknown class type: ' + classType);
+            }
+
+            try {
+                const response = await fetch(fileName + '?t=' + Date.now());
+                if (!response.ok) throw new Error('Failed to load ' + fileName);
+                const code = await response.text();
+
+                // Clear previous quizData if it exists - use delete to remove the property entirely
+                if (typeof window.quizData !== 'undefined') {
+                    delete window.quizData;
+                }
+
+                // Execute the script code in the global scope
+                new Function(code)();
+
+                if (!window.quizData || !Array.isArray(window.quizData)) {
+                    throw new Error('Quiz data not properly loaded');
+                }
+            } catch (error) {
+                throw new Error('Failed to load quiz data: ' + error.message);
+            }
+        }
+
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function loadStudentInfo() {
+            studentName = localStorage.getItem(STUDENT_NAME_KEY) || '';
+            studentEmail = localStorage.getItem(STUDENT_EMAIL_KEY) || '';
+            classType = localStorage.getItem(CLASS_TYPE_KEY) || 'pretraining';
+
+            if (studentName) {
+                document.getElementById('studentName').value = studentName;
+            }
+            if (studentEmail) {
+                document.getElementById('studentEmail').value = studentEmail;
+            }
+            // Map classType to radio button ID (all use 'class-' + classType)
+            const radioId = 'class-' + classType;
+            const radioBtn = document.getElementById(radioId);
+            if (radioBtn) {
+                radioBtn.checked = true;
+            }
+        }
+
+        async function startQuiz() {
+            const nameInput = document.getElementById('studentName').value.trim();
+            const emailInput = document.getElementById('studentEmail').value.trim();
+            const classInput = document.querySelector('input[name="class_type"]:checked').value;
+
+            if (!nameInput) {
+                alert('Please enter your name');
+                return;
+            }
+
+            studentName = nameInput;
+            studentEmail = emailInput;
+            classType = classInput;
+
+            // Save to localStorage
+            localStorage.setItem(STUDENT_NAME_KEY, studentName);
+            localStorage.setItem(STUDENT_EMAIL_KEY, studentEmail);
+            localStorage.setItem(CLASS_TYPE_KEY, classType);
+
+            // Load quiz data file dynamically
+            try {
+                await loadQuizDataFile(classType);
+            } catch (error) {
+                alert('Failed to load quiz: ' + error.message);
+                return;
+            }
+
+            // Update display
+            document.getElementById('currentStudentName').textContent = studentName;
+            const classLabels = {
+                'pretraining': 'Pretraining',
+                'post_class': 'Post-Class Review',
+                'fabric': 'Fabric Engine',
+                'switch': 'Switch Engine'
+            };
+            document.getElementById('currentClassType').textContent = classLabels[classType] || classType;
+
+            // Hide student info screen, show quiz
+            document.getElementById('studentInfoScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+
+            // Show home link, hide instructor link during quiz
+            document.querySelector('.header-link.home-link').classList.remove('hidden');
+            document.querySelector('.header-link.instructor-link').classList.add('hidden');
+
+            quizStartTime = new Date();
+            currentQuestion = 0;
+            responses = new Array(quizData.length).fill(null);
+            topicScores = {};
+            questionOptions = {};
+
+            // Try to load saved responses
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    responses = JSON.parse(saved);
+                } catch (e) {
+                    responses = new Array(quizData.length).fill(null);
+                }
+            }
+
+            loadQuestion();
+        }
+
+        function showHomeConfirmation() {
+            document.getElementById('homeModal').classList.add('active');
+        }
+
+        function closeHomeConfirmation() {
+            document.getElementById('homeModal').classList.remove('active');
+        }
+
+        function goHome() {
+            // Clear all quiz state
+            retryMode = 'normal';
+            wrongAnswerIndices = [];
+            currentQuestion = 0;
+            responses = [];
+            topicScores = {};
+            questionOptions = {};
+
+            // Hide all screens except initial
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('reviewScreen').classList.remove('active');
+            document.getElementById('studentInfoScreen').classList.add('active');
+
+            // Show instructor link, hide home link
+            document.querySelector('.header-link.instructor-link').classList.remove('hidden');
+            document.querySelector('.header-link.home-link').classList.add('hidden');
+
+            // Close modal
+            closeHomeConfirmation();
+            window.scrollTo(0, 0);
+        }
+
+        function goToResultsFromReview() {
+            document.getElementById('reviewScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function openStudentInfoModal() {
+            document.getElementById('modalStudentName').value = studentName;
+            document.getElementById('modalStudentEmail').value = studentEmail;
+            document.getElementById('studentInfoModal').classList.add('active');
+        }
+
+        function closeStudentInfoModal() {
+            document.getElementById('studentInfoModal').classList.remove('active');
+        }
+
+        function saveStudentInfo() {
+            const newName = document.getElementById('modalStudentName').value.trim();
+            const newEmail = document.getElementById('modalStudentEmail').value.trim();
+
+            if (!newName) {
+                alert('Please enter your name');
+                return;
+            }
+
+            studentName = newName;
+            studentEmail = newEmail;
+
+            localStorage.setItem(STUDENT_NAME_KEY, studentName);
+            localStorage.setItem(STUDENT_EMAIL_KEY, studentEmail);
+
+            document.getElementById('currentStudentName').textContent = studentName;
+            closeStudentInfoModal();
+        }
+
+        function loadQuestion() {
+            // Determine actual question index based on retry mode
+            let actualQuestionIndex = currentQuestion;
+            let totalQuestions = quizData.length;
+            let displayQuestionNumber = currentQuestion + 1;
+
+            if (retryMode === 'wrong-answers-only') {
+                if (currentQuestion >= wrongAnswerIndices.length) {
+                    showWrongAnswersSummary();
+                    return;
+                }
+                actualQuestionIndex = wrongAnswerIndices[currentQuestion];
+                totalQuestions = wrongAnswerIndices.length;
+                displayQuestionNumber = currentQuestion + 1;
+            }
+
+            const question = quizData[actualQuestionIndex];
+            const progress = (displayQuestionNumber / totalQuestions) * 100;
+
+            document.getElementById('progressFill').style.width = progress + '%';
+            const modeLabel = retryMode === 'wrong-answers-only' ? ' (Review)' : '';
+            document.getElementById('questionCounter').textContent = `Question ${displayQuestionNumber} of ${totalQuestions}${modeLabel}`;
+            document.getElementById('topicBadge').textContent = question.topic;
+            document.getElementById('questionText').textContent = question.question;
+
+            if (!questionOptions[actualQuestionIndex]) {
+                const optionsWithIndex = question.options.map((opt, idx) => ({ option: opt, originalIndex: idx }));
+                const shuffled = shuffleArray(optionsWithIndex);
+                questionOptions[actualQuestionIndex] = shuffled;
+            }
+
+            const shuffledOptions = questionOptions[actualQuestionIndex];
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            const currentResponse = responses[actualQuestionIndex];
+
+            shuffledOptions.forEach((item, displayIndex) => {
+                const label = String.fromCharCode(65 + displayIndex);
+                const optionDiv = document.createElement('label');
+                optionDiv.className = 'option';
+                const isSelected = currentResponse && currentResponse.selectedIndex === item.originalIndex;
+                optionDiv.innerHTML = `
+                    <input type="radio" name="answer" value="${displayIndex}" ${isSelected ? 'checked' : ''}>
+                    <span>${label}. ${item.option.text}</span>
+                `;
+                optionDiv.addEventListener('change', () => selectOption(item.originalIndex));
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            document.getElementById('feedbackScreen').style.display = 'none';
+            document.getElementById('feedbackScreen').className = 'feedback-screen';
+
+            // Display feedback if this question was previously answered
+            if (currentResponse) {
+                displayFeedback(actualQuestionIndex, currentResponse.selectedIndex);
+            }
+
+            document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+            document.getElementById('nextBtn').style.display = currentQuestion < totalQuestions - 1 ? 'inline-block' : 'none';
+
+            window.scrollTo(0, 0);
+        }
+
+        function showWrongAnswersSummary() {
+            const title = document.querySelector('#quizScreen h2') || document.createElement('h2');
+            const content = document.getElementById('quizScreen');
+
+            const summary = document.createElement('div');
+            summary.className = 'info-box';
+            summary.innerHTML = `
+                <h3>Wrong Answers Review Complete!</h3>
+                <p>You've reviewed all ${wrongAnswerIndices.length} wrong answer(s). Would you like to:</p>
+                <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn" onclick="retakeQuizFresh()" style="flex: 1; min-width: 200px;">Start Fresh Full Quiz</button>
+                    <button class="btn btn-secondary" onclick="retakeQuizWithAnswers()" style="flex: 1; min-width: 200px;">Retry Full Quiz (Keep Answers)</button>
+                    <button class="btn btn-secondary" onclick="goToResults()" style="flex: 1; min-width: 200px;">Back to Results</button>
+                </div>
+            `;
+
+            document.getElementById('optionsContainer').innerHTML = '';
+            document.getElementById('optionsContainer').parentElement.replaceChild(summary, document.getElementById('optionsContainer'));
+            document.getElementById('feedbackScreen').style.display = 'none';
+            document.getElementById('prevBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+
+        function goToResults() {
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function displayFeedback(actualQuestionIndex, selectedIndex) {
+            const question = quizData[actualQuestionIndex];
+            const isCorrect = question.options[selectedIndex].isCorrect;
+
+            const feedbackScreen = document.getElementById('feedbackScreen');
+            const feedbackHeader = document.getElementById('feedbackHeader');
+            const feedbackText = document.getElementById('feedbackText');
+
+            feedbackHeader.className = 'feedback-header ' + (isCorrect ? 'feedback-correct' : 'feedback-incorrect');
+            feedbackHeader.textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect';
+            feedbackText.textContent = question.options[selectedIndex].feedback;
+
+            const resourceSection = document.getElementById('resourceSection');
+            if (question.resources && question.resources.youtubeLinks && question.resources.youtubeLinks.length > 0) {
+                let resourceHTML = `
+                    <div class="resource-label">📚 Learn More: ${question.resources.videoTopic}</div>
+                    <div class="resource-links">
+                `;
+                question.resources.youtubeLinks.forEach(link => {
+                    resourceHTML += `<a href="${link.url}" target="_blank" class="resource-link">▶ ${link.title}</a>`;
+                });
+                resourceHTML += '</div>';
+                resourceSection.innerHTML = resourceHTML;
+            }
+
+            feedbackScreen.style.display = 'block';
+        }
+
+        function selectOption(selectedIndex) {
+            // Determine actual question index based on retry mode
+            let actualQuestionIndex = currentQuestion;
+            if (retryMode === 'wrong-answers-only') {
+                actualQuestionIndex = wrongAnswerIndices[currentQuestion];
+            }
+
+            const question = quizData[actualQuestionIndex];
+            const isCorrect = question.options[selectedIndex].isCorrect;
+
+            responses[actualQuestionIndex] = {
+                selectedIndex: selectedIndex,
+                isCorrect: isCorrect,
+                selectedText: question.options[selectedIndex].text
+            };
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+
+            displayFeedback(actualQuestionIndex, selectedIndex);
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            const totalQuestions = retryMode === 'wrong-answers-only' ? wrongAnswerIndices.length : quizData.length;
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                loadQuestion();
+            }
+        }
+
+        function showFinishWarning() {
+            const answeredCount = responses.filter(r => r !== null).length;
+            const totalCount = responses.length;
+
+            const modal = document.getElementById('finishModal');
+            const modalText = document.getElementById('finishModalText');
+
+            if (answeredCount === totalCount) {
+                modalText.textContent = 'You have completed all questions. Submit your assessment?';
+            } else {
+                modalText.textContent = `You have answered ${answeredCount} of ${totalCount} questions. If you finish now, your score will be calculated based only on the questions you've answered.`;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeFinishModal() {
+            document.getElementById('finishModal').classList.remove('active');
+        }
+
+        function finishQuiz() {
+            document.getElementById('finishModal').classList.remove('active');
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            showResults();
+            window.scrollTo(0, 0);
+        }
+
+        function submitResults() {
+            const correct = responses.filter(r => r !== null && r.isCorrect).length;
+            const total = quizData.length;
+
+            const submissionData = {
+                name: studentName,
+                email: studentEmail,
+                quiz_type: classType,
+                score: Math.round((correct / total) * 100),
+                total_questions: total,
+                correct_answers: correct,
+                duration_minutes: Math.round((new Date() - quizStartTime) / 60000),
+                topic_scores: topicScores,
+                responses: responses
+            };
+
+            // Use centralized configuration from config.js
+            const netlifyUrl = CONFIG.NETLIFY_FUNCTIONS_URL + '/submit-responses';
+
+            fetch(netlifyUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(submissionData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Assessment submitted successfully!');
+            })
+            .catch(error => {
+                console.error('Submission error:', error);
+                alert('Assessment submitted locally. Server submission: ' + error.message);
+            });
+        }
+
+        function showResults() {
+            const correct = responses.filter(r => r !== null && r.isCorrect).length;
+            const total = quizData.length;
+            const percentage = Math.round((correct / total) * 100);
+
+            document.getElementById('scoreCircle').textContent = percentage + '%';
+            document.getElementById('scoreText').textContent = `You scored ${correct} out of ${total} correct.`;
+
+            topicScores = {};
+            quizData.forEach((question, index) => {
+                const topic = question.topic;
+                if (!topicScores[topic]) {
+                    topicScores[topic] = { correct: 0, total: 0 };
+                }
+                topicScores[topic].total++;
+                const response = responses[index];
+                if (response && response.isCorrect) {
+                    topicScores[topic].correct++;
+                }
+            });
+
+            const readinessMessage = document.getElementById('readinessMessage');
+            if (percentage >= 80) {
+                readinessMessage.className = 'readiness-message ready';
+                readinessMessage.textContent = '✓ You are well-prepared!';
+            } else if (percentage >= 60) {
+                readinessMessage.className = 'readiness-message review-needed';
+                readinessMessage.textContent = '⚠ Review the recommended topics.';
+            } else {
+                readinessMessage.className = 'readiness-message not-ready';
+                readinessMessage.textContent = '✗ Please review several topics.';
+            }
+
+            const topicResultsList = document.getElementById('topicResultsList');
+            topicResultsList.innerHTML = '';
+            const topics = Object.keys(topicScores).sort();
+
+            topics.forEach(topic => {
+                const score = topicScores[topic];
+                const pct = Math.round((score.correct / score.total) * 100);
+                let strength = 'weak';
+                if (pct >= 80) strength = 'strong';
+                else if (pct >= 60) strength = 'medium';
+
+                const topicRow = document.createElement('div');
+                topicRow.className = `topic-row ${strength}`;
+                topicRow.innerHTML = `
+                    <div class="topic-name">${topic}</div>
+                    <div class="topic-score">
+                        <div class="topic-bar">
+                            <div class="topic-bar-fill" style="width: ${pct}%"></div>
+                        </div>
+                        <div class="topic-percentage">${pct}%</div>
+                    </div>
+                `;
+                topicResultsList.appendChild(topicRow);
+            });
+
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+
+            const weakTopics = topics.filter(topic => {
+                const score = topicScores[topic];
+                return (score.correct / score.total) < 0.8;
+            });
+
+            if (weakTopics.length === 0) {
+                document.getElementById('recommendationsBox').innerHTML = '<h3>Well Done!</h3><p>You demonstrated strong knowledge across all topics!</p>';
+            } else {
+                recommendationsList.innerHTML = '';
+                weakTopics.forEach(topic => {
+                    const li = document.createElement('li');
+                    li.textContent = `Review: ${topic} – Check the learning resources below for recommended videos.`;
+                    recommendationsList.appendChild(li);
+                });
+                const li = document.createElement('li');
+                li.textContent = 'Take your time to understand each concept.';
+                recommendationsList.appendChild(li);
+            }
+
+            const topicReferencesContainer = document.getElementById('topicReferencesContainer');
+            topicReferencesContainer.innerHTML = '';
+
+            topics.forEach(topic => {
+                const topicQuestions = quizData.filter(q => q.topic === topic);
+                const div = document.createElement('div');
+                div.className = 'info-box';
+
+                let html = `<h3>${topic}</h3>`;
+                const seenUrls = new Set();
+
+                topicQuestions.forEach(q => {
+                    if (q.resources && q.resources.youtubeLinks) {
+                        q.resources.youtubeLinks.forEach(link => {
+                            if (!seenUrls.has(link.url)) {
+                                html += `<a href="${link.url}" target="_blank" class="resource-link">▶ ${link.title}</a>`;
+                                seenUrls.add(link.url);
+                            }
+                        });
+                    }
+                });
+
+                div.innerHTML = html;
+                topicReferencesContainer.appendChild(div);
+            });
+        }
+
+        function reviewAnswers() {
+            // Display all answers in review screen (non-editable)
+            const reviewContainer = document.getElementById('reviewContainer');
+            reviewContainer.innerHTML = '';
+
+            for (let i = 0; i < quizData.length; i++) {
+                const question = quizData[i];
+                const response = responses[i];
+                const isAnswered = response !== null && response !== undefined;
+                const isCorrect = isAnswered ? response.isCorrect : false;
+
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'answer-review-card';
+
+                let statusBadgeColor = '#999';
+                let statusText = '○ Skipped';
+                if (isCorrect) {
+                    statusBadgeColor = '#22c55e';
+                    statusText = '✓ Correct';
+                } else if (isAnswered) {
+                    statusBadgeColor = '#ef4444';
+                    statusText = '✗ Incorrect';
+                }
+
+                let html = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                        <div>
+                            <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #333;">Q${i + 1}. ${question.topic}</h3>
+                            <p style="margin: 0; font-size: 16px; color: #555; font-weight: 500;">${question.question}</p>
+                        </div>
+                        <span style="font-weight: 700; font-size: 14px; color: ${statusBadgeColor}; white-space: nowrap; margin-left: 20px;">
+                            ${statusText}
+                        </span>
+                    </div>
+                `;
+
+                if (isAnswered) {
+                    html += `
+                        <div style="background: linear-gradient(135deg, #f0edff 0%, #ede9fe 100%); padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #8b5cf6;">
+                            <p style="margin: 0; font-weight: 600; font-size: 14px; color: #333;">Your Answer</p>
+                            <p style="margin: 8px 0 0 0; font-size: 15px; color: #555;">${response.selectedText}</p>
+                        </div>
+                        <div style="background: ${isCorrect ? 'linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%)' : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)'}; padding: 16px; border-radius: 8px; border-left: 4px solid ${isCorrect ? '#22c55e' : '#ef4444'};">
+                            <p style="margin: 0; font-weight: 600; font-size: 14px; color: ${isCorrect ? '#065f46' : '#7f1d1d'};">${isCorrect ? '✓ Correct Answer' : '✗ Incorrect Answer'}</p>
+                            <p style="margin: 8px 0 0 0; font-size: 15px; color: ${isCorrect ? '#047857' : '#991b1b'};">${question.options[response.selectedIndex].feedback}</p>
+                        </div>
+                    `;
+                } else {
+                    html += `<p style="color: #999; font-style: italic; margin: 0; padding-top: 8px;">Not answered</p>`;
+                }
+
+                reviewItem.innerHTML = html;
+                reviewContainer.appendChild(reviewItem);
+            }
+
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('reviewScreen').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function reviewWrongAnswers() {
+            // Identify wrong answers
+            wrongAnswerIndices = [];
+            for (let i = 0; i < responses.length; i++) {
+                if (responses[i] && !responses[i].isCorrect) {
+                    wrongAnswerIndices.push(i);
+                }
+            }
+
+            if (wrongAnswerIndices.length === 0) {
+                alert('Great job! You answered all questions correctly. No wrong answers to review.');
+                return;
+            }
+
+            retryMode = 'wrong-answers-only';
+            currentQuestion = 0;
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            document.querySelector('.header-link.home-link').classList.remove('hidden');
+            document.querySelector('.header-link.instructor-link').classList.add('hidden');
+            loadQuestion();
+            window.scrollTo(0, 0);
+        }
+
+        function retakeQuizFresh() {
+            localStorage.removeItem(STORAGE_KEY);
+            responses = [];
+            topicScores = {};
+            currentQuestion = 0;
+            retryMode = 'fresh';
+            wrongAnswerIndices = [];
+            questionOptions = {};
+
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('reviewScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            quizStartTime = new Date();
+            responses = new Array(quizData.length).fill(null);
+            loadQuestion();
+            window.scrollTo(0, 0);
+        }
+
+        function retakeQuizWithAnswers() {
+            retryMode = 'with-answers';
+            currentQuestion = 0;
+            wrongAnswerIndices = [];
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('reviewScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            quizStartTime = new Date();
+            loadQuestion();
+            window.scrollTo(0, 0);
+        }
+
+        window.addEventListener('load', () => {
+            loadStudentInfo();
+        });
+    </script>
+</body>
+</html>

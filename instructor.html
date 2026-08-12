@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Dashboard - Extreme Networks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .header-user {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .login-screen {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .login-screen h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .login-screen p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E8E3FF;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #5B059C;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(91, 5, 156, 0.4);
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .controls select {
+            padding: 10px 15px;
+            border: 2px solid #E8E3FF;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .responses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .response-card {
+            border: 2px solid #E8E3FF;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .response-card.correct {
+            border-left: 4px solid #22c55e;
+        }
+
+        .response-card.incorrect {
+            border-left: 4px solid #ef4444;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .student-answer {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .controls select {
+                width: 100%;
+            }
+
+            .responses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-user {
+                position: static;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" style="position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600; transition: background 0.2s;"
+               onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+               onmouseout="this.style.background='rgba(255,255,255,0.2)'">← Home</a>
+            <div class="header-user" id="headerUser" style="display:none;">
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <h1>Instructor Dashboard</h1>
+            <p>Monitor student responses in real-time</p>
+        </div>
+
+        <div class="content">
+            <!-- Login Screen -->
+            <div class="screen active" id="loginScreen">
+                <div class="login-screen">
+                    <h2>Instructor Login</h2>
+                    <p>Sign in with your instructor account</p>
+
+                    <div class="error-message" id="loginError"></div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="your@email.com" onkeypress="if(event.key==='Enter') login()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••" onkeypress="if(event.key==='Enter') login()">
+                    </div>
+
+                    <button class="btn" onclick="login()">Sign In</button>
+                </div>
+            </div>
+
+            <!-- Dashboard Screen -->
+            <div class="screen" id="dashboardScreen">
+                <div class="dashboard-header">
+                    <h2 style="color: #333;">Student Submissions</h2>
+                    <div class="controls">
+                        <select id="quizSelect" onchange="changeQuiz()">
+                            <option value="">Select Quiz...</option>
+                            <option value="pretraining">Pre-Class Assessment</option>
+                            <option value="post_class">Post-Class Review</option>
+                            <option value="fabric">Fabric Engine In-Class</option>
+                            <option value="switch">Switch Engine In-Class</option>
+                        </select>
+
+                        <button class="btn" style="width: auto; padding: 8px 20px;" onclick="refreshData()">Refresh</button>
+                    </div>
+                </div>
+
+                <div id="responseContainer" class="responses-grid"></div>
+                <div id="noData" class="no-data">Select a quiz to see submissions</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // Use centralized configuration from config.js
+
+        let sessionToken = null;
+        let currentQuiz = null;
+        let autoRefreshInterval = null;
+
+        async function login() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorDiv = document.getElementById('loginError');
+
+            if (!email || !password) {
+                showError('Please enter email and password');
+                return;
+            }
+
+            try {
+                // Call authenticate-instructor function
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/authenticate-instructor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.token) {
+                    showError('Invalid email or password');
+                    return;
+                }
+
+                // Store session token
+                sessionToken = result.token;
+                sessionStorage.setItem('instructorToken', sessionToken);
+                document.getElementById('loginScreen').classList.remove('active');
+                document.getElementById('dashboardScreen').classList.add('active');
+                document.getElementById('headerUser').style.display = 'block';
+
+                startAutoRefresh();
+            } catch (error) {
+                showError('Login failed: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => errorDiv.classList.remove('show'), 5000);
+        }
+
+        function logout() {
+            sessionToken = null;
+            document.getElementById('dashboardScreen').classList.remove('active');
+            document.getElementById('loginScreen').classList.add('active');
+            document.getElementById('headerUser').style.display = 'none';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+        }
+
+        async function changeQuiz() {
+            currentQuiz = document.getElementById('quizSelect').value;
+            if (currentQuiz) {
+                await refreshData();
+            }
+        }
+
+        async function refreshData() {
+            if (!currentQuiz || !sessionToken) return;
+
+            try {
+                // Call get-submissions function
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/get-submissions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: sessionToken, quiz_type: currentQuiz })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    showError('Failed to fetch submissions');
+                    return;
+                }
+
+                displaySubmissions(result.submissions || []);
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+
+        function displaySubmissions(submissions) {
+            const container = document.getElementById('responseContainer');
+            const noData = document.getElementById('noData');
+
+            if (submissions.length === 0) {
+                container.innerHTML = '';
+                noData.style.display = 'block';
+                return;
+            }
+
+            noData.style.display = 'none';
+
+            container.innerHTML = submissions.map(submission => {
+                const responses = submission.responses || [];
+                const correct = responses.filter(r => r && r.isCorrect).length;
+                const total = responses.length;
+                const score = Math.round((correct / total) * 100) || 0;
+                const statusClass = correct >= total * 0.8 ? 'correct' : 'incorrect';
+
+                return `
+                    <div class="response-card ${statusClass}">
+                        <div class="student-name">${submission.name || 'Anonymous'}</div>
+                        <div class="student-answer">Score: ${score}% (${correct}/${total})</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                if (currentQuiz && sessionToken) {
+                    refreshData();
+                }
+            }, 3000);
+        }
+
+        window.addEventListener('load', () => {
+            // Check if already logged in
+            const savedToken = sessionStorage.getItem('instructorToken');
+            if (savedToken) {
+                sessionToken = savedToken;
+                document.getElementById('loginScreen').classList.remove('active');
+                document.getElementById('dashboardScreen').classList.add('active');
+                document.getElementById('headerUser').style.display = 'block';
+                startAutoRefresh();
+            }
+        });
+    </script>
+</body>
+</html>

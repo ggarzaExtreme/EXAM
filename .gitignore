@@ -1,0 +1,35 @@
+# Directories with development/scratch content (keep local only)
+research/
+scratchpad/
+
+# Temporary/scratch files
+*.tmp
+*.swp
+*.bak
+*.log
+
+# Sensitive/local configuration
+.env
+.env.local
+*.key
+credentials.json
+settings.local.json
+config.local.js
+
+# OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node modules
+node_modules/
+package-lock.json
+
+# IDE & Local Settings
+*.code-workspace
+.vscode/
+.claude/
+
+# Git
+.git/

@@ -1,0 +1,16 @@
+{
+  "name": "extreme-networks-knowledge-assessment",
+  "version": "1.0.0",
+  "description": "Knowledge assessment quiz platform with instructor dashboard",
+  "main": "index.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "jsonwebtoken": "^9.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Extreme Networks",
+  "license": "MIT"
+}

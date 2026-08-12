@@ -74,10 +74,24 @@
             font-size: 12px;
             font-weight: 600;
             transition: background 0.2s;
+            cursor: pointer;
         }
 
         .header-link:hover {
             background: rgba(255,255,255,0.3);
+        }
+
+        .header-link.hidden {
+            display: none;
+        }
+
+        .header-link.home-link {
+            right: auto;
+            left: 20px;
+        }
+
+        .header-link.instructor-link {
+            right: 20px;
         }
 
         .header-link.hidden {
@@ -676,7 +690,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <a href="instructor.html" class="header-link">Instructor Dashboard →</a>
+            <a href="javascript:void(0)" class="header-link home-link hidden" onclick="showHomeConfirmation()">← Home</a>
+            <a href="instructor.html" class="header-link instructor-link">Instructor Dashboard →</a>
             <div class="header-logo">🔷 Extreme Networks</div>
             <h1>Networking Fundamentals Assessment</h1>
         </div>
@@ -729,7 +744,7 @@
                     <div class="student-info-text">
                         Student: <strong id="currentStudentName">Anonymous</strong> | Class: <strong id="currentClassType">Pretraining</strong>
                     </div>
-                    <button class="btn btn-secondary btn-small" onclick="showRestartModal()">← Back to Start</button>
+                    <button class="btn btn-secondary btn-small" onclick="openStudentInfoModal()">Edit Info</button>
                 </div>
 
                 <div class="progress-bar">
@@ -756,14 +771,26 @@
                 </div>
             </div>
 
+            <!-- Answer Review Screen -->
+            <div class="screen" id="reviewScreen">
+                <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Answer Review</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 30px;">Review all your answers and feedback below.</p>
+
+                <div id="reviewContainer"></div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <button class="btn btn-secondary" onclick="goToResults()" style="margin-right: 10px;">← Back to Results</button>
+                    <button class="btn" onclick="showHomeConfirmation()">← Home</button>
+                </div>
+            </div>
+
             <!-- Results Screen -->
             <div class="screen" id="resultsScreen">
                 <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Assessment Results</h2>
 
                 <div class="button-group" style="margin-top: 0; margin-bottom: 30px; flex-direction: column; gap: 15px;">
-                    <button class="btn" onclick="reviewWrongAnswers()" style="width: 100%;">Review Wrong Answers First</button>
-                    <button class="btn btn-secondary" onclick="retakeQuizFresh()" style="width: 100%;">Full Fresh Retry</button>
-                    <button class="btn btn-secondary" onclick="retakeQuizWithAnswers()" style="width: 100%;">Full Retry with Previous Answers</button>
+                    <button class="btn" onclick="reviewAnswers()" style="width: 100%;">Review Answers</button>
+                    <button class="btn btn-secondary" onclick="retakeQuizFresh()" style="width: 100%;">Retake Quiz</button>
                     <button class="btn" onclick="submitResults()" style="width: 100%; margin-top: 20px;">Submit Results</button>
                 </div>
 
@@ -803,15 +830,14 @@
         </div>
     </div>
 
-    <!-- Restart Modal -->
-    <div class="modal-overlay" id="restartModal">
+    <!-- Home Confirmation Modal -->
+    <div class="modal-overlay" id="homeModal">
         <div class="modal-content">
-            <h3>Return to Start?</h3>
-            <p>What would you like to do?</p>
-            <div class="modal-buttons" style="flex-direction: column; gap: 10px; margin-top: 20px;">
-                <button class="btn" onclick="restartWithAnswers()" style="width: 100%;">Keep Answers & Go to Results</button>
-                <button class="btn btn-secondary" onclick="restartFresh()" style="width: 100%;">Clear Answers & Retake</button>
-                <button class="btn btn-cancel" onclick="closeRestartModal()" style="width: 100%;">Continue Quiz</button>
+            <h3>Return to Home?</h3>
+            <p>Your current progress will be saved. You can edit your name, email, or class selection.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeHomeConfirmation()">Cancel</button>
+                <button class="btn" onclick="goHome()">Yes, Go Home</button>
             </div>
         </div>
     </div>
@@ -959,8 +985,9 @@
             document.getElementById('studentInfoScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
 
-            // Hide instructor dashboard link during quiz
-            document.querySelector('.header-link').classList.add('hidden');
+            // Show home link, hide instructor link during quiz
+            document.querySelector('.header-link.home-link').classList.remove('hidden');
+            document.querySelector('.header-link.instructor-link').classList.add('hidden');
 
             quizStartTime = new Date();
             currentQuestion = 0;
@@ -981,31 +1008,41 @@
             loadQuestion();
         }
 
-        function showRestartModal() {
-            document.getElementById('restartModal').classList.add('active');
+        function showHomeConfirmation() {
+            document.getElementById('homeModal').classList.add('active');
         }
 
-        function closeRestartModal() {
-            document.getElementById('restartModal').classList.remove('active');
+        function closeHomeConfirmation() {
+            document.getElementById('homeModal').classList.remove('active');
         }
 
-        function restartWithAnswers() {
-            document.getElementById('restartModal').classList.remove('active');
+        function goHome() {
+            // Clear all quiz state
+            retryMode = 'normal';
+            wrongAnswerIndices = [];
+            currentQuestion = 0;
+            responses = [];
+            topicScores = {};
+            questionOptions = {};
+
+            // Hide all screens except initial
             document.getElementById('quizScreen').classList.remove('active');
-            document.getElementById('resultsScreen').classList.add('active');
-            showResults();
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('reviewScreen').classList.remove('active');
+            document.getElementById('studentInfoScreen').classList.add('active');
+
+            // Show instructor link, hide home link
+            document.querySelector('.header-link.instructor-link').classList.remove('hidden');
+            document.querySelector('.header-link.home-link').classList.add('hidden');
+
+            // Close modal
+            closeHomeConfirmation();
             window.scrollTo(0, 0);
         }
 
-        function restartFresh() {
-            localStorage.removeItem(STORAGE_KEY);
-            responses = [];
-            topicScores = {};
-            currentQuestion = 0;
-            document.getElementById('restartModal').classList.remove('active');
-            document.getElementById('quizScreen').classList.remove('active');
+        function goToResults() {
+            document.getElementById('reviewScreen').classList.remove('active');
             document.getElementById('resultsScreen').classList.add('active');
-            showResults();
             window.scrollTo(0, 0);
         }
 
@@ -1364,6 +1401,53 @@
             });
         }
 
+        function reviewAnswers() {
+            // Display all answers in review screen (non-editable)
+            const reviewContainer = document.getElementById('reviewContainer');
+            reviewContainer.innerHTML = '';
+
+            for (let i = 0; i < quizData.length; i++) {
+                const question = quizData[i];
+                const response = responses[i];
+                const isAnswered = response !== null && response !== undefined;
+                const isCorrect = isAnswered ? response.isCorrect : false;
+
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'info-box';
+                reviewItem.style.marginBottom = '20px';
+
+                let html = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0;">Q${i + 1}. ${question.topic}</h3>
+                        <span style="font-weight: 600; ${isCorrect ? 'color: #22c55e;' : isAnswered ? 'color: #ef4444;' : 'color: #999;'}">
+                            ${isCorrect ? '✓ Correct' : isAnswered ? '✗ Incorrect' : '○ Skipped'}
+                        </span>
+                    </div>
+                    <p style="font-weight: 500; margin-bottom: 15px;">${question.question}</p>
+                `;
+
+                if (isAnswered) {
+                    html += `
+                        <div style="background: #f0edff; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                            <p style="margin: 0; font-weight: 500;">Your answer: ${response.selectedText}</p>
+                        </div>
+                        <div style="background: ${isCorrect ? '#dcfce7' : '#fee2e2'}; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                            <p style="margin: 0; font-weight: 500;">${isCorrect ? '✓' : '✗'} ${question.options[response.selectedIndex].feedback}</p>
+                        </div>
+                    `;
+                } else {
+                    html += `<p style="color: #999; font-style: italic;">Not answered</p>`;
+                }
+
+                reviewItem.innerHTML = html;
+                reviewContainer.appendChild(reviewItem);
+            }
+
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('reviewScreen').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
         function reviewWrongAnswers() {
             // Identify wrong answers
             wrongAnswerIndices = [];
@@ -1382,7 +1466,8 @@
             currentQuestion = 0;
             document.getElementById('resultsScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
-            document.querySelector('.header-link').classList.add('hidden');
+            document.querySelector('.header-link.home-link').classList.remove('hidden');
+            document.querySelector('.header-link.instructor-link').classList.add('hidden');
             loadQuestion();
             window.scrollTo(0, 0);
         }
@@ -1397,8 +1482,8 @@
             questionOptions = {};
 
             document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('reviewScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
-            document.querySelector('.header-link').classList.add('hidden');
             quizStartTime = new Date();
             responses = new Array(quizData.length).fill(null);
             loadQuestion();
@@ -1410,8 +1495,8 @@
             currentQuestion = 0;
             wrongAnswerIndices = [];
             document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('reviewScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
-            document.querySelector('.header-link').classList.add('hidden');
             quizStartTime = new Date();
             loadQuestion();
             window.scrollTo(0, 0);

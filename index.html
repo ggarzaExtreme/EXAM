@@ -1213,7 +1213,15 @@
                 const data = await response.json();
 
                 if (!data.success) {
-                    setAnswerStatus('Could not submit: ' + (data.error || 'unknown error') + '. Please try again.');
+                    const err = data.error || '';
+                    // The instructor advanced while this student was still answering,
+                    // so their question is stale — point them at the catch-up button
+                    // rather than showing the raw server error.
+                    if (data.code === 'question_changed' || /does not match current question/i.test(err)) {
+                        setAnswerStatus('The instructor has moved on to a new question. Click "Next Question" below to catch up.');
+                    } else {
+                        setAnswerStatus('Could not submit: ' + (err || 'unknown error') + '. Please try again.');
+                    }
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Submit Answer';
                     return;

@@ -83,7 +83,12 @@ exports.handler = async (event) => {
       return {
         statusCode: 400,
         headers: corsHeaders,
-        body: JSON.stringify({ error: 'Question does not match current question' })
+        // `code` lets the client show a "click Next Question" prompt instead of
+        // surfacing this raw message to the student
+        body: JSON.stringify({
+          code: 'question_changed',
+          error: 'Question does not match current question'
+        })
       };
     }
 

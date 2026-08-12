@@ -60,11 +60,26 @@ POST /.netlify/functions/get-submissions
 {
   success: true,
   current_question_id: '3',
-  current_section: null,
+  current_section: 'Intro',
   answer_distribution: { A: { count: 2, percentage: 40, correct: false },
                          B: { count: 3, percentage: 60, correct: true }, ... },
   retry_stats: { got_correct_first_attempt: 3, needed_one_retry: 1, needed_multiple_retries: 0 },
-  participation: { total_responses: 5, students_pending: 1 }
+  participation: { total_responses: 5, students_pending: 1, roster_size: 6 },
+
+  // Per-student rows, sorted alphabetically by name (case-insensitive, email
+  // as tiebreaker) so the order is identical on every refresh. The roster is
+  // everyone who has answered ANY question in the session, so a student who
+  // answered earlier shows as 'pending' until they answer the current one.
+  students: [
+    { name: 'Alice', email: 'alice@x.com', status: 'correct',
+      selected_option: 'C', attempts: 2, correct_attempt: 2 },
+    { name: 'bob',   email: 'anon-8f21',   status: 'wrong',
+      selected_option: 'B', attempts: 1, correct_attempt: null },
+    { name: 'Zoe',   email: 'zoe@x.com',   status: 'pending',
+      selected_option: null, attempts: 0 }
+  ]
+  // status: 'correct' = answered correctly | 'wrong' = answered, not yet correct
+  //         'pending' = on the roster but no answer to this question yet
 }
 
 // Response

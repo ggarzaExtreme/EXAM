@@ -159,8 +159,15 @@ question on demand with a "Next Question" button (one API call per click).
 5. **Monitor** — the dashboard auto-refreshes `get-submissions` with
    `mode: 'inclass_live'` at a configurable interval (3/5/10/30s, default 5s;
    toggleable off for manual-Refresh-only mode — the preference persists in
-   localStorage): per-option answer distribution (with the correct option
-   flagged), first-attempt/retry breakdown, and students still working.
+   localStorage). It returns per-option answer distribution (with the correct
+   option flagged), first-attempt/retry breakdown, and a **per-student roster**.
+
+   The roster is everyone who has answered *any* question in the session, keyed
+   by email (anonymous students carry a generated `anon-<uuid>`), sorted
+   alphabetically by name so the order never shifts between refreshes. Each
+   student is `correct`, `wrong` (answered, not yet right), or `pending` — so a
+   student who answered an earlier question appears immediately as
+   "Not answered" on each new question until they respond.
 6. **End** — `end-class-session` sets `is_active = FALSE` and returns final
    stats. A student's next question-check gets a 404 and shows
    "Session Ended"; the class ID is freed for reuse.

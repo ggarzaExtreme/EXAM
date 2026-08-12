@@ -116,8 +116,42 @@ exports.handler = async (event) => {
         };
       }
 
-      // 2. No question active yet — return empty stats
+      // 2. Session roster: everyone who has answered ANY question in this
+      // session. Students stay listed for the rest of the session so the
+      // instructor can see who hasn't answered the current question yet.
+      // (Two narrow columns; a class-sized session is a few hundred rows.)
+      const { data: rosterRows, error: rosterError } = await supabase
+        .from('question_responses')
+        .select('email, name, created_at')
+        .eq('session_id', session.id)
+        .order('created_at', { ascending: true });
+
+      if (rosterError) {
+        console.error('Fetch roster error:', rosterError);
+        return {
+          statusCode: 500,
+          headers: corsHeaders,
+          body: JSON.stringify({ error: 'Failed to fetch session roster' })
+        };
+      }
+
+      // email is the per-student key (anonymous students get a generated
+      // anon-<uuid>); the most recent name they used is the display name
+      const roster = new Map();
+      (rosterRows || []).forEach(r => {
+        const key = r.email || r.name;
+        if (key) roster.set(key, r.name || 'Anonymous');
+      });
+
+      const sortStudents = (a, b) =>
+        (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }) ||
+        (a.email || '').localeCompare(b.email || '');
+
+      // 3. No question active yet — still report the roster
       if (!session.current_question_id) {
+        const waiting = [...roster.entries()]
+          .map(([email, name]) => ({ name, email, status: 'pending', selected_option: null, attempts: 0 }))
+          .sort(sortStudents);
         return {
           statusCode: 200,
           headers: corsHeaders,
@@ -127,17 +161,19 @@ exports.handler = async (event) => {
             current_section: session.current_section,
             answer_distribution: null,
             retry_stats: { got_correct_first_attempt: 0, needed_one_retry: 0, needed_multiple_retries: 0 },
-            participation: { total_responses: 0, students_pending: 0 }
+            participation: { total_responses: 0, students_pending: waiting.length, roster_size: waiting.length },
+            students: waiting
           })
         };
       }
 
-      // 3. Fetch all responses for the current question
+      // 4. Fetch all responses for the current question
       const { data: responses, error: respError } = await supabase
         .from('question_responses')
         .select('email, name, selected_option, is_correct, attempt_number')
         .eq('session_id', session.id)
-        .eq('question_id', session.current_question_id);
+        .eq('question_id', session.current_question_id)
+        .order('attempt_number', { ascending: true });
 
       if (respError) {
         console.error('Fetch responses error:', respError);
@@ -173,27 +209,54 @@ exports.handler = async (event) => {
         d.percentage = totalAnswers > 0 ? (d.count / totalAnswers) * 100 : 0;
       });
 
-      // 6. Per-student retry stats (key by email — anonymous students get a
-      // generated anon id client-side, so this is unique per student)
-      const students = {};
+      // 6. Per-student state for the current question
+      const byStudent = new Map();
       (responses || []).forEach(r => {
         const key = r.email || r.name;
-        if (!students[key]) students[key] = { correctAttempt: null, maxAttempt: 0 };
-        students[key].maxAttempt = Math.max(students[key].maxAttempt, r.attempt_number);
-        if (r.is_correct && (students[key].correctAttempt === null || r.attempt_number < students[key].correctAttempt)) {
-          students[key].correctAttempt = r.attempt_number;
+        if (!byStudent.has(key)) {
+          byStudent.set(key, { correctAttempt: null, maxAttempt: 0, attempts: 0, latestOption: null });
         }
+        const s = byStudent.get(key);
+        s.attempts++;
+        if (r.attempt_number >= s.maxAttempt) {
+          s.maxAttempt = r.attempt_number;
+          s.latestOption = r.selected_option;
+        }
+        if (r.is_correct && (s.correctAttempt === null || r.attempt_number < s.correctAttempt)) {
+          s.correctAttempt = r.attempt_number;
+        }
+        // A student's first appearance may be on this question
+        roster.set(key, r.name || roster.get(key) || 'Anonymous');
       });
 
-      const studentList = Object.values(students);
+      // 7. Roster-wide list: anyone who has participated in the session, marked
+      // 'pending' until they answer the current question
+      const students = [...roster.entries()].map(([email, name]) => {
+        const s = byStudent.get(email);
+        if (!s) {
+          return { name, email, status: 'pending', selected_option: null, attempts: 0 };
+        }
+        return {
+          name,
+          email,
+          status: s.correctAttempt !== null ? 'correct' : 'wrong',
+          selected_option: s.latestOption,
+          attempts: s.attempts,
+          correct_attempt: s.correctAttempt
+        };
+      }).sort(sortStudents);
+
+      const answered = [...byStudent.values()];
       const retryStats = {
-        got_correct_first_attempt: studentList.filter(s => s.correctAttempt === 1).length,
-        needed_one_retry: studentList.filter(s => s.correctAttempt === 2).length,
-        needed_multiple_retries: studentList.filter(s => s.correctAttempt !== null && s.correctAttempt > 2).length
+        got_correct_first_attempt: answered.filter(s => s.correctAttempt === 1).length,
+        needed_one_retry: answered.filter(s => s.correctAttempt === 2).length,
+        needed_multiple_retries: answered.filter(s => s.correctAttempt !== null && s.correctAttempt > 2).length
       };
       const participation = {
-        total_responses: studentList.length,
-        students_pending: studentList.filter(s => s.correctAttempt === null).length
+        total_responses: answered.length,
+        // everyone on the roster who has not yet answered this question correctly
+        students_pending: students.filter(s => s.status !== 'correct').length,
+        roster_size: students.length
       };
 
       return {
@@ -205,7 +268,8 @@ exports.handler = async (event) => {
           current_section: session.current_section,
           answer_distribution: distribution,
           retry_stats: retryStats,
-          participation: participation
+          participation: participation,
+          students: students
         })
       };
     }

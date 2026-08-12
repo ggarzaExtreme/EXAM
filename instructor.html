@@ -359,6 +359,75 @@
             min-width: 40px;
         }
 
+        .student-responses {
+            background: white;
+            border: 2px solid #E8E3FF;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .student-responses h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .student-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #E8E3FF;
+            font-size: 14px;
+        }
+
+        .student-row:last-child {
+            border-bottom: none;
+        }
+
+        .student-name {
+            flex: 1;
+            color: #333;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .student-answer {
+            min-width: 28px;
+            text-align: center;
+            font-weight: 700;
+            font-family: 'DM Sans', monospace;
+            color: #5B059C;
+        }
+
+        .student-answer.none {
+            color: #bbb;
+            font-weight: 400;
+        }
+
+        .student-tries {
+            color: #666;
+            font-size: 12px;
+            min-width: 62px;
+            text-align: right;
+        }
+
+        .student-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+            min-width: 96px;
+            text-align: center;
+        }
+
+        .student-badge.correct { background: #dcfce7; color: #166534; }
+        .student-badge.wrong { background: #fee2e2; color: #991b1b; }
+        .student-badge.pending { background: #f1f5f9; color: #64748b; }
+
         .retry-stats {
             background: white;
             border: 2px solid #E8E3FF;
@@ -570,6 +639,11 @@
                             <div id="answerChart"></div>
                         </div>
 
+                        <div class="student-responses">
+                            <h3>Student Responses <span id="studentAnsweredCount" style="font-weight: 400; font-size: 14px; color: #666;"></span></h3>
+                            <div id="studentList"></div>
+                        </div>
+
                         <div class="retry-stats">
                             <h3>Response Statistics</h3>
                             <div class="stat-row">
@@ -591,6 +665,10 @@
                             <div class="stat-row">
                                 <span class="stat-label">Still working:</span>
                                 <span class="stat-value" id="stillWorking">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Students in session:</span>
+                                <span class="stat-value" id="rosterSize">0</span>
                             </div>
                         </div>
                     </div>
@@ -901,6 +979,7 @@
                 restoreLiveContext();
                 displayAnswerDistribution(result.answer_distribution);
                 displayRetryStats(result.retry_stats, result.participation);
+                displayStudentResponses(result.students);
                 document.getElementById('currentQuestionDisplay').textContent =
                     result.current_question_id || 'Not started — click "Start Quiz"';
                 document.getElementById('currentSectionDisplay').textContent = result.current_section || '-';
@@ -953,8 +1032,11 @@
         function clearQuestionStats() {
             document.getElementById('answerChart').innerHTML =
                 '<p style="color: #666; font-size: 14px;">Waiting for responses...</p>';
-            ['totalResponses', 'firstAttemptCorrect', 'oneRetry', 'multipleRetries', 'stillWorking']
+            ['totalResponses', 'firstAttemptCorrect', 'oneRetry', 'multipleRetries', 'stillWorking', 'rosterSize']
                 .forEach(id => { document.getElementById(id).textContent = '0'; });
+            document.getElementById('studentList').innerHTML =
+                '<p style="color: #666; font-size: 14px;">Loading students...</p>';
+            document.getElementById('studentAnsweredCount').textContent = '';
         }
 
         // Returns the dashboard to the "No Active Session" state.
@@ -1016,6 +1098,67 @@
             document.getElementById('oneRetry').textContent = r.needed_one_retry || 0;
             document.getElementById('multipleRetries').textContent = r.needed_multiple_retries || 0;
             document.getElementById('stillWorking').textContent = p.students_pending || 0;
+            document.getElementById('rosterSize').textContent = p.roster_size || 0;
+        }
+
+        function escapeHtml(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // Per-student list. Order comes from the server (alphabetical by name),
+        // and is re-sorted here so the ordering is identical on every render
+        // regardless of response order.
+        function displayStudentResponses(students) {
+            const list = document.getElementById('studentList');
+            const countLabel = document.getElementById('studentAnsweredCount');
+
+            if (!students) {
+                // Older deployed function that doesn't return per-student data yet
+                list.innerHTML = '<p style="color: #666; font-size: 14px;">Per-student responses need the latest Netlify functions deployed.</p>';
+                countLabel.textContent = '';
+                return;
+            }
+
+            if (students.length === 0) {
+                list.innerHTML = '<p style="color: #666; font-size: 14px;">No students have answered yet. Names appear here as soon as students submit their first answer.</p>';
+                countLabel.textContent = '';
+                return;
+            }
+
+            const ordered = [...students].sort((a, b) =>
+                (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }) ||
+                (a.email || '').localeCompare(b.email || ''));
+
+            const answeredCount = ordered.filter(s => s.status !== 'pending').length;
+            const correctCount = ordered.filter(s => s.status === 'correct').length;
+            countLabel.textContent = `— ${answeredCount} of ${ordered.length} answered, ${correctCount} correct`;
+
+            list.innerHTML = ordered.map(s => {
+                const label = {
+                    correct: '✓ Correct',
+                    wrong: '✗ Incorrect',
+                    pending: 'Not answered'
+                }[s.status] || 'Not answered';
+
+                const tries = s.attempts > 0
+                    ? s.attempts + (s.attempts === 1 ? ' try' : ' tries')
+                    : '';
+
+                // Anonymous students have a generated anon-<uuid> id; only show a
+                // real email as the hover hint
+                const hint = (s.email && !s.email.startsWith('anon-')) ? s.email : '';
+
+                return `
+                    <div class="student-row">
+                        <span class="student-name" title="${escapeHtml(hint)}">${escapeHtml(s.name || 'Anonymous')}</span>
+                        <span class="student-answer ${s.selected_option ? '' : 'none'}">${escapeHtml(s.selected_option || '–')}</span>
+                        <span class="student-tries">${tries}</span>
+                        <span class="student-badge ${s.status || 'pending'}">${label}</span>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Updates the Next button so the first click reads as "start the quiz"

@@ -555,10 +555,11 @@
                                 </div>
                             </div>
                             <div class="session-controls">
-                                <button class="btn btn-secondary" onclick="previousQuestion()">← Previous</button>
-                                <button class="btn btn-secondary" onclick="nextQuestion()">Next →</button>
-                                <button class="btn" style="background: #ef4444;" onclick="endSession()">End Session</button>
+                                <button class="btn btn-secondary" id="prevQuestionBtn" onclick="previousQuestion()">← Previous</button>
+                                <button class="btn btn-secondary" id="nextQuestionBtn" onclick="nextQuestion()">▶ Start Quiz (Q1)</button>
+                                <button class="btn" style="background: #ef4444;" id="endSessionBtn" onclick="endSession()">End Session</button>
                             </div>
+                            <div id="liveStatusMsg" style="display: none; margin-top: 15px; padding: 12px 15px; border-radius: 6px; font-size: 14px;"></div>
                         </div>
 
                         <div class="answer-distribution">
@@ -790,10 +791,10 @@
                 activeQuizType = result.quiz_type;
 
                 closeCreateSessionModal();
-                if (result.resumed) {
-                    alert('Reconnected to your existing active session for "' + result.class_id + '".');
-                }
                 await displayActiveSession(result.current_question_id);
+                if (result.resumed) {
+                    setLiveStatus('Reconnected to your existing active session for "' + result.class_id + '".', 'info');
+                }
                 refreshInClassData();
             } catch (error) {
                 showError(errorDiv, 'Error: ' + error.message);
@@ -806,8 +807,20 @@
             document.getElementById('activeClassId').textContent = activeClassId;
             document.getElementById('activeQuizType').textContent = activeQuizType;
 
+            // Start from a clean panel — never show a previous session's numbers
+            clearQuestionStats();
+            setLiveStatus(null);
+            pendingEndConfirm = false;
+            document.getElementById('endSessionBtn').textContent = 'End Session';
+            document.getElementById('endSessionBtn').disabled = false;
+
             // Load quiz data for this quiz type
             await loadQuizData(activeQuizType);
+
+            if (!quizData) {
+                setLiveStatus('Could not load the questions for this quiz type. Check that quiz_data_' +
+                    activeQuizType + '_engine.js is reachable, then click Refresh.', 'error');
+            }
 
             // Sync question index (matters when resuming an existing session)
             currentQuestionIndex = -1;
@@ -815,6 +828,10 @@
                 const idx = quizData.findIndex(q => q.id === parseInt(currentQuestionId));
                 if (idx >= 0) currentQuestionIndex = idx;
             }
+
+            document.getElementById('currentQuestionDisplay').textContent =
+                currentQuestionId || 'Not started — click "Start Quiz"';
+            updateQuestionControls();
         }
 
         async function loadQuizData(quizType) {
@@ -865,17 +882,75 @@
 
                 const result = await response.json();
 
-                if (response.ok) {
-                    displayAnswerDistribution(result.answer_distribution);
-                    displayRetryStats(result.retry_stats, result.participation);
-                    document.getElementById('currentQuestionDisplay').textContent = result.current_question_id || 'Waiting...';
-                    if (result.current_section) {
-                        document.getElementById('currentSectionDisplay').textContent = result.current_section;
+                if (!response.ok) {
+                    // The session is gone (ended elsewhere, or the DB row gone) —
+                    // don't leave the instructor staring at a stale live view.
+                    if (response.status === 404 || response.status === 403) {
+                        resetInClassUI();
+                        setLiveStatus('This session is no longer active. Create a new one to continue.', 'warn');
+                        return;
                     }
+                    // Anything else: say so instead of failing silently.
+                    setLiveStatus('Could not load live data: ' + (result.error || 'HTTP ' + response.status), 'error');
+                    return;
                 }
+
+                setLiveStatus(null);
+                displayAnswerDistribution(result.answer_distribution);
+                displayRetryStats(result.retry_stats, result.participation);
+                document.getElementById('currentQuestionDisplay').textContent =
+                    result.current_question_id || 'Not started — click "Start Quiz"';
+                document.getElementById('currentSectionDisplay').textContent = result.current_section || '-';
             } catch (error) {
                 console.error('Error refreshing in-class data:', error);
+                setLiveStatus('Could not reach the server: ' + error.message, 'error');
             }
+        }
+
+        function setLiveStatus(message, type) {
+            const el = document.getElementById('liveStatusMsg');
+            if (!message) {
+                el.style.display = 'none';
+                return;
+            }
+            const palette = {
+                error: { bg: '#F8D7DA', fg: '#721C24' },
+                warn:  { bg: '#FFF3CD', fg: '#856404' },
+                info:  { bg: '#D1E7DD', fg: '#155724' }
+            }[type || 'info'];
+            el.style.background = palette.bg;
+            el.style.color = palette.fg;
+            el.textContent = message;
+            el.style.display = 'block';
+        }
+
+        // Clears the per-question panels so stats from the previous question
+        // are never mistaken for the current one.
+        function clearQuestionStats() {
+            document.getElementById('answerChart').innerHTML =
+                '<p style="color: #666; font-size: 14px;">Waiting for responses...</p>';
+            ['totalResponses', 'firstAttemptCorrect', 'oneRetry', 'multipleRetries', 'stillWorking']
+                .forEach(id => { document.getElementById(id).textContent = '0'; });
+        }
+
+        // Returns the dashboard to the "No Active Session" state.
+        function resetInClassUI() {
+            activeSessionId = null;
+            activeClassId = null;
+            activeQuizType = null;
+            quizData = null;
+            currentQuestionIndex = -1;
+            pendingEndConfirm = false;
+
+            document.getElementById('createSessionContainer').style.display = 'block';
+            document.getElementById('liveSessionContainer').style.display = 'none';
+            document.getElementById('currentQuestionDisplay').textContent = 'Waiting...';
+            document.getElementById('currentSectionDisplay').textContent = '-';
+            const endBtn = document.getElementById('endSessionBtn');
+            endBtn.textContent = 'End Session';
+            endBtn.disabled = false;
+            clearQuestionStats();
+            updateQuestionControls();
         }
 
         function displayAnswerDistribution(distribution) {
@@ -910,23 +985,52 @@
         }
 
         function displayRetryStats(retryStats, participation) {
-            if (retryStats) {
-                document.getElementById('totalResponses').textContent = participation.total_responses;
-                document.getElementById('firstAttemptCorrect').textContent = retryStats.got_correct_first_attempt;
-                document.getElementById('oneRetry').textContent = retryStats.needed_one_retry;
-                document.getElementById('multipleRetries').textContent = retryStats.needed_multiple_retries;
-                document.getElementById('stillWorking').textContent = participation.students_pending;
-            }
+            const r = retryStats || {};
+            const p = participation || {};
+            document.getElementById('totalResponses').textContent = p.total_responses || 0;
+            document.getElementById('firstAttemptCorrect').textContent = r.got_correct_first_attempt || 0;
+            document.getElementById('oneRetry').textContent = r.needed_one_retry || 0;
+            document.getElementById('multipleRetries').textContent = r.needed_multiple_retries || 0;
+            document.getElementById('stillWorking').textContent = p.students_pending || 0;
         }
 
-        async function nextQuestion() {
-            if (!quizData || currentQuestionIndex >= quizData.length - 1) {
-                alert('No more questions');
+        // Updates the Next button so the first click reads as "start the quiz"
+        function updateQuestionControls() {
+            const nextBtn = document.getElementById('nextQuestionBtn');
+            const total = quizData ? quizData.length : 0;
+
+            if (currentQuestionIndex < 0) {
+                nextBtn.textContent = '▶ Start Quiz (Q1)';
+            } else if (currentQuestionIndex >= total - 1) {
+                nextBtn.textContent = 'Last question';
+            } else {
+                nextBtn.textContent = 'Next → (Q' + (currentQuestionIndex + 2) + ')';
+            }
+
+            nextBtn.disabled = !quizData || currentQuestionIndex >= total - 1;
+            document.getElementById('prevQuestionBtn').disabled = currentQuestionIndex <= 0;
+        }
+
+        function nextQuestion() { return goToQuestion(currentQuestionIndex + 1); }
+        function previousQuestion() { return goToQuestion(currentQuestionIndex - 1); }
+
+        async function goToQuestion(targetIndex) {
+            if (!quizData) {
+                setLiveStatus('Quiz questions have not loaded yet. Click Refresh and try again.', 'error');
+                return;
+            }
+            if (targetIndex < 0 || targetIndex >= quizData.length) {
+                setLiveStatus(targetIndex < 0 ? 'Already at the first question.' : 'No more questions in this quiz.', 'warn');
                 return;
             }
 
-            currentQuestionIndex++;
-            const nextQuestion = quizData[currentQuestionIndex];
+            const previousIndex = currentQuestionIndex;
+            const question = quizData[targetIndex];
+            const nextBtn = document.getElementById('nextQuestionBtn');
+            const prevBtn = document.getElementById('prevQuestionBtn');
+            nextBtn.disabled = true;
+            prevBtn.disabled = true;
+            setLiveStatus(null);
 
             try {
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/advance-question', {
@@ -935,66 +1039,65 @@
                     body: JSON.stringify({
                         token: sessionToken,
                         class_id: activeClassId,
-                        next_question_id: nextQuestion.id
+                        // current_question_id is a TEXT column — send a string so the
+                        // value round-trips identically for the students' comparison
+                        next_question_id: String(question.id),
+                        section: question.section || null
                     })
                 });
 
                 const result = await response.json();
 
                 if (!response.ok) {
-                    alert('Error advancing question: ' + (result.error || 'Unknown error'));
-                    currentQuestionIndex--;
+                    currentQuestionIndex = previousIndex;
+                    updateQuestionControls();
+                    setLiveStatus('Could not change question: ' + (result.error || 'HTTP ' + response.status), 'error');
                     return;
                 }
 
-                // Question advanced successfully, refreshInClassData will show the new question
+                // Commit locally and update the display immediately — do not wait
+                // for a poll tick (auto-refresh may be off or set to 30s)
+                currentQuestionIndex = targetIndex;
+                document.getElementById('currentQuestionDisplay').textContent = String(question.id);
+                document.getElementById('currentSectionDisplay').textContent = question.section || '-';
+                clearQuestionStats();
+                updateQuestionControls();
+                setLiveStatus('Now showing question ' + question.id +
+                    ' (' + (targetIndex + 1) + ' of ' + quizData.length + '). Tell students to click "Next Question".', 'info');
+
+                refreshInClassData();  // pull fresh stats for the new question right away
             } catch (error) {
-                console.error('Error advancing question:', error);
-                alert('Failed to advance question: ' + error.message);
-                currentQuestionIndex--;
+                console.error('Error changing question:', error);
+                currentQuestionIndex = previousIndex;
+                updateQuestionControls();
+                setLiveStatus('Could not reach the server: ' + error.message, 'error');
             }
         }
 
-        async function previousQuestion() {
-            if (currentQuestionIndex <= 0) {
-                alert('No previous questions');
-                return;
-            }
-
-            currentQuestionIndex--;
-            const prevQuestion = quizData[currentQuestionIndex];
-
-            try {
-                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/advance-question', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        token: sessionToken,
-                        class_id: activeClassId,
-                        next_question_id: prevQuestion.id
-                    })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    alert('Error going to previous question: ' + (result.error || 'Unknown error'));
-                    currentQuestionIndex++;
-                    return;
-                }
-
-                // Question updated successfully
-            } catch (error) {
-                console.error('Error going to previous question:', error);
-                alert('Failed to go to previous question: ' + error.message);
-                currentQuestionIndex++;
-            }
-        }
+        // Two-step inline confirmation — deliberately avoids window.confirm(),
+        // which silently returns false if the browser suppresses page dialogs
+        let pendingEndConfirm = false;
 
         async function endSession() {
-            if (!confirm('Are you sure you want to end this session? Students will see "Session Ended".')) {
+            const btn = document.getElementById('endSessionBtn');
+
+            if (!pendingEndConfirm) {
+                pendingEndConfirm = true;
+                btn.textContent = 'Click again to confirm';
+                setLiveStatus('Ending the session will show students "Session Ended". Click "Click again to confirm" to proceed.', 'warn');
+                setTimeout(() => {
+                    if (pendingEndConfirm) {
+                        pendingEndConfirm = false;
+                        btn.textContent = 'End Session';
+                        setLiveStatus(null);
+                    }
+                }, 8000);
                 return;
             }
+
+            pendingEndConfirm = false;
+            btn.disabled = true;
+            btn.textContent = 'Ending...';
 
             try {
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/end-class-session', {
@@ -1009,25 +1112,31 @@
                 const result = await response.json();
 
                 if (!response.ok) {
-                    alert('Error ending session: ' + (result.error || 'Unknown error'));
+                    // 404/403 means there is no active session to end — the goal is
+                    // already met, so clear the UI rather than trapping the instructor
+                    if (response.status === 404 || response.status === 403) {
+                        resetInClassUI();
+                        setLiveStatus('That session was already ended. Ready for a new one.', 'warn');
+                        return;
+                    }
+                    btn.disabled = false;
+                    btn.textContent = 'End Session';
+                    setLiveStatus('Could not end session: ' + (result.error || 'HTTP ' + response.status), 'error');
                     return;
                 }
 
-                // Session ended successfully
-                activeSessionId = null;
-                activeClassId = null;
-                quizData = null;
-                currentQuestionIndex = -1;
-
-                document.getElementById('createSessionContainer').style.display = 'block';
-                document.getElementById('liveSessionContainer').style.display = 'none';
-
-                // (live polling interval keeps running — it no-ops until a new session is created)
-
-                alert('Session ended. Final stats: ' + JSON.stringify(result.final_stats, null, 2));
+                const s = result.final_stats || {};
+                resetInClassUI();
+                setLiveStatus('Session ended. ' +
+                    (s.total_responses || 0) + ' responses across ' +
+                    (s.total_questions_presented || 0) + ' questions, ' +
+                    (s.accuracy_rate || 0) + '% accuracy, ' +
+                    (s.avg_attempts || 0) + ' avg attempts.', 'info');
             } catch (error) {
                 console.error('Error ending session:', error);
-                alert('Failed to end session: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'End Session';
+                setLiveStatus('Could not reach the server: ' + error.message, 'error');
             }
         }
 

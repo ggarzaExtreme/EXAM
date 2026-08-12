@@ -748,9 +748,11 @@
             <div class="screen" id="resultsScreen">
                 <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Assessment Results</h2>
 
-                <div class="button-group" style="margin-top: 0; margin-bottom: 30px;">
-                    <button class="btn" onclick="retakeQuiz()">Retake Assessment</button>
-                    <button class="btn btn-secondary" onclick="reviewAnswers()">Review Answers</button>
+                <div class="button-group" style="margin-top: 0; margin-bottom: 30px; flex-direction: column; gap: 15px;">
+                    <button class="btn" onclick="reviewWrongAnswers()" style="width: 100%;">Review Wrong Answers First</button>
+                    <button class="btn btn-secondary" onclick="retakeQuizFresh()" style="width: 100%;">Full Fresh Retry</button>
+                    <button class="btn btn-secondary" onclick="retakeQuizWithAnswers()" style="width: 100%;">Full Retry with Previous Answers</button>
+                    <button class="btn" onclick="submitResults()" style="width: 100%; margin-top: 20px;">Submit Results</button>
                 </div>
 
                 <div class="score-display">
@@ -772,10 +774,6 @@
                 <div class="topic-results">
                     <h3>Learning Resources by Topic</h3>
                     <div id="topicReferencesContainer"></div>
-                </div>
-
-                <div style="text-align: center; margin-top: 40px;">
-                    <button class="btn" onclick="submitResults()">Submit Results</button>
                 </div>
             </div>
         </div>
@@ -814,16 +812,18 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script>
         let currentQuestion = 0;
         let responses = [];
-        let quizData = [];
         let topicScores = {};
         let questionOptions = {};
         let quizStartTime = null;
         let studentName = '';
         let studentEmail = '';
         let classType = 'pretraining';
+        let retryMode = 'normal'; // 'normal', 'wrong-answers-only', 'fresh', 'with-answers'
+        let wrongAnswerIndices = []; // Track indices of wrong answers for review mode
 
         const STORAGE_KEY = 'networkingAssessmentData';
         const STUDENT_NAME_KEY = 'quiz_student_name';
@@ -845,13 +845,23 @@
                 throw new Error('Unknown class type: ' + classType);
             }
 
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = fileName;
-                script.onload = () => resolve();
-                script.onerror = () => reject(new Error('Failed to load ' + fileName));
-                document.head.appendChild(script);
-            });
+            try {
+                const response = await fetch(fileName + '?t=' + Date.now());
+                if (!response.ok) throw new Error('Failed to load ' + fileName);
+                const code = await response.text();
+
+                // Clear previous quizData if it exists
+                window.quizData = null;
+
+                // Execute the script code in the global scope
+                new Function(code)();
+
+                if (!window.quizData || !Array.isArray(window.quizData)) {
+                    throw new Error('Quiz data not properly loaded');
+                }
+            } catch (error) {
+                throw new Error('Failed to load quiz data: ' + error.message);
+            }
         }
 
         // Fisher-Yates shuffle algorithm
@@ -973,25 +983,41 @@
         }
 
         function loadQuestion() {
-            const question = quizData[currentQuestion];
-            const progress = ((currentQuestion + 1) / quizData.length) * 100;
+            // Determine actual question index based on retry mode
+            let actualQuestionIndex = currentQuestion;
+            let totalQuestions = quizData.length;
+            let displayQuestionNumber = currentQuestion + 1;
+
+            if (retryMode === 'wrong-answers-only') {
+                if (currentQuestion >= wrongAnswerIndices.length) {
+                    showWrongAnswersSummary();
+                    return;
+                }
+                actualQuestionIndex = wrongAnswerIndices[currentQuestion];
+                totalQuestions = wrongAnswerIndices.length;
+                displayQuestionNumber = currentQuestion + 1;
+            }
+
+            const question = quizData[actualQuestionIndex];
+            const progress = (displayQuestionNumber / totalQuestions) * 100;
 
             document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('questionCounter').textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+            const modeLabel = retryMode === 'wrong-answers-only' ? ' (Review)' : '';
+            document.getElementById('questionCounter').textContent = `Question ${displayQuestionNumber} of ${totalQuestions}${modeLabel}`;
             document.getElementById('topicBadge').textContent = question.topic;
             document.getElementById('questionText').textContent = question.question;
 
-            if (!questionOptions[currentQuestion]) {
+            if (!questionOptions[actualQuestionIndex]) {
                 const optionsWithIndex = question.options.map((opt, idx) => ({ option: opt, originalIndex: idx }));
                 const shuffled = shuffleArray(optionsWithIndex);
-                questionOptions[currentQuestion] = shuffled;
+                questionOptions[actualQuestionIndex] = shuffled;
             }
 
-            const shuffledOptions = questionOptions[currentQuestion];
+            const shuffledOptions = questionOptions[actualQuestionIndex];
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
 
-            const currentResponse = responses[currentQuestion];
+            const currentResponse = responses[actualQuestionIndex];
 
             shuffledOptions.forEach((item, displayIndex) => {
                 const label = String.fromCharCode(65 + displayIndex);
@@ -1010,16 +1036,51 @@
             document.getElementById('feedbackScreen').className = 'feedback-screen';
 
             document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
-            document.getElementById('nextBtn').style.display = currentQuestion < quizData.length - 1 ? 'inline-block' : 'none';
+            document.getElementById('nextBtn').style.display = currentQuestion < totalQuestions - 1 ? 'inline-block' : 'none';
 
             window.scrollTo(0, 0);
         }
 
+        function showWrongAnswersSummary() {
+            const title = document.querySelector('#quizScreen h2') || document.createElement('h2');
+            const content = document.getElementById('quizScreen');
+
+            const summary = document.createElement('div');
+            summary.className = 'info-box';
+            summary.innerHTML = `
+                <h3>Wrong Answers Review Complete!</h3>
+                <p>You've reviewed all ${wrongAnswerIndices.length} wrong answer(s). Would you like to:</p>
+                <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn" onclick="retakeQuizFresh()" style="flex: 1; min-width: 200px;">Start Fresh Full Quiz</button>
+                    <button class="btn btn-secondary" onclick="retakeQuizWithAnswers()" style="flex: 1; min-width: 200px;">Retry Full Quiz (Keep Answers)</button>
+                    <button class="btn btn-secondary" onclick="goToResults()" style="flex: 1; min-width: 200px;">Back to Results</button>
+                </div>
+            `;
+
+            document.getElementById('optionsContainer').innerHTML = '';
+            document.getElementById('optionsContainer').parentElement.replaceChild(summary, document.getElementById('optionsContainer'));
+            document.getElementById('feedbackScreen').style.display = 'none';
+            document.getElementById('prevBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+
+        function goToResults() {
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
         function selectOption(selectedIndex) {
-            const question = quizData[currentQuestion];
+            // Determine actual question index based on retry mode
+            let actualQuestionIndex = currentQuestion;
+            if (retryMode === 'wrong-answers-only') {
+                actualQuestionIndex = wrongAnswerIndices[currentQuestion];
+            }
+
+            const question = quizData[actualQuestionIndex];
             const isCorrect = question.options[selectedIndex].isCorrect;
 
-            responses[currentQuestion] = {
+            responses[actualQuestionIndex] = {
                 selectedIndex: selectedIndex,
                 isCorrect: isCorrect,
                 selectedText: question.options[selectedIndex].text
@@ -1059,7 +1120,8 @@
         }
 
         function nextQuestion() {
-            if (currentQuestion < quizData.length - 1) {
+            const totalQuestions = retryMode === 'wrong-answers-only' ? wrongAnswerIndices.length : quizData.length;
+            if (currentQuestion < totalQuestions - 1) {
                 currentQuestion++;
                 loadQuestion();
             }
@@ -1109,9 +1171,8 @@
                 responses: responses
             };
 
-            // Configuration: Update with your Netlify site URL
-            // Example: https://my-quiz-site.netlify.app/.netlify/functions/submit-responses
-            const netlifyUrl = 'https://extremeassessmentmodule.netlify.app/.netlify/functions/submit-responses';
+            // Use centralized configuration from config.js
+            const netlifyUrl = CONFIG.NETLIFY_FUNCTIONS_URL + '/submit-responses';
 
             fetch(netlifyUrl, {
                 method: 'POST',
@@ -1235,22 +1296,52 @@
             });
         }
 
-        function retakeQuiz() {
+        function reviewWrongAnswers() {
+            // Identify wrong answers
+            wrongAnswerIndices = [];
+            for (let i = 0; i < responses.length; i++) {
+                if (responses[i] && !responses[i].isCorrect) {
+                    wrongAnswerIndices.push(i);
+                }
+            }
+
+            if (wrongAnswerIndices.length === 0) {
+                alert('Great job! You answered all questions correctly. No wrong answers to review.');
+                return;
+            }
+
+            retryMode = 'wrong-answers-only';
+            currentQuestion = 0;
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            loadQuestion();
+            window.scrollTo(0, 0);
+        }
+
+        function retakeQuizFresh() {
             localStorage.removeItem(STORAGE_KEY);
             responses = [];
             topicScores = {};
             currentQuestion = 0;
+            retryMode = 'fresh';
+            wrongAnswerIndices = [];
+            questionOptions = {};
 
             document.getElementById('resultsScreen').classList.remove('active');
-            document.getElementById('studentInfoScreen').classList.add('active');
-            loadStudentInfo();
+            document.getElementById('quizScreen').classList.add('active');
+            quizStartTime = new Date();
+            responses = new Array(quizData.length).fill(null);
+            loadQuestion();
             window.scrollTo(0, 0);
         }
 
-        function reviewAnswers() {
+        function retakeQuizWithAnswers() {
+            retryMode = 'with-answers';
             currentQuestion = 0;
+            wrongAnswerIndices = [];
             document.getElementById('resultsScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
+            quizStartTime = new Date();
             loadQuestion();
             window.scrollTo(0, 0);
         }

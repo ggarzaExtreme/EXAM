@@ -310,10 +310,9 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script>
-        // Configuration: Update with your Netlify site URL
-        // Example: https://my-quiz-site.netlify.app/.netlify/functions
-        const NETLIFY_FUNCTIONS_URL = 'https://extremeassessmentmodule.netlify.app/.netlify/functions';
+        // Use centralized configuration from config.js
 
         let sessionToken = null;
         let currentQuiz = null;
@@ -331,7 +330,7 @@
 
             try {
                 // Call authenticate-instructor function
-                const response = await fetch(NETLIFY_FUNCTIONS_URL + '/authenticate-instructor', {
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/authenticate-instructor', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -346,6 +345,7 @@
 
                 // Store session token
                 sessionToken = result.token;
+                sessionStorage.setItem('instructorToken', sessionToken);
                 document.getElementById('loginScreen').classList.remove('active');
                 document.getElementById('dashboardScreen').classList.add('active');
                 document.getElementById('headerUser').style.display = 'block';
@@ -385,7 +385,7 @@
 
             try {
                 // Call get-submissions function
-                const response = await fetch(NETLIFY_FUNCTIONS_URL + '/get-submissions', {
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/get-submissions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token: sessionToken, quiz_type: currentQuiz })
@@ -451,44 +451,6 @@
                 startAutoRefresh();
             }
         });
-
-        // Save token to session storage on successful login
-        const originalLogin = login;
-        login = async function() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const errorDiv = document.getElementById('loginError');
-
-            if (!email || !password) {
-                showError('Please enter email and password');
-                return;
-            }
-
-            try {
-                const response = await fetch(NETLIFY_FUNCTIONS_URL + '/authenticate-instructor', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok || !result.token) {
-                    showError('Invalid email or password');
-                    return;
-                }
-
-                sessionToken = result.token;
-                sessionStorage.setItem('instructorToken', sessionToken);
-                document.getElementById('loginScreen').classList.remove('active');
-                document.getElementById('dashboardScreen').classList.add('active');
-                document.getElementById('headerUser').style.display = 'block';
-
-                startAutoRefresh();
-            } catch (error) {
-                showError('Login failed: ' + error.message);
-            }
-        };
     </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 # Quick Reference Guide
 
-## New API Contracts
+## API Contracts
 
 ### Student Submission
 ```javascript
@@ -49,6 +49,24 @@ POST /.netlify/functions/get-submissions
   section: 'Section A'              // optional, for real-time in-class
 }
 
+// OR live in-class stats (quiz_type not needed; class_id instead):
+{
+  token: 'eyJhbGc...',
+  mode: 'inclass_live',
+  class_id: 'class7'
+}
+
+// inclass_live response
+{
+  success: true,
+  current_question_id: '3',
+  current_section: null,
+  answer_distribution: { A: { count: 2, percentage: 40, correct: false },
+                         B: { count: 3, percentage: 60, correct: true }, ... },
+  retry_stats: { got_correct_first_attempt: 3, needed_one_retry: 1, needed_multiple_retries: 0 },
+  participation: { total_responses: 5, students_pending: 1 }
+}
+
 // Response
 {
   success: true,
@@ -73,6 +91,89 @@ POST /.netlify/functions/export-submissions
 // Response: CSV file
 ID,Date,Name,Email,Score,Percentage,Total Questions,Correct Answers,Duration (min),Section,Topic Scores,Responses
 1,2024-08-12T...,John Doe,john@example.com,85,84,32,27,45,,"{...}","{...}"
+```
+
+### Create / Resume In-Class Session (instructor)
+```javascript
+POST /.netlify/functions/create-class-session
+{
+  token: 'eyJhbGc...',
+  quiz_type: 'fabric' | 'switch',
+  class_id: 'class7',          // lowercase, reusable after a session ends
+  session_name: 'Monday AM'    // optional
+}
+
+// Response (201 created, or 200 with resumed:true if this instructor
+// already has an active session with this class_id — e.g. after a refresh)
+{
+  success: true,
+  session_id: 'uuid',
+  class_id: 'class7',
+  quiz_type: 'fabric',
+  current_question_id: null,   // set on resume if a question was active
+  is_active: true
+}
+// 409 if ANOTHER instructor has an active session with this class_id
+```
+
+### Get Current Question (student polling, every 3s)
+```javascript
+POST /.netlify/functions/get-current-question
+{ class_id: 'class7' }
+
+// Response — options contain text ONLY (isCorrect/feedback stripped)
+{
+  session_active: true,
+  current_question_id: '3',    // null while waiting for instructor
+  question_data: { id: 3, question: '...', topic: '...',
+                   options: [{ text: '...' }, ...] }
+}
+// 404 if session not found or ended
+```
+
+### Submit Question Response (student, retry until correct)
+```javascript
+POST /.netlify/functions/submit-question-response
+{
+  class_id: 'class7',
+  question_id: '3',            // must match the session's current question
+  selected_option: 'B',        // letter A-D
+  name: 'John Doe',
+  email: 'john@example.com',   // optional — anonymous students get a
+                               // client-generated 'anon-<uuid>' id
+  time_spent_seconds: 0
+}
+
+// Response (grading is server-side)
+{
+  success: true,
+  is_correct: false,
+  attempt_number: 1,           // server-computed, increments per retry
+  can_retry: true,
+  explanation: '...'
+}
+```
+
+### Advance Question (instructor)
+```javascript
+POST /.netlify/functions/advance-question
+{
+  token: 'eyJhbGc...',
+  class_id: 'class7',
+  next_question_id: 4,
+  section: 'Intro'             // optional
+}
+// Response includes previous_question_stats for the question just left
+```
+
+### End Session (instructor)
+```javascript
+POST /.netlify/functions/end-class-session
+{ token: 'eyJhbGc...', class_id: 'class7' }
+
+// Response
+{ success: true, final_stats: { total_questions_presented, total_responses,
+                                correct_final, accuracy_rate, avg_attempts } }
 ```
 
 ---
@@ -125,6 +226,27 @@ Indexes:
 - (quiz_type, section, created_at DESC)    -- Real-time queries
 - (quiz_type, created_at DESC)             -- Historical queries
 - (email, quiz_type, created_at DESC)      -- Student tracking
+
+class_sessions (                 -- in-class live sessions
+  id UUID PRIMARY KEY,
+  class_id TEXT,                 -- UNIQUE among active sessions only (partial index)
+  instructor_id UUID REFERENCES auth.users(id),
+  quiz_type TEXT,                -- 'fabric' or 'switch'
+  current_question_id TEXT,      -- NULL until instructor advances
+  current_section TEXT,
+  is_active BOOLEAN
+)
+
+question_responses (             -- one row PER ATTEMPT (retries included)
+  session_id UUID REFERENCES class_sessions(id),
+  question_id TEXT,
+  name TEXT, email TEXT,         -- email may be a generated anon-<uuid>
+  selected_option TEXT,          -- letter A-D
+  is_correct BOOLEAN,
+  attempt_number INTEGER,        -- 1, 2, 3...
+  final_answer BOOLEAN,          -- TRUE when correct
+  UNIQUE(session_id, question_id, email, attempt_number)
+)
 ```
 
 ---
@@ -132,15 +254,25 @@ Indexes:
 ## Common Tasks
 
 ### Add New Quiz Type
-1. Add to quiz data file: `quiz/quiz_data_MY_TYPE.js`
+1. Create quiz data file at repo root: `quiz_data_MY_TYPE.js`
+   (same format as the others: `const quizData = [...]` + the dual
+   window/module export block at the bottom)
 2. Add to ALLOWED_QUIZ_TYPES in:
    - `submit-responses.js`
    - `get-submissions.js`
    - `export-submissions.js`
-3. Add option to HTML dropdowns:
-   - `index.html` (student)
-   - `instructor.html` (dashboard)
-4. Commit and push (no DB changes needed!)
+3. **Add a static require to the QUIZ_DATA map** in:
+   - `submit-question-response.js`
+   - `get-current-question.js`
+   - `get-submissions.js`
+   (requires must be static literals — the Netlify bundler cannot trace
+   dynamic paths, and the file won't be packaged)
+4. For in-class use, add to validQuizTypes in `create-class-session.js`
+5. Add options to HTML:
+   - `index.html`: `quizDataFiles` map (full quiz)
+   - `instructor.html`: `sessionQuizType` select + `loadQuizData` map (in-class)
+6. Commit, push, and trigger a Netlify redeploy (quiz data is bundled into
+   the functions). No DB changes needed.
 
 ### Change Rate Limit
 Edit `netlify/functions/submit-responses.js` line 11:
@@ -194,6 +326,11 @@ ORDER BY total DESC;
 | `Failed to fetch submissions` | Missing env vars | Check SUPABASE_URL, SUPABASE_KEY, JWT_SECRET |
 | `Rate limit exceeded` | Too many submissions | Wait until next day (resets at midnight UTC) |
 | `No results found` | Filters too strict | Try different quiz_type or mode |
+| `Session not found or not active` | Bad class ID, or session ended | Check class ID; create/resume the session |
+| `Class ID already in use by another instructor's active session` | ID collision | Pick a different class ID (your own sessions auto-resume) |
+| `Question does not match current question` | Student submitted after instructor advanced | Client re-polls and shows the new question; retry |
+| `Quiz data not available` | quiz_type has no bundled data file | Add file to QUIZ_DATA maps and redeploy |
+| In-class lookups fail but full quiz works | SUPABASE_KEY is the anon key | Use the **service_role** key (RLS blocks anon reads of class_sessions) |
 
 ---
 
@@ -225,21 +362,22 @@ ORDER BY total DESC;
 
 ## Development Workflow
 
-### Frontend Changes (HTML/JS in quiz/)
-1. Edit `quiz/index.html` or `quiz/instructor.html`
-2. Commit: `git add quiz/*.html && git commit -m "message"`
-3. Push: `git push origin main`
-4. GitHub Pages updates **instantly** (no Netlify redeploy needed!)
-5. Hard refresh browser (Ctrl+Shift+R) to see changes
+### Frontend Changes (index.html / instructor.html / config.js)
+1. Edit the file at repo root
+2. Commit and push to main
+3. GitHub Pages updates **instantly** (no Netlify redeploy needed!)
+4. Hard refresh browser (Ctrl+Shift+R) to see changes
 
-### Function Changes (Code in netlify/functions/)
-1. Edit `netlify/functions/*.js`
-2. Commit: `git add netlify/functions/*.js && git commit -m "message"`
-3. Push: `git push origin main`
-4. **Manually trigger Netlify redeploy:**
+### Function Changes (netlify/functions/) — AND quiz data changes
+1. Edit `netlify/functions/*.js` **or any `quiz_data_*.js`**
+   (quiz data files are bundled into the functions at build time, so
+   editing questions requires a function redeploy too — the GitHub Pages
+   copy updates instantly, but server-side grading uses the bundled copy)
+2. Commit and push to main
+3. **Manually trigger Netlify redeploy:**
    - Netlify dashboard → **Deployments** → **Trigger deploy** → **Deploy site**
    - Wait for "Published" status
-5. Test function via browser or Postman
+4. Test function via browser or Postman
 
 ### Dependency Changes (package.json)
 1. Edit `package.json`
@@ -253,15 +391,14 @@ ORDER BY total DESC;
 
 | File | Purpose | Edit? |
 |------|---------|-------|
-| `sql/database-setup.sql` | Database schema | Once (fresh setup) |
+| `sql/database-setup.sql` | Full schema (drop & rebuild) | Fresh setup |
+| `sql/migration-001-class-id-reuse.sql` | Migration for pre-existing DBs | Once if needed |
 | `netlify/functions/*.js` | Backend functions | For new features |
-| `quiz/index.html` | Student quiz | UPDATE NOW |
-| `quiz/instructor.html` | Instructor dashboard | UPDATE NOW |
-| `package.json` | Dependencies | Once (already updated) |
-| `ENVIRONMENT_VARIABLES.md` | Env var reference | No |
-| `DEPLOYMENT_GUIDE.md` | Setup instructions | No |
-| `ARCHITECTURE.md` | Technical reference | No |
-| `FRONTEND_UPDATES.md` | Code examples | Reference |
+| `index.html` | Student app (both quiz modes) | For UI changes |
+| `instructor.html` | Instructor dashboard | For UI changes |
+| `config.js` | Netlify Functions URL | If site URL changes |
+| `quiz_data_*.js` | Questions (bundled into functions!) | Redeploy after edits |
+| `package.json` | Dependencies | Rarely |
 
 ---
 
@@ -297,7 +434,5 @@ ORDER BY total DESC;
 ## Resources
 
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Step-by-step setup
-- [FRONTEND_UPDATES.md](FRONTEND_UPDATES.md) - Code examples for HTML changes
-- [IMPLEMENTATION_NOTES.md](IMPLEMENTATION_NOTES.md) - Technical details
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System design overview
 - [ENVIRONMENT_VARIABLES.md](ENVIRONMENT_VARIABLES.md) - Env var reference

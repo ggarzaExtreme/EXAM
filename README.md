@@ -1,132 +1,150 @@
 # Extreme Networks Knowledge Assessment Platform
 
-Complete quiz system with student submissions, instructor dashboard, and secure data collection.
+Quiz system with two modes — self-paced full assessments (pre/post class) and instructor-driven live in-class quizzes — plus an instructor dashboard and secure data collection.
 
 ## Architecture Overview
 
 ```
-Students → Quiz (GitHub Pages)
-             ↓
-       [Submissions]
-             ↓
-Instructors → Dashboard (GitHub Pages)
-               ↓
-         [Netlify Functions]
-             ↓
-       [Supabase Database]
+Students → index.html (mode selection)
+   ├── Full Assessment (pre/post class): all questions client-side,
+   │     one submission at the end → submit-responses
+   └── In-Class Live Quiz: joins by class ID, polls every 3s for the
+         current question → get-current-question / submit-question-response
+
+Instructors → instructor.html
+   ├── Historical tab: past submissions → get-submissions
+   └── In-Class Live tab: create/end sessions, advance questions,
+         watch live answer distribution and retry stats
+
+All API calls → Netlify Functions → Supabase (PostgreSQL + RLS)
 ```
 
 **Zero credentials in GitHub.** All secrets stored only in Netlify environment variables.
 
 ## Features
 
-✅ Multiple quiz types (pretraining, post-class, in-class fabric/switch)  
-✅ Immediate feedback with diagnostic scoring  
-✅ Instructor dashboard with two viewing modes:
-  - Historical: View past 7 days of submissions (paginated)
-  - Real-time: Monitor past 5 minutes for in-class quizzes
-✅ Secure JWT-based authentication (24-hour tokens)  
-✅ CSV export for all quiz submissions  
-✅ IP-based rate limiting (500 submissions/day)  
-✅ Randomized answer options (Fisher-Yates shuffle)  
-✅ localStorage persistence (auto-resume quizzes)  
-✅ YouTube learning resources links  
-✅ Responsive mobile-friendly design  
+**Full assessment mode (pre/post class)**
+- One question at a time with Previous/Next navigation
+- Immediate per-option feedback and explanations
+- Results screen: score, readiness message, per-topic breakdown
+- Single submission to the database at the end
+
+**In-class live mode**
+- Instructor creates a session with a simple class ID (e.g. `class7`)
+- Students join by class ID; anonymous students get a generated participant ID
+- Instructor advances questions; students poll every 3 seconds
+- Retry-until-correct: wrong answers can be retried, every attempt is recorded
+- Live instructor view: answer distribution per option, first-attempt/retry
+  stats, students still working
+- Sessions can be resumed after a page refresh; class IDs are reusable after a
+  session ends
+
+**Platform**
+- Secure JWT-based instructor authentication (24-hour tokens)
+- CSV export for full-quiz submissions
+- IP-based rate limiting on submissions (500/day)
+- Responsive mobile-friendly design
 
 ## File Structure
 
 ```
-quiz/
-├── index.html                      Student quiz application
-├── instructor.html                 Instructor dashboard (secure)
-├── quiz_data_pre_class.js          Pre-class assessment questions
-├── quiz_data_post_class.js         Post-class review questions
-├── quiz_data_fabric_engine.js      Fabric engine in-class quiz
-└── quiz_data_switch_engine.js      Switch engine in-class quiz
+index.html                      Student app (mode selection, full quiz, in-class quiz)
+instructor.html                 Instructor dashboard (historical + in-class live tabs)
+config.js                       Netlify Functions base URL
+quiz_data_pre_class.js          Pre-class assessment questions (32)
+quiz_data_post_class.js         Post-class review questions (10)
+quiz_data_fabric_engine.js      Fabric Engine in-class questions (20)
+quiz_data_switch_engine.js      Switch Engine in-class questions (20)
 
 netlify/functions/
-├── submit-responses.js             Student submission handler
-├── authenticate-instructor.js       Instructor login (JWT generation)
-├── get-submissions.js              Fetch submissions (paginated, filtered)
-└── export-submissions.js           CSV export handler
+├── submit-responses.js         Full-quiz submission handler (rate-limited)
+├── authenticate-instructor.js  Instructor login (Supabase Auth → JWT)
+├── get-submissions.js          Historical submissions + in-class live stats
+├── export-submissions.js       CSV export
+├── create-class-session.js     Create (or resume) an in-class session
+├── get-current-question.js     Student polling endpoint (answers stripped)
+├── submit-question-response.js Per-question answer submission with retries
+├── advance-question.js         Instructor moves the session to a question
+└── end-class-session.js        End session, return final stats
 
 sql/
-└── database-setup.sql              Complete schema + RLS
+├── database-setup.sql          Complete schema + RLS + grants (drop & rebuild)
+└── migration-001-class-id-reuse.sql  For DBs created before class-id reuse fix
 
-package.json                        Dependencies (@supabase/supabase-js, jsonwebtoken)
+package.json                    Function dependencies (@supabase/supabase-js, jsonwebtoken)
 
-Documentation/
-├── DEPLOYMENT_GUIDE.md             Step-by-step setup (5 phases, ~30 min)
-├── ARCHITECTURE.md                 Technical deep-dive (schema, security, flows)
-├── ENVIRONMENT_VARIABLES.md        How to configure secrets
-├── FRONTEND_UPDATES.md             Code examples for HTML changes
-└── QUICK_REFERENCE.md              API contracts, schema, common tasks
+md/
+├── DEPLOYMENT_GUIDE.md         Step-by-step setup
+├── ARCHITECTURE.md             Technical deep-dive
+├── ENVIRONMENT_VARIABLES.md    How to configure secrets
+└── QUICK_REFERENCE.md          API contracts, schema, common tasks
 ```
 
-## Quick Start
+## Quiz Data Format
 
-**Choose your path:**
+All four quiz files share one format, consumed by both the browser and the
+Netlify functions (each file exports for both environments):
 
-- **New to the system?** → Read [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
-- **Need technical details?** → Read [ARCHITECTURE.md](ARCHITECTURE.md)
-- **Setting up secrets?** → Read [ENVIRONMENT_VARIABLES.md](ENVIRONMENT_VARIABLES.md)
-- **Updating frontend?** → Read [FRONTEND_UPDATES.md](FRONTEND_UPDATES.md)
-- **Need a cheat sheet?** → Read [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
+```javascript
+const quizData = [
+  {
+    id: 1,                        // unique integer per file
+    topic: "Layer 2 Switching",
+    question: "What information does...?",
+    options: [
+      { text: "Wrong answer", feedback: "Why it's wrong..." },
+      { text: "Right answer", feedback: "Why it's right...", isCorrect: true },
+      // exactly ONE option has isCorrect: true
+    ],
+    explanation: "Shown after answering.",
+    resources: { ... }            // optional learning links
+  },
+];
+```
+
+Correct answers never reach the student's browser in in-class mode —
+`get-current-question` strips `isCorrect` and `feedback`; grading happens
+server-side in `submit-question-response`.
+
+## Database Schema
+
+Four tables (see [sql/database-setup.sql](sql/database-setup.sql)):
+
+- **submissions** — one row per completed full quiz (score, topic_scores JSONB, responses JSONB)
+- **class_sessions** — one row per in-class session (class_id, instructor_id, quiz_type, current_question_id, is_active). class_id is unique **among active sessions only**, so IDs like `class7` are reusable.
+- **question_responses** — one row per in-class answer attempt (attempt_number, is_correct, final_answer) with UNIQUE(session_id, question_id, email, attempt_number)
+- **rate_limits** — per-IP daily submission counters
 
 ## Security
 
 - No credentials in GitHub (all secrets in Netlify env vars only)
-- JWT token authentication with HS256 signature verification
-- Row-level security (RLS) on database tables
-- Service role key (not anon key) for instructor access
-- Whitelist validation on quiz types and table names
-- CORS headers for cross-origin requests
-- IP-based rate limiting (prevents bot spam)
-
-## Database Schema
-
-**Single unified table** (`submissions`):
-```
-quiz_type: 'pretraining' | 'post_class' | 'fabric' | 'switch'
-section: NULL (for pre/post) or 'Section 1-5' (for in-class)
-name, email, score, total_questions, correct_answers, duration_minutes
-topic_scores: JSONB (flexible structure)
-responses: JSONB (flexible structure)
-```
-
-Optimized indexes for:
-- Real-time queries (past 5 minutes): `(quiz_type, section, created_at DESC)`
-- Historical analysis (past 7 days): `(quiz_type, created_at DESC)`
+- JWT (HS256) instructor auth backed by Supabase Auth users
+- Row-level security on all tables
+- ⚠️ `SUPABASE_KEY` **must be the service_role key** — the in-class functions
+  read `class_sessions` directly and RLS blocks the anon key
+- Correct answers stripped from student-facing question payloads
+- Whitelist validation on quiz types; IP-based rate limiting
 
 ## Deployment
 
-**Frontend (HTML/JS):**
-- `index.html` (student quiz) → GitHub Pages
-- `instructor.html` (instructor dashboard) → GitHub Pages
-- Instant deploys on `git push` (no Netlify redeploy needed!)
+**Frontend** (`index.html`, `instructor.html`, `config.js`, `quiz_data_*.js`):
+GitHub Pages — deploys on `git push`, no Netlify redeploy needed.
 
-**Backend:**
-- Netlify Functions (authenticate, get-submissions, export-submissions, submit-responses)
-- ⚠️ **Netlify site MUST be public** for GitHub Pages to access functions
-- Separate redeploy only when function code changes
+**Backend** (`netlify/functions/*.js`): Netlify Functions — requires a Netlify
+redeploy when function code **or quiz data files** change (quiz data is bundled
+into the functions at build time via static requires).
 
-**Database:** Supabase (managed PostgreSQL with RLS)
-- ⚠️ **Service role must have INSERT/SELECT permissions** on all tables and sequences
+**Database**: Supabase. Fresh setup: run `sql/database-setup.sql` in the SQL
+Editor. Existing DB created before the class-id-reuse fix: run
+`sql/migration-001-class-id-reuse.sql` instead.
 
-**Secrets:** Netlify environment variables only (SUPABASE_URL, SUPABASE_KEY, JWT_SECRET)
+**Secrets** (Netlify env vars): `SUPABASE_URL`, `SUPABASE_KEY` (service_role),
+`JWT_SECRET`.
 
-## Frontend Development
-
-After backend setup, update frontend files per [FRONTEND_UPDATES.md](FRONTEND_UPDATES.md):
-1. Student quiz: Change `quiz_table` parameter to `quiz_type`
-2. Instructor dashboard: Add JWT handling, pagination, CSV export
-
-Frontend changes deploy instantly via GitHub Pages—no function redeploy needed.
+**Instructor accounts**: create users in Supabase Dashboard → Authentication →
+Users. No code changes needed.
 
 ## Support
 
-See [QUICK_REFERENCE.md](QUICK_REFERENCE.md) for:
-- API contracts
-- Error messages & solutions
-- Common tasks (add quiz type, add instructor, query data)
-- Troubleshooting guide
+See [md/QUICK_REFERENCE.md](md/QUICK_REFERENCE.md) for API contracts, schema,
+common tasks, and troubleshooting.

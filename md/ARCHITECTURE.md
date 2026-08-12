@@ -10,10 +10,10 @@
          ▼
 ┌─────────────────────────────────┐
 │  Quiz HTML (GitHub Pages)       │
+│  - Mode selection:              │
+│    full quiz / in-class live    │
 │  - 4 quiz types                 │
 │  - Immediate feedback           │
-│  - localStorage persistence     │
-│  - Randomized answers           │
 └────────┬────────────────────────┘
          │
          │ POST /submit-responses
@@ -127,6 +127,48 @@
    - Queries submissions matching filters
    - Converts to CSV format (headers + data rows)
    - Returns file download with timestamp
+
+## In-Class Live Quiz System
+
+Instructor-driven question flow with per-question, per-attempt tracking.
+Uses two additional tables (`class_sessions`, `question_responses`) and five
+functions. No WebSockets — students poll every 3 seconds.
+
+### Session lifecycle
+
+1. **Create** — instructor (JWT) calls `create-class-session` with a class ID
+   like `class7` and a quiz type (`fabric`/`switch`). Class IDs are unique
+   among *active* sessions only (partial unique index), so they're reusable.
+   If the same instructor already has an active session with that ID, it's
+   **resumed** instead (page-refresh recovery); another instructor's ID → 409.
+2. **Join** — students enter the class ID (no auth). Students without an email
+   get a client-generated `anon-<uuid>` participant id, which keys their
+   attempt tracking.
+3. **Advance** — instructor calls `advance-question` to set
+   `current_question_id`; the response includes stats for the question just
+   left. Students' next poll of `get-current-question` picks up the new
+   question. The payload strips `isCorrect`/`feedback` — grading is
+   server-side only.
+4. **Answer** — students call `submit-question-response`. The server loads the
+   bundled quiz data, grades the answer, computes `attempt_number`, and stores
+   one row per attempt. Wrong answers can be retried until correct
+   (`final_answer = TRUE` on the correct attempt).
+5. **Monitor** — the dashboard polls `get-submissions` with
+   `mode: 'inclass_live'` every 3s: per-option answer distribution (with the
+   correct option flagged), first-attempt/retry breakdown, and students still
+   working.
+6. **End** — `end-class-session` sets `is_active = FALSE` and returns final
+   stats. Students' polls get a 404 and show "Session Ended"; the class ID is
+   freed for reuse.
+
+### Quiz data bundling
+
+The `quiz_data_*.js` files are dual-format: they set `window.quizData` in the
+browser and `module.exports` in Node. The functions that grade or serve
+questions require them **statically** (a `QUIZ_DATA` map at module top) so
+Netlify's bundler packages them — dynamic `require()` paths are not traced and
+fail at runtime. Consequence: **editing quiz questions requires a Netlify
+redeploy**, not just a GitHub Pages push.
 
 ## Security Model
 

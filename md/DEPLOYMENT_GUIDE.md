@@ -207,42 +207,29 @@ This way you control exactly when Netlify builds—no wasted token deployments!
 
 This setup means **frontend changes deploy instantly via GitHub**—no Netlify redeploy needed!
 
-### Step 4.1: Configure Function URLs for GitHub Pages Hosting
+### Step 4.1: Configure the Functions URL
 
-Since both `index.html` and `instructor.html` are hosted on **GitHub Pages** and call **Netlify Functions**, you need to update the function URLs to use absolute paths (not relative).
+Both `index.html` and `instructor.html` read the Netlify Functions base URL
+from a single file: **`config.js`** at the repo root.
 
-**In `quiz/index.html` (around line 1084):**
-
-Find:
+Edit `config.js` and set your Netlify site name (from Phase 3.1):
 ```javascript
-const netlifyUrl = 'https://YOUR-SITE.netlify.app/.netlify/functions/submit-responses';
+const CONFIG = {
+    NETLIFY_FUNCTIONS_URL: 'https://my-quiz-site.netlify.app/.netlify/functions'
+};
 ```
 
-Replace `YOUR-SITE` with your actual Netlify site name (from Phase 3.1):
-```javascript
-const netlifyUrl = 'https://my-quiz-site.netlify.app/.netlify/functions/submit-responses';
-```
-
-**In `quiz/instructor.html` (around line 316):**
-
-Find:
-```javascript
-const NETLIFY_FUNCTIONS_URL = 'https://YOUR-SITE.netlify.app/.netlify/functions';
-```
-
-Replace `YOUR-SITE` with your actual Netlify site name:
-```javascript
-const NETLIFY_FUNCTIONS_URL = 'https://my-quiz-site.netlify.app/.netlify/functions';
-```
-
-Then commit and push both changes:
+Then commit and push:
 ```bash
-git add quiz/index.html quiz/instructor.html
-git commit -m "Configure Netlify function URLs for GitHub Pages hosting"
+git add config.js
+git commit -m "Configure Netlify functions URL"
 git push origin main
 ```
 
 ✅ **Result:** Both HTML files on GitHub Pages call functions on Netlify. Frontend changes deploy instantly via GitHub—no Netlify redeploy needed!
+
+⚠️ **Note:** editing `quiz_data_*.js` question files DOES require a Netlify
+redeploy — the quiz data is bundled into the functions for server-side grading.
 
 ---
 

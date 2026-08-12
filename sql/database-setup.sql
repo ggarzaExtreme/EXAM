@@ -196,7 +196,6 @@ GRANT USAGE ON SEQUENCE submissions_id_seq TO service_role;
 
 -- Class Sessions (for instructor functions: create, update, select)
 GRANT INSERT, UPDATE, SELECT ON class_sessions TO service_role;
-GRANT USAGE ON SEQUENCE class_sessions_id_seq TO service_role;
 
 -- Question Responses (for student submissions and instructor analytics)
 GRANT INSERT, SELECT ON question_responses TO service_role;

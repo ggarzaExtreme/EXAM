@@ -4,5 +4,5 @@
 const CONFIG = {
     // Netlify Functions URL - Update this with your actual Netlify site URL
     // Example: https://my-quiz-site.netlify.app/.netlify/functions
-    NETLIFY_FUNCTIONS_URL: 'https://YOUR-SITE.netlify.app/.netlify/functions'
+    NETLIFY_FUNCTIONS_URL: 'https://extremeassessmentmodule.netlify.app/.netlify/functions'
 };

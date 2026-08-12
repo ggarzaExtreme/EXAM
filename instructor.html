@@ -294,10 +294,10 @@
                     <div class="controls">
                         <select id="quizSelect" onchange="changeQuiz()">
                             <option value="">Select Quiz...</option>
-                            <option value="submissions_pretraining_assessment">Pre-Class Assessment</option>
-                            <option value="submissions_post_class_review">Post-Class Review</option>
-                            <option value="submissions_inclass_fabric_engine">Fabric Engine In-Class</option>
-                            <option value="submissions_inclass_switch_engine">Switch Engine In-Class</option>
+                            <option value="pretraining">Pre-Class Assessment</option>
+                            <option value="post_class">Post-Class Review</option>
+                            <option value="fabric">Fabric Engine In-Class</option>
+                            <option value="switch">Switch Engine In-Class</option>
                         </select>
 
                         <button class="btn" style="width: auto; padding: 8px 20px;" onclick="refreshData()">Refresh</button>
@@ -388,7 +388,7 @@
                 const response = await fetch(NETLIFY_FUNCTIONS_URL + '/get-submissions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: sessionToken, quiz_table: currentQuiz })
+                    body: JSON.stringify({ token: sessionToken, quiz_type: currentQuiz })
                 });
 
                 const result = await response.json();

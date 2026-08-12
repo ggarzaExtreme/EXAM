@@ -530,6 +530,51 @@
                 </div>
             </div>
 
+            <!-- Full Quiz Mode: Quiz Screen -->
+            <div class="screen" id="fullQuizScreen">
+                <div class="status-bar">
+                    <div>
+                        <span class="status-text">Student: <strong id="fullQuizStudentName">Anonymous</strong></span><br>
+                        <span class="status-text">Assessment: <strong id="fullQuizAssessmentType">Pretraining</strong></span>
+                    </div>
+                </div>
+
+                <div class="question-counter" id="fullQuizCounter"></div>
+                <span class="topic-badge" id="fullQuizTopicBadge"></span>
+
+                <div class="question-text" id="fullQuizQuestionText"></div>
+                <div class="options" id="fullQuizOptionsContainer"></div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">← Previous</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display: none; margin-left: auto;">Next →</button>
+                    <button class="btn" id="submitBtn" onclick="finishQuiz()" style="margin-left: auto;">Finish Quiz</button>
+                </div>
+
+                <div class="feedback-screen" id="fullQuizFeedback">
+                    <div class="feedback-header" id="fullQuizFeedbackHeader"></div>
+                    <div class="feedback-text" id="fullQuizFeedbackText"></div>
+                </div>
+            </div>
+
+            <!-- Full Quiz Mode: Results Screen -->
+            <div class="screen" id="fullQuizResultsScreen">
+                <h2 style="text-align: center; margin-bottom: 30px;">Assessment Results</h2>
+
+                <div style="text-align: center; margin: 40px 0;">
+                    <div style="display: inline-block; width: 160px; height: 160px; border-radius: 50%; background: linear-gradient(135deg, #20004C 0%, #5B059C 100%); color: white; font-size: 60px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;" id="scoreCircle">0%</div>
+                    <div id="scoreText" style="font-size: 18px; color: #333; margin-bottom: 10px; font-weight: 600;"></div>
+                    <div id="readinessMessage" style="font-size: 16px; font-weight: 600; padding: 15px; border-radius: 6px; margin: 15px 0;"></div>
+                </div>
+
+                <div id="topicResults" style="margin: 40px 0;"></div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <button class="btn" onclick="submitResults()">✓ Submit Results</button>
+                    <button class="btn btn-secondary" onclick="backToModeSelection()" style="margin-left: 10px;">← Start Over</button>
+                </div>
+            </div>
+
             <!-- In-Class Mode: Question Screen -->
             <div class="screen" id="inclassQuizScreen">
                 <div class="status-bar">
@@ -657,7 +702,11 @@
             document.getElementById('studentInfoScreen').classList.remove('active');
             document.getElementById('sessionJoinScreen').classList.remove('active');
             document.getElementById('inclassQuizScreen').classList.remove('active');
+            document.getElementById('fullQuizScreen').classList.remove('active');
+            document.getElementById('fullQuizResultsScreen').classList.remove('active');
         }
+
+        let fullQuizCurrentQuestion = 0;
 
         async function startFullQuiz() {
             const nameInput = document.getElementById('studentName').value.trim();
@@ -683,10 +732,211 @@
             quizStartTime = new Date();
             responses = new Array(quizData.length).fill(null);
             topicScores = {};
+            fullQuizCurrentQuestion = 0;
 
             document.getElementById('studentInfoScreen').classList.remove('active');
-            // TODO: Show full quiz screen (existing implementation)
-            alert('Full quiz mode will be implemented in Phase 2b');
+            document.getElementById('fullQuizScreen').classList.add('active');
+
+            document.getElementById('fullQuizStudentName').textContent = studentName;
+            document.getElementById('fullQuizAssessmentType').textContent = classType === 'pretraining' ? 'Pre-Class' : 'Post-Class';
+
+            displayFullQuizQuestion();
+        }
+
+        function displayFullQuizQuestion() {
+            const question = quizData[fullQuizCurrentQuestion];
+
+            document.getElementById('fullQuizCounter').textContent = `Question ${fullQuizCurrentQuestion + 1} of ${quizData.length}`;
+            document.getElementById('fullQuizTopicBadge').textContent = question.topic;
+            document.getElementById('fullQuizQuestionText').textContent = question.question;
+
+            const container = document.getElementById('fullQuizOptionsContainer');
+            container.innerHTML = '';
+
+            question.options.forEach((option, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                const optionText = typeof option === 'string' ? option : option.text;
+                btn.textContent = String.fromCharCode(65 + idx) + ') ' + optionText;
+                btn.onclick = () => selectFullQuizOption(String.fromCharCode(65 + idx));
+
+                if (responses[fullQuizCurrentQuestion]?.selected === String.fromCharCode(65 + idx)) {
+                    btn.classList.add('selected');
+                }
+
+                container.appendChild(btn);
+            });
+
+            // Hide feedback when changing questions
+            document.getElementById('fullQuizFeedback').style.display = 'none';
+            document.getElementById('prevBtn').style.display = fullQuizCurrentQuestion > 0 ? 'block' : 'none';
+            document.getElementById('nextBtn').style.display = fullQuizCurrentQuestion < quizData.length - 1 ? 'block' : 'none';
+        }
+
+        function selectFullQuizOption(optionLetter) {
+            const question = quizData[fullQuizCurrentQuestion];
+            const optionIndex = optionLetter.charCodeAt(0) - 65;
+            const selectedOption = question.options[optionIndex];
+            const isCorrect = typeof selectedOption === 'object' ? selectedOption.isCorrect : false;
+
+            responses[fullQuizCurrentQuestion] = {
+                selected: optionLetter,
+                isCorrect: isCorrect,
+                question_id: question.id
+            };
+
+            // Update topic scores
+            if (!topicScores[question.topic]) {
+                topicScores[question.topic] = { correct: 0, total: 0 };
+            }
+            topicScores[question.topic].total++;
+            if (isCorrect) {
+                topicScores[question.topic].correct++;
+            }
+
+            // Show feedback
+            const feedback = document.getElementById('fullQuizFeedback');
+            const header = document.getElementById('fullQuizFeedbackHeader');
+            const text = document.getElementById('fullQuizFeedbackText');
+
+            if (isCorrect) {
+                header.innerHTML = '✓ Correct!';
+                header.style.color = '#2DCA73';
+                text.textContent = typeof selectedOption === 'object' ? selectedOption.feedback : question.explanation;
+            } else {
+                header.innerHTML = '✗ Incorrect';
+                header.style.color = '#E63946';
+                text.textContent = typeof selectedOption === 'object' ? selectedOption.feedback : question.explanation;
+            }
+
+            feedback.style.display = 'block';
+
+            // Highlight selected button
+            document.querySelectorAll('#fullQuizOptionsContainer .option-btn').forEach((btn, idx) => {
+                if (String.fromCharCode(65 + idx) === optionLetter) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        function previousQuestion() {
+            if (fullQuizCurrentQuestion > 0) {
+                fullQuizCurrentQuestion--;
+                displayFullQuizQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (fullQuizCurrentQuestion < quizData.length - 1) {
+                fullQuizCurrentQuestion++;
+                displayFullQuizQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            // Calculate final scores
+            let totalCorrect = 0;
+            responses.forEach(r => {
+                if (r && r.isCorrect) totalCorrect++;
+            });
+
+            const percentage = Math.round((totalCorrect / responses.length) * 100);
+
+            document.getElementById('scoreCircle').textContent = percentage + '%';
+            document.getElementById('scoreText').textContent = `You scored ${totalCorrect} out of ${responses.length} questions correctly`;
+
+            // Readiness message
+            const readinessDiv = document.getElementById('readinessMessage');
+            if (classType === 'pretraining') {
+                if (percentage >= 80) {
+                    readinessDiv.textContent = '✓ You are well-prepared for this class!';
+                    readinessDiv.style.backgroundColor = '#D1E7DD';
+                    readinessDiv.style.color = '#155724';
+                } else if (percentage >= 60) {
+                    readinessDiv.textContent = '⚠ Review the material before class';
+                    readinessDiv.style.backgroundColor = '#FFF3CD';
+                    readinessDiv.style.color = '#856404';
+                } else {
+                    readinessDiv.textContent = '✗ You should review the fundamentals';
+                    readinessDiv.style.backgroundColor = '#F8D7DA';
+                    readinessDiv.style.color = '#721C24';
+                }
+            } else {
+                if (percentage >= 80) {
+                    readinessDiv.textContent = '✓ Excellent understanding demonstrated!';
+                    readinessDiv.style.backgroundColor = '#D1E7DD';
+                    readinessDiv.style.color = '#155724';
+                } else if (percentage >= 60) {
+                    readinessDiv.textContent = '⚠ Good progress, review challenging topics';
+                    readinessDiv.style.backgroundColor = '#FFF3CD';
+                    readinessDiv.style.color = '#856404';
+                } else {
+                    readinessDiv.textContent = '✗ Additional practice recommended';
+                    readinessDiv.style.backgroundColor = '#F8D7DA';
+                    readinessDiv.style.color = '#721C24';
+                }
+            }
+
+            // Display topic breakdown
+            let topicHtml = '<h3>Topic Breakdown:</h3><div style="margin: 20px 0;">';
+            Object.entries(topicScores).forEach(([topic, scores]) => {
+                const topicPercent = Math.round((scores.correct / scores.total) * 100);
+                topicHtml += `
+                    <div style="margin: 15px 0;">
+                        <div style="font-weight: 600; margin-bottom: 5px;">${topic}</div>
+                        <div style="width: 100%; background: #e0e0e0; height: 20px; border-radius: 4px; overflow: hidden;">
+                            <div style="width: ${topicPercent}%; background: ${topicPercent >= 80 ? '#2DCA73' : topicPercent >= 60 ? '#FFA500' : '#E63946'}; height: 100%;"></div>
+                        </div>
+                        <div style="font-size: 14px; color: #666; margin-top: 5px;">${scores.correct}/${scores.total} correct</div>
+                    </div>
+                `;
+            });
+            topicHtml += '</div>';
+            document.getElementById('topicResults').innerHTML = topicHtml;
+
+            document.getElementById('fullQuizScreen').classList.remove('active');
+            document.getElementById('fullQuizResultsScreen').classList.add('active');
+        }
+
+        async function submitResults() {
+            try {
+                const quizEndTime = new Date();
+                const durationMinutes = Math.round((quizEndTime - quizStartTime) / 60000);
+
+                let totalCorrect = 0;
+                responses.forEach(r => {
+                    if (r && r.isCorrect) totalCorrect++;
+                });
+
+                const payload = {
+                    quiz_type: classType,
+                    name: studentName,
+                    email: studentEmail,
+                    score: Math.round((totalCorrect / responses.length) * 100),
+                    total_questions: responses.length,
+                    correct_answers: totalCorrect,
+                    duration_minutes: durationMinutes,
+                    topic_scores: topicScores,
+                    responses: responses
+                };
+
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/submit-responses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert('Assessment submitted successfully!');
+                    backToModeSelection();
+                } else {
+                    alert('Failed to submit assessment. Your responses were recorded locally.');
+                }
+            } catch (error) {
+                alert('Error submitting assessment: ' + error.message);
+            }
         }
 
         async function joinInClassSession() {

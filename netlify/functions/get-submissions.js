@@ -4,10 +4,26 @@ const jwt = require('jsonwebtoken');
 const ALLOWED_QUIZ_TYPES = ['pretraining', 'post_class', 'fabric', 'switch'];
 const DEFAULT_LIMIT = 50;
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
 exports.handler = async (event) => {
+  // Handle CORS preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: ''
+    };
+  }
+
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Method not allowed' })
     };
   }
@@ -18,6 +34,7 @@ exports.handler = async (event) => {
     if (!token || !quiz_type) {
       return {
         statusCode: 400,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Token and quiz_type required' })
       };
     }
@@ -28,6 +45,7 @@ exports.handler = async (event) => {
       console.error('Missing JWT_SECRET environment variable');
       return {
         statusCode: 500,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Server configuration error' })
       };
     }
@@ -38,6 +56,7 @@ exports.handler = async (event) => {
     } catch (err) {
       return {
         statusCode: 401,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Invalid or expired token' })
       };
     }
@@ -46,6 +65,7 @@ exports.handler = async (event) => {
     if (!ALLOWED_QUIZ_TYPES.includes(quiz_type)) {
       return {
         statusCode: 400,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Invalid quiz type' })
       };
     }
@@ -58,6 +78,7 @@ exports.handler = async (event) => {
       console.error('Missing Supabase environment variables');
       return {
         statusCode: 500,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Server configuration error' })
       };
     }
@@ -100,12 +121,14 @@ exports.handler = async (event) => {
       console.error('Fetch error:', error);
       return {
         statusCode: 500,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Failed to fetch submissions' })
       };
     }
 
     return {
       statusCode: 200,
+      headers: corsHeaders,
       body: JSON.stringify({
         success: true,
         submissions: data || [],
@@ -121,6 +144,7 @@ exports.handler = async (event) => {
     console.error('Error:', error.message);
     return {
       statusCode: 500,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Server error' })
     };
   }

@@ -10,16 +10,19 @@ const ALLOWED_QUIZ_TYPES = [
 
 const RATE_LIMIT_PER_DAY = 500;
 
+// Helper to add CORS headers to all responses
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
 exports.handler = async (event) => {
   // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
-      },
+      headers: corsHeaders,
       body: ''
     };
   }
@@ -28,6 +31,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Method not allowed' })
     };
   }
@@ -62,6 +66,7 @@ exports.handler = async (event) => {
       console.error('Invalid quiz_type:', data.quiz_type);
       return {
         statusCode: 400,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Invalid quiz_type parameter' })
       };
     }
@@ -87,6 +92,7 @@ exports.handler = async (event) => {
       console.warn(`Rate limit exceeded for IP ${clientIp}: ${currentCount} submissions today`);
       return {
         statusCode: 429,
+        headers: corsHeaders,
         body: JSON.stringify({
           error: 'Rate limit exceeded. Maximum 500 submissions per day.',
           retryAfter: 86400
@@ -140,6 +146,7 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: corsHeaders,
       body: JSON.stringify({
         success: true,
         message: 'Response recorded',
@@ -151,6 +158,7 @@ exports.handler = async (event) => {
     console.error('Function error:', error.message);
     return {
       statusCode: 400,
+      headers: corsHeaders,
       body: JSON.stringify({ error: error.message })
     };
   }

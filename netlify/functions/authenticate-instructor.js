@@ -1,10 +1,26 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
 exports.handler = async (event) => {
+  // Handle CORS preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: ''
+    };
+  }
+
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Method not allowed' })
     };
   }
@@ -15,6 +31,7 @@ exports.handler = async (event) => {
     if (!email || !password) {
       return {
         statusCode: 400,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Email and password required' })
       };
     }
@@ -28,6 +45,7 @@ exports.handler = async (event) => {
       console.error('Missing environment variables');
       return {
         statusCode: 500,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Server configuration error' })
       };
     }
@@ -44,6 +62,7 @@ exports.handler = async (event) => {
     if (error) {
       return {
         statusCode: 401,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Invalid email or password' })
       };
     }
@@ -51,6 +70,7 @@ exports.handler = async (event) => {
     if (!data.session) {
       return {
         statusCode: 401,
+        headers: corsHeaders,
         body: JSON.stringify({ error: 'Authentication failed' })
       };
     }
@@ -69,6 +89,7 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: corsHeaders,
       body: JSON.stringify({
         success: true,
         token: token,
@@ -82,6 +103,7 @@ exports.handler = async (event) => {
     console.error('Auth error:', error.message);
     return {
       statusCode: 500,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Authentication service error' })
     };
   }

@@ -1,7 +1,7 @@
 // Networking Fundamentals Knowledge Assessment
 // Questions 1-32 with answers, explanations, and topic-based learning resources
 
-const quizData = [
+window.quizData = [
   // ===== LAYER 2 SWITCHING (Questions 1-5) =====
   {
     id: 1,

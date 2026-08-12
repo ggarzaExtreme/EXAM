@@ -1,7 +1,7 @@
 // Post-Class Review/Feedback Quiz Data
 // 10 placeholder questions
 
-const quizData = [
+window.quizData = [
   {
     id: 1,
     topic: "Course Concepts",

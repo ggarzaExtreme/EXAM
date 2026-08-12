@@ -1,7 +1,7 @@
 // Fabric Engine In-Class Quiz Data
 // Questions organized by presentation section
 
-const quizData = [
+window.quizData = [
   // ===== INTRO SECTION =====
   {
     id: 1,

@@ -1,7 +1,7 @@
-// Fabric Engine In-Class Quiz Data
+﻿// Fabric Engine In-Class Quiz Data
 // Questions organized by presentation section
 
-window.quizData = [
+const quizData = [
   // ===== INTRO SECTION =====
   {
     id: 1,
@@ -390,3 +390,13 @@ window.quizData = [
     }
   }
 ];
+
+
+
+// Export for use in HTML and Node.js
+if (typeof window !== 'undefined') {
+  window.quizData = quizData;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = quizData;
+}

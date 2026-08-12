@@ -81,9 +81,18 @@ exports.handler = async (event) => {
     }
 
     // 3. Load quiz data and find the question
+    // Map quiz_type to actual filename
+    const quizTypeMap = {
+      'pretraining': 'quiz_data_pre_class',
+      'post_class': 'quiz_data_post_class',
+      'fabric': 'quiz_data_fabric_engine',
+      'switch': 'quiz_data_switch_engine'
+    };
+
     let quizData;
     try {
-      quizData = require(`../quiz_data_${session.quiz_type}.js`);
+      const fileName = quizTypeMap[session.quiz_type] || session.quiz_type;
+      quizData = require(`../${fileName}.js`);
     } catch (err) {
       console.error(`Quiz data file not found: quiz_data_${session.quiz_type}.js`, err);
       return {

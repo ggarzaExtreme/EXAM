@@ -1,7 +1,7 @@
-// Post-Class Review/Feedback Quiz Data
+﻿// Post-Class Review/Feedback Quiz Data
 // 10 placeholder questions
 
-window.quizData = [
+const quizData = [
   {
     id: 1,
     topic: "Course Concepts",
@@ -193,3 +193,13 @@ window.quizData = [
     }
   }
 ];
+
+
+
+// Export for use in HTML and Node.js
+if (typeof window !== 'undefined') {
+  window.quizData = quizData;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = quizData;
+}

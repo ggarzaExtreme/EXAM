@@ -1,7 +1,7 @@
-// Switch Engine In-Class Quiz Data
+﻿// Switch Engine In-Class Quiz Data
 // Questions organized by presentation section
 
-window.quizData = [
+const quizData = [
   // ===== INTRO SECTION =====
   {
     id: 1,
@@ -109,7 +109,7 @@ window.quizData = [
       { text: "Speed, duplex, VLAN, and port type", feedback: "Correct! Multiple port attributes are configurable.", isCorrect: true },
       { text: "Only the port speed", feedback: "Port config is more comprehensive.", isCorrect: false },
       { text: "Only the physical cable type", feedback: "Logical config is also important.", isCorrect: false },
-      { text: "Nothing—port settings are fixed", feedback: "Ports have many configurable options.", isCorrect: false }
+      { text: "Nothingâ€”port settings are fixed", feedback: "Ports have many configurable options.", isCorrect: false }
     ],
     explanation: "Switch Engine allows comprehensive port configuration including speed, duplex, VLAN assignment, and port type.",
     resources: {
@@ -390,3 +390,13 @@ window.quizData = [
     }
   }
 ];
+
+
+
+// Export for use in HTML and Node.js
+if (typeof window !== 'undefined') {
+  window.quizData = quizData;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = quizData;
+}

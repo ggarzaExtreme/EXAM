@@ -26,14 +26,17 @@ exports.handler = async (event) => {
   try {
     const { class_id, question_id, selected_option, time_spent_seconds, name, email } = JSON.parse(event.body);
 
-    // Validate required fields
-    if (!class_id || !question_id || !selected_option || !name || !email) {
+    // Validate required fields (email is optional)
+    if (!class_id || !question_id || !selected_option || !name) {
       return {
         statusCode: 400,
         headers: corsHeaders,
-        body: JSON.stringify({ error: 'Missing required fields' })
+        body: JSON.stringify({ error: 'Missing required fields: class_id, question_id, selected_option, name' })
       };
     }
+
+    // Use empty string for email if not provided
+    const emailValue = email || '';
 
     // Initialize Supabase client
     const supabaseUrl = process.env.SUPABASE_URL;
@@ -77,9 +80,18 @@ exports.handler = async (event) => {
 
     // 3. Load quiz data and find the question
     // Dynamically require the appropriate quiz data file
+    // Map quiz_type to actual filename
+    const quizTypeMap = {
+      'pretraining': 'quiz_data_pre_class',
+      'post_class': 'quiz_data_post_class',
+      'fabric': 'quiz_data_fabric_engine',
+      'switch': 'quiz_data_switch_engine'
+    };
+
     let quizData;
     try {
-      quizData = require(`../quiz_data_${session.quiz_type}.js`);
+      const fileName = quizTypeMap[session.quiz_type] || session.quiz_type;
+      quizData = require(`../${fileName}.js`);
     } catch (err) {
       console.error(`Quiz data file not found: quiz_data_${session.quiz_type}.js`, err);
       return {
@@ -115,7 +127,7 @@ exports.handler = async (event) => {
       .select('attempt_number')
       .eq('session_id', session.id)
       .eq('question_id', question_id)
-      .eq('email', email)
+      .eq('email', emailValue)
       .order('attempt_number', { ascending: false })
       .limit(1);
 
@@ -131,7 +143,7 @@ exports.handler = async (event) => {
         question_id: question_id,
         quiz_type: session.quiz_type,
         name: name,
-        email: email,
+        email: emailValue,
         selected_option: selected_option,
         is_correct: is_correct,
         time_spent_seconds: time_spent_seconds || 0,

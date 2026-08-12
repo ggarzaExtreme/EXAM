@@ -161,7 +161,7 @@ functions. No WebSockets — students poll every 3 seconds.
    stats. Students' polls get a 404 and show "Session Ended"; the class ID is
    freed for reuse.
 
-### Quiz data bundling
+### Quiz Data Bundling
 
 The `quiz_data_*.js` files are dual-format: they set `window.quizData` in the
 browser and `module.exports` in Node. The functions that grade or serve

@@ -129,8 +129,7 @@
         }
 
         .btn {
-            width: 100%;
-            padding: 12px;
+            padding: 12px 24px;
             background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
             color: white;
             border: none;
@@ -144,6 +143,25 @@
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(91, 5, 156, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-secondary {
+            background: #F0EDFF;
+            color: #5B059C;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 20px rgba(91, 5, 156, 0.2);
         }
 
         .error-message {
@@ -160,10 +178,41 @@
             display: block;
         }
 
-        .loading {
-            text-align: center;
-            color: #999;
-            padding: 20px;
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #E8E3FF;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: #5B059C;
+            border-bottom-color: #5B059C;
         }
 
         .dashboard-header {
@@ -189,6 +238,137 @@
             font-size: 14px;
             background: white;
             cursor: pointer;
+        }
+
+        .session-info {
+            background: #F0EDFF;
+            border-left: 4px solid #5B059C;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .session-info h3 {
+            color: #5B059C;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .session-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .detail-item strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .session-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .answer-distribution {
+            background: white;
+            border: 2px solid #E8E3FF;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .answer-option {
+            margin-bottom: 20px;
+        }
+
+        .option-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .option-label .correctness {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .option-label .correct {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .option-label .incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .bar-container {
+            background: #E8E3FF;
+            border-radius: 4px;
+            overflow: hidden;
+            height: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .bar-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            min-width: 40px;
+        }
+
+        .retry-stats {
+            background: white;
+            border: 2px solid #E8E3FF;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .retry-stats h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #E8E3FF;
+            font-size: 14px;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #555;
+        }
+
+        .stat-value {
+            color: #333;
+            font-weight: 600;
         }
 
         .responses-grid {
@@ -247,9 +427,17 @@
                 grid-template-columns: 1fr;
             }
 
+            .session-details {
+                grid-template-columns: 1fr;
+            }
+
             .header-user {
                 position: static;
                 margin-top: 10px;
+            }
+
+            .tabs {
+                flex-direction: column;
             }
         }
     </style>
@@ -264,7 +452,7 @@
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
             <h1>Instructor Dashboard</h1>
-            <p>Monitor student responses in real-time</p>
+            <p>Monitor student responses and manage in-class sessions</p>
         </div>
 
         <div class="content">
@@ -286,40 +474,162 @@
                         <input type="password" id="password" placeholder="••••••••" onkeypress="if(event.key==='Enter') login()">
                     </div>
 
-                    <button class="btn" onclick="login()">Sign In</button>
+                    <button class="btn btn-full" onclick="login()">Sign In</button>
                 </div>
             </div>
 
             <!-- Dashboard Screen -->
             <div class="screen" id="dashboardScreen">
-                <div class="dashboard-header">
-                    <h2 style="color: #333;">Student Submissions</h2>
-                    <div class="controls">
-                        <select id="quizSelect" onchange="changeQuiz()">
-                            <option value="">Select Quiz...</option>
-                            <option value="pretraining">Pre-Class Assessment</option>
-                            <option value="post_class">Post-Class Review</option>
-                            <option value="fabric">Fabric Engine In-Class</option>
-                            <option value="switch">Switch Engine In-Class</option>
-                        </select>
-
-                        <button class="btn" style="width: auto; padding: 8px 20px;" onclick="refreshData()">Refresh</button>
-                    </div>
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('historical')">📊 Historical Data</button>
+                    <button class="tab-btn" onclick="switchTab('inclass')">🎓 In-Class Live</button>
                 </div>
 
-                <div id="responseContainer" class="responses-grid"></div>
-                <div id="noData" class="no-data">Select a quiz to see submissions</div>
+                <!-- Historical Tab -->
+                <div id="historicalTab" class="tab-content active">
+                    <div class="dashboard-header">
+                        <h2 style="color: #333;">Student Submissions</h2>
+                        <div class="controls">
+                            <select id="quizSelect" onchange="changeQuiz()">
+                                <option value="">Select Quiz...</option>
+                                <option value="pretraining">Pre-Class Assessment</option>
+                                <option value="post_class">Post-Class Review</option>
+                                <option value="fabric">Fabric Engine In-Class</option>
+                                <option value="switch">Switch Engine In-Class</option>
+                            </select>
+
+                            <button class="btn" style="width: auto; padding: 8px 20px;" onclick="refreshData()">Refresh</button>
+                        </div>
+                    </div>
+
+                    <div id="responseContainer" class="responses-grid"></div>
+                    <div id="noData" class="no-data">Select a quiz to see submissions</div>
+                </div>
+
+                <!-- In-Class Tab -->
+                <div id="inclassTab" class="tab-content">
+                    <div class="dashboard-header">
+                        <h2 style="color: #333;">In-Class Live Sessions</h2>
+                        <div class="controls">
+                            <button class="btn" style="width: auto;" onclick="showCreateSessionModal()">+ New Session</button>
+                            <select id="sessionSelect" onchange="selectSession()" style="display:none;">
+                                <option value="">Select Active Session...</option>
+                            </select>
+                            <button class="btn" style="width: auto; padding: 8px 20px;" onclick="refreshInClassData()" id="refreshLiveBtn">Refresh</button>
+                        </div>
+                    </div>
+
+                    <div id="createSessionContainer">
+                        <div class="info-box" style="background: #F0EDFF; border-left: 4px solid #5B059C; padding: 20px; border-radius: 6px; text-align: center;">
+                            <h3 style="color: #5B059C; margin-bottom: 10px;">No Active Session</h3>
+                            <p style="color: #555; margin-bottom: 15px;">Create a new in-class session to begin monitoring student responses in real-time.</p>
+                            <button class="btn" onclick="showCreateSessionModal()">Create New Session</button>
+                        </div>
+                    </div>
+
+                    <div id="liveSessionContainer" style="display: none;">
+                        <div class="session-info">
+                            <h3>Active Session</h3>
+                            <div class="session-details">
+                                <div class="detail-item">
+                                    <strong>Class ID:</strong> <span id="activeClassId"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Quiz Type:</strong> <span id="activeQuizType"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Current Question:</strong> <span id="currentQuestionDisplay">Waiting...</span>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Section:</strong> <span id="currentSectionDisplay">-</span>
+                                </div>
+                            </div>
+                            <div class="session-controls">
+                                <button class="btn btn-secondary" onclick="previousQuestion()">← Previous</button>
+                                <button class="btn btn-secondary" onclick="nextQuestion()">Next →</button>
+                                <button class="btn" style="background: #ef4444;" onclick="endSession()">End Session</button>
+                            </div>
+                        </div>
+
+                        <div class="answer-distribution">
+                            <h3 style="color: #333; margin-bottom: 20px;">Answer Distribution</h3>
+                            <div id="answerChart"></div>
+                        </div>
+
+                        <div class="retry-stats">
+                            <h3>Response Statistics</h3>
+                            <div class="stat-row">
+                                <span class="stat-label">Total Responses:</span>
+                                <span class="stat-value" id="totalResponses">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Got it right (1st attempt):</span>
+                                <span class="stat-value" id="firstAttemptCorrect">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Needed one retry:</span>
+                                <span class="stat-value" id="oneRetry">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Needed multiple retries:</span>
+                                <span class="stat-value" id="multipleRetries">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Still working:</span>
+                                <span class="stat-value" id="stillWorking">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Session Modal -->
+    <div id="createSessionModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; flex-direction: column;">
+        <div style="background: white; border-radius: 12px; padding: 40px; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="color: #333; font-size: 20px; margin-bottom: 15px; font-weight: 700;">Create New In-Class Session</h3>
+
+            <div class="error-message" id="createSessionError"></div>
+
+            <div class="form-group">
+                <label for="sessionClassId">Class ID</label>
+                <input type="text" id="sessionClassId" placeholder="e.g., class7 or fabric-jan15" style="text-transform: lowercase;">
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">Students will enter this ID to join your session</p>
+            </div>
+
+            <div class="form-group">
+                <label for="sessionQuizType">Quiz Type</label>
+                <select id="sessionQuizType">
+                    <option value="">Select Quiz...</option>
+                    <option value="fabric">Fabric Engine</option>
+                    <option value="switch">Switch Engine</option>
+                    <option value="custom_inclass">Custom In-Class</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="sessionName">Session Name (optional)</label>
+                <input type="text" id="sessionName" placeholder="e.g., Monday Morning Class">
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="closeCreateSessionModal()">Cancel</button>
+                <button class="btn" onclick="createSession()">Create Session</button>
             </div>
         </div>
     </div>
 
     <script src="config.js"></script>
     <script>
-        // Use centralized configuration from config.js
-
         let sessionToken = null;
         let currentQuiz = null;
         let autoRefreshInterval = null;
+        let currentTab = 'historical';
+        let activeSessionId = null;
+        let activeClassId = null;
+        let activeQuizType = null;
+        let livePollingInterval = null;
 
         async function login() {
             const email = document.getElementById('email').value.trim();
@@ -327,12 +637,11 @@
             const errorDiv = document.getElementById('loginError');
 
             if (!email || !password) {
-                showError('Please enter email and password');
+                showError(errorDiv, 'Please enter email and password');
                 return;
             }
 
             try {
-                // Call authenticate-instructor function
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/authenticate-instructor', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -342,11 +651,10 @@
                 const result = await response.json();
 
                 if (!response.ok || !result.token) {
-                    showError('Invalid email or password');
+                    showError(errorDiv, 'Invalid email or password');
                     return;
                 }
 
-                // Store session token
                 sessionToken = result.token;
                 sessionStorage.setItem('instructorToken', sessionToken);
                 document.getElementById('loginScreen').classList.remove('active');
@@ -355,15 +663,20 @@
 
                 startAutoRefresh();
             } catch (error) {
-                showError('Login failed: ' + error.message);
+                showError(errorDiv, 'Login failed: ' + error.message);
             }
         }
 
-        function showError(message) {
-            const errorDiv = document.getElementById('loginError');
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-            setTimeout(() => errorDiv.classList.remove('show'), 5000);
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
+            setTimeout(() => element.classList.remove('show'), 5000);
+        }
+
+        function showSuccess(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
+            setTimeout(() => element.classList.remove('show'), 3000);
         }
 
         function logout() {
@@ -374,6 +687,180 @@
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
             if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            if (livePollingInterval) clearInterval(livePollingInterval);
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+
+            if (livePollingInterval) clearInterval(livePollingInterval);
+
+            if (tab === 'inclass') {
+                // Start polling for in-class data
+                livePollingInterval = setInterval(refreshInClassData, 3000);
+                refreshInClassData();
+            }
+        }
+
+        function showCreateSessionModal() {
+            document.getElementById('createSessionModal').style.display = 'flex';
+        }
+
+        function closeCreateSessionModal() {
+            document.getElementById('createSessionModal').style.display = 'none';
+            document.getElementById('sessionClassId').value = '';
+            document.getElementById('sessionQuizType').value = '';
+            document.getElementById('sessionName').value = '';
+            document.getElementById('createSessionError').classList.remove('show');
+        }
+
+        async function createSession() {
+            const classId = document.getElementById('sessionClassId').value.trim().toLowerCase();
+            const quizType = document.getElementById('sessionQuizType').value;
+            const sessionName = document.getElementById('sessionName').value.trim();
+            const errorDiv = document.getElementById('createSessionError');
+
+            if (!classId) {
+                showError(errorDiv, 'Please enter a class ID');
+                return;
+            }
+
+            if (!quizType) {
+                showError(errorDiv, 'Please select a quiz type');
+                return;
+            }
+
+            try {
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/create-class-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: sessionToken,
+                        quiz_type: quizType,
+                        class_id: classId,
+                        session_name: sessionName
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    showError(errorDiv, result.error || 'Failed to create session');
+                    return;
+                }
+
+                activeSessionId = result.session_id;
+                activeClassId = result.class_id;
+                activeQuizType = result.quiz_type;
+
+                closeCreateSessionModal();
+                displayActiveSession();
+                refreshInClassData();
+            } catch (error) {
+                showError(errorDiv, 'Error: ' + error.message);
+            }
+        }
+
+        function displayActiveSession() {
+            document.getElementById('createSessionContainer').style.display = 'none';
+            document.getElementById('liveSessionContainer').style.display = 'block';
+            document.getElementById('activeClassId').textContent = activeClassId;
+            document.getElementById('activeQuizType').textContent = activeQuizType;
+        }
+
+        async function refreshInClassData() {
+            if (!activeSessionId || !sessionToken) return;
+
+            try {
+                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/get-submissions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: sessionToken,
+                        mode: 'inclass_live',
+                        class_id: activeClassId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    displayAnswerDistribution(result.answer_distribution);
+                    displayRetryStats(result.retry_stats, result.participation);
+                    document.getElementById('currentQuestionDisplay').textContent = result.current_question_id || 'Waiting...';
+                    if (result.current_section) {
+                        document.getElementById('currentSectionDisplay').textContent = result.current_section;
+                    }
+                }
+            } catch (error) {
+                console.error('Error refreshing in-class data:', error);
+            }
+        }
+
+        function displayAnswerDistribution(distribution) {
+            if (!distribution) return;
+
+            const chart = document.getElementById('answerChart');
+            chart.innerHTML = '';
+
+            Object.entries(distribution).forEach(([option, data]) => {
+                const div = document.createElement('div');
+                div.className = 'answer-option';
+
+                const isCorrect = data.correct;
+                const percentage = Math.round(data.percentage);
+
+                div.innerHTML = `
+                    <div class="option-label">
+                        <span>${option}) Option ${option}</span>
+                        <span class="correctness ${isCorrect ? 'correct' : 'incorrect'}">
+                            ${isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                        </span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: ${Math.max(percentage, 5)}%">
+                            ${data.count > 0 ? `${data.count} (${percentage}%)` : ''}
+                        </div>
+                    </div>
+                `;
+
+                chart.appendChild(div);
+            });
+        }
+
+        function displayRetryStats(retryStats, participation) {
+            if (retryStats) {
+                document.getElementById('totalResponses').textContent = participation.total_responses;
+                document.getElementById('firstAttemptCorrect').textContent = retryStats.got_correct_first_attempt;
+                document.getElementById('oneRetry').textContent = retryStats.needed_one_retry;
+                document.getElementById('multipleRetries').textContent = retryStats.needed_multiple_retries;
+                document.getElementById('stillWorking').textContent = participation.students_pending;
+            }
+        }
+
+        async function nextQuestion() {
+            // TODO: Implement via advance-question API
+            alert('Question navigation will be implemented in the next phase');
+        }
+
+        async function previousQuestion() {
+            alert('Question navigation will be implemented in the next phase');
+        }
+
+        async function endSession() {
+            if (confirm('Are you sure you want to end this session?')) {
+                // TODO: Implement via end-class-session API
+                activeSessionId = null;
+                activeClassId = null;
+                document.getElementById('createSessionContainer').style.display = 'block';
+                document.getElementById('liveSessionContainer').style.display = 'none';
+                if (livePollingInterval) clearInterval(livePollingInterval);
+            }
         }
 
         async function changeQuiz() {
@@ -387,7 +874,6 @@
             if (!currentQuiz || !sessionToken) return;
 
             try {
-                // Call get-submissions function
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/get-submissions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -397,7 +883,7 @@
                 const result = await response.json();
 
                 if (!response.ok) {
-                    showError('Failed to fetch submissions');
+                    console.error('Failed to fetch submissions');
                     return;
                 }
 
@@ -437,14 +923,13 @@
 
         function startAutoRefresh() {
             autoRefreshInterval = setInterval(() => {
-                if (currentQuiz && sessionToken) {
+                if (currentTab === 'historical' && currentQuiz && sessionToken) {
                     refreshData();
                 }
             }, 3000);
         }
 
         window.addEventListener('load', () => {
-            // Check if already logged in
             const savedToken = sessionStorage.getItem('instructorToken');
             if (savedToken) {
                 sessionToken = savedToken;

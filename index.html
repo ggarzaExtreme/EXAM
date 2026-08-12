@@ -619,6 +619,414 @@
             display: none !important;
         }
 
+        /* ===== COMPREHENSIVE STYLE IMPROVEMENTS ===== */
+
+        /* Better spacing and typography */
+        body {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        /* Action bar for results/review screens */
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .action-bar .btn {
+            padding: 12px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .action-bar .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        /* Improved button styling */
+        .btn {
+            padding: 14px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(91, 5, 156, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #f0edff;
+            color: #5B059C;
+            border: 2px solid #e0d4ff;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e0ff;
+            border-color: #d4c4ff;
+            box-shadow: 0 10px 25px rgba(91, 5, 156, 0.2);
+        }
+
+        /* Better form styling */
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-group label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"] {
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus {
+            outline: none;
+            border-color: #5B059C;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(91, 5, 156, 0.1);
+        }
+
+        /* Better radio options */
+        .radio-option {
+            padding: 16px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .radio-option:hover {
+            border-color: #5B059C;
+            background: #f9f5ff;
+            box-shadow: 0 4px 12px rgba(91, 5, 156, 0.1);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Card-based design for answer review */
+        .answer-review-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .answer-review-card:hover {
+            border-color: #5B059C;
+            box-shadow: 0 4px 16px rgba(91, 5, 156, 0.1);
+        }
+
+        .answer-review-card .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+            gap: 20px;
+        }
+
+        .answer-review-card .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .answer-review-card .status-correct {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .answer-review-card .status-incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .answer-review-card .status-skipped {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* Better progress visualization */
+        .progress-bar {
+            height: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #e5e7eb;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            transition: width 0.4s ease;
+        }
+
+        /* Better score display */
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            font-weight: 700;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            color: white;
+            box-shadow: 0 15px 40px rgba(91, 5, 156, 0.3);
+        }
+
+        /* Better info boxes */
+        .info-box {
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            border-left: 4px solid #5B059C;
+            padding: 24px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #5B059C;
+            margin-top: 0;
+        }
+
+        /* Better modal styling */
+        .modal-content {
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-content h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .modal-buttons {
+            gap: 12px;
+        }
+
+        .modal-buttons .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+        }
+
+        /* Better feedback styling */
+        .feedback-screen {
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid #5B059C;
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            margin-top: 30px;
+        }
+
+        .feedback-header {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .feedback-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        /* Better question styling in quiz */
+        .question-text {
+            font-size: 20px;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        /* Better option styling */
+        .option {
+            padding: 18px 20px;
+            margin: 14px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .option:hover:not(.disabled) {
+            border-color: #667eea;
+            background: #f9faff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 14px;
+        }
+
+        /* Better student info bar */
+        .student-info-bar {
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            padding: 18px 22px;
+            border-radius: 10px;
+            margin-bottom: 28px;
+            border: 1px solid #e0d4ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .student-info-text {
+            font-size: 15px;
+            color: #555;
+        }
+
+        .student-info-text strong {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        /* Better topic badge */
+        .topic-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            color: #5B059C;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid #e0d4ff;
+        }
+
+        /* Better recommendations */
+        .recommendations {
+            background: linear-gradient(135deg, #f0edff 0%, #fafafe 100%);
+            border-left: 4px solid #5B059C;
+            padding: 28px;
+            border-radius: 12px;
+            margin: 40px 0;
+            border: 1px solid #e0d4ff;
+        }
+
+        .recommendations h3 {
+            color: #5B059C;
+            margin-top: 0;
+        }
+
+        .recommendations ul {
+            margin-left: 24px;
+        }
+
+        .recommendations li {
+            margin-bottom: 12px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Better readiness message */
+        .readiness-message {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 18px 22px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #999;
+        }
+
+        .readiness-message.ready {
+            background: #dcfce7;
+            color: #166534;
+            border-left-color: #22c55e;
+        }
+
+        .readiness-message.review-needed {
+            background: #fef3c7;
+            color: #92400e;
+            border-left-color: #f59e0b;
+        }
+
+        .readiness-message.not-ready {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left-color: #ef4444;
+        }
+
+        /* ===== END STYLE IMPROVEMENTS ===== */
+
         @media (max-width: 600px) {
             .header h1 {
                 font-size: 20px;
@@ -773,25 +1181,25 @@
 
             <!-- Answer Review Screen -->
             <div class="screen" id="reviewScreen">
-                <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Answer Review</h2>
+                <h2 style="text-align: center; margin-bottom: 10px;">Answer Review</h2>
                 <p style="text-align: center; color: #666; margin-bottom: 30px;">Review all your answers and feedback below.</p>
 
-                <div id="reviewContainer"></div>
-
-                <div style="text-align: center; margin-top: 40px;">
-                    <button class="btn btn-secondary" onclick="goToResults()" style="margin-right: 10px;">← Back to Results</button>
-                    <button class="btn" onclick="showHomeConfirmation()">← Home</button>
+                <div class="action-bar" style="margin-bottom: 40px;">
+                    <button class="btn btn-secondary" onclick="goToResultsFromReview()">← Back to Results</button>
+                    <button class="btn" onclick="showHomeConfirmation()" style="margin-left: auto;">← Home</button>
                 </div>
+
+                <div id="reviewContainer"></div>
             </div>
 
             <!-- Results Screen -->
             <div class="screen" id="resultsScreen">
-                <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Assessment Results</h2>
+                <h2 style="text-align: center; margin-bottom: 30px;">Assessment Results</h2>
 
-                <div class="button-group" style="margin-top: 0; margin-bottom: 30px; flex-direction: column; gap: 15px;">
-                    <button class="btn" onclick="reviewAnswers()" style="width: 100%;">Review Answers</button>
-                    <button class="btn btn-secondary" onclick="retakeQuizFresh()" style="width: 100%;">Retake Quiz</button>
-                    <button class="btn" onclick="submitResults()" style="width: 100%; margin-top: 20px;">Submit Results</button>
+                <div class="action-bar">
+                    <button class="btn" onclick="reviewAnswers()">📋 Review Answers</button>
+                    <button class="btn btn-secondary" onclick="retakeQuizFresh()">🔄 Retake Quiz</button>
+                    <button class="btn" onclick="submitResults()" style="margin-left: auto;">✓ Submit Results</button>
                 </div>
 
                 <div class="score-display">
@@ -901,8 +1309,10 @@
                 if (!response.ok) throw new Error('Failed to load ' + fileName);
                 const code = await response.text();
 
-                // Clear previous quizData if it exists
-                window.quizData = null;
+                // Clear previous quizData if it exists - use delete to remove the property entirely
+                if (typeof window.quizData !== 'undefined') {
+                    delete window.quizData;
+                }
 
                 // Execute the script code in the global scope
                 new Function(code)();
@@ -1040,7 +1450,7 @@
             window.scrollTo(0, 0);
         }
 
-        function goToResults() {
+        function goToResultsFromReview() {
             document.getElementById('reviewScreen').classList.remove('active');
             document.getElementById('resultsScreen').classList.add('active');
             window.scrollTo(0, 0);
@@ -1413,30 +1823,43 @@
                 const isCorrect = isAnswered ? response.isCorrect : false;
 
                 const reviewItem = document.createElement('div');
-                reviewItem.className = 'info-box';
-                reviewItem.style.marginBottom = '20px';
+                reviewItem.className = 'answer-review-card';
+
+                let statusBadgeColor = '#999';
+                let statusText = '○ Skipped';
+                if (isCorrect) {
+                    statusBadgeColor = '#22c55e';
+                    statusText = '✓ Correct';
+                } else if (isAnswered) {
+                    statusBadgeColor = '#ef4444';
+                    statusText = '✗ Incorrect';
+                }
 
                 let html = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="margin: 0;">Q${i + 1}. ${question.topic}</h3>
-                        <span style="font-weight: 600; ${isCorrect ? 'color: #22c55e;' : isAnswered ? 'color: #ef4444;' : 'color: #999;'}">
-                            ${isCorrect ? '✓ Correct' : isAnswered ? '✗ Incorrect' : '○ Skipped'}
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                        <div>
+                            <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #333;">Q${i + 1}. ${question.topic}</h3>
+                            <p style="margin: 0; font-size: 16px; color: #555; font-weight: 500;">${question.question}</p>
+                        </div>
+                        <span style="font-weight: 700; font-size: 14px; color: ${statusBadgeColor}; white-space: nowrap; margin-left: 20px;">
+                            ${statusText}
                         </span>
                     </div>
-                    <p style="font-weight: 500; margin-bottom: 15px;">${question.question}</p>
                 `;
 
                 if (isAnswered) {
                     html += `
-                        <div style="background: #f0edff; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                            <p style="margin: 0; font-weight: 500;">Your answer: ${response.selectedText}</p>
+                        <div style="background: linear-gradient(135deg, #f0edff 0%, #ede9fe 100%); padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #8b5cf6;">
+                            <p style="margin: 0; font-weight: 600; font-size: 14px; color: #333;">Your Answer</p>
+                            <p style="margin: 8px 0 0 0; font-size: 15px; color: #555;">${response.selectedText}</p>
                         </div>
-                        <div style="background: ${isCorrect ? '#dcfce7' : '#fee2e2'}; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                            <p style="margin: 0; font-weight: 500;">${isCorrect ? '✓' : '✗'} ${question.options[response.selectedIndex].feedback}</p>
+                        <div style="background: ${isCorrect ? 'linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%)' : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)'}; padding: 16px; border-radius: 8px; border-left: 4px solid ${isCorrect ? '#22c55e' : '#ef4444'};">
+                            <p style="margin: 0; font-weight: 600; font-size: 14px; color: ${isCorrect ? '#065f46' : '#7f1d1d'};">${isCorrect ? '✓ Correct Answer' : '✗ Incorrect Answer'}</p>
+                            <p style="margin: 8px 0 0 0; font-size: 15px; color: ${isCorrect ? '#047857' : '#991b1b'};">${question.options[response.selectedIndex].feedback}</p>
                         </div>
                     `;
                 } else {
-                    html += `<p style="color: #999; font-style: italic;">Not answered</p>`;
+                    html += `<p style="color: #999; font-style: italic; margin: 0; padding-top: 8px;">Not answered</p>`;
                 }
 
                 reviewItem.innerHTML = html;

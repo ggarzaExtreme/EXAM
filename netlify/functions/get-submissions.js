@@ -1,6 +1,14 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 
+// Static requires so Netlify's bundler packages the quiz data files with the function.
+const QUIZ_DATA = {
+  'pretraining': require('../../quiz_data_pre_class.js'),
+  'post_class': require('../../quiz_data_post_class.js'),
+  'fabric': require('../../quiz_data_fabric_engine.js'),
+  'switch': require('../../quiz_data_switch_engine.js')
+};
+
 const ALLOWED_QUIZ_TYPES = ['pretraining', 'post_class', 'fabric', 'switch'];
 const DEFAULT_LIMIT = 50;
 
@@ -29,13 +37,14 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { token, quiz_type, mode, limit, offset, section } = JSON.parse(event.body);
+    const { token, quiz_type, mode, limit, offset, section, class_id } = JSON.parse(event.body);
 
-    if (!token || !quiz_type) {
+    // inclass_live mode needs class_id instead of quiz_type
+    if (!token || (mode === 'inclass_live' ? !class_id : !quiz_type)) {
       return {
         statusCode: 400,
         headers: corsHeaders,
-        body: JSON.stringify({ error: 'Token and quiz_type required' })
+        body: JSON.stringify({ error: mode === 'inclass_live' ? 'Token and class_id required' : 'Token and quiz_type required' })
       };
     }
 
@@ -61,8 +70,9 @@ exports.handler = async (event) => {
       };
     }
 
-    // Validate quiz_type to prevent injection
-    if (!ALLOWED_QUIZ_TYPES.includes(quiz_type)) {
+    // Validate quiz_type to prevent injection (skipped in inclass_live mode,
+    // where quiz_type comes from the session record instead)
+    if (mode !== 'inclass_live' && !ALLOWED_QUIZ_TYPES.includes(quiz_type)) {
       return {
         statusCode: 400,
         headers: corsHeaders,
@@ -86,6 +96,121 @@ exports.handler = async (event) => {
     // Create Supabase client with service role key
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // ===== IN-CLASS LIVE MODE =====
+    // Returns aggregated live stats for the instructor dashboard
+    if (mode === 'inclass_live') {
+      // 1. Fetch the session (must belong to this instructor)
+      const { data: session, error: sessionError } = await supabase
+        .from('class_sessions')
+        .select('id, quiz_type, current_question_id, current_section, is_active')
+        .eq('class_id', class_id)
+        .eq('instructor_id', decoded.userId)
+        .eq('is_active', true)
+        .single();
+
+      if (sessionError || !session) {
+        return {
+          statusCode: 404,
+          headers: corsHeaders,
+          body: JSON.stringify({ error: 'Session not found or not active' })
+        };
+      }
+
+      // 2. No question active yet — return empty stats
+      if (!session.current_question_id) {
+        return {
+          statusCode: 200,
+          headers: corsHeaders,
+          body: JSON.stringify({
+            success: true,
+            current_question_id: null,
+            current_section: session.current_section,
+            answer_distribution: null,
+            retry_stats: { got_correct_first_attempt: 0, needed_one_retry: 0, needed_multiple_retries: 0 },
+            participation: { total_responses: 0, students_pending: 0 }
+          })
+        };
+      }
+
+      // 3. Fetch all responses for the current question
+      const { data: responses, error: respError } = await supabase
+        .from('question_responses')
+        .select('email, name, selected_option, is_correct, attempt_number')
+        .eq('session_id', session.id)
+        .eq('question_id', session.current_question_id);
+
+      if (respError) {
+        console.error('Fetch responses error:', respError);
+        return {
+          statusCode: 500,
+          headers: corsHeaders,
+          body: JSON.stringify({ error: 'Failed to fetch responses' })
+        };
+      }
+
+      // 4. Determine the correct option letter from quiz data
+      const quizData = QUIZ_DATA[session.quiz_type];
+      const question = quizData ? quizData.find(q => q.id === parseInt(session.current_question_id)) : null;
+      let correctLetter = null;
+      if (question) {
+        question.options.forEach((opt, idx) => {
+          if (opt && opt.isCorrect === true) correctLetter = String.fromCharCode(65 + idx);
+        });
+      }
+
+      // 5. Build answer distribution (counts latest attempt per student per option)
+      const optionCount = question ? question.options.length : 4;
+      const distribution = {};
+      for (let i = 0; i < optionCount; i++) {
+        const letter = String.fromCharCode(65 + i);
+        distribution[letter] = { count: 0, percentage: 0, correct: letter === correctLetter };
+      }
+      (responses || []).forEach(r => {
+        if (distribution[r.selected_option]) distribution[r.selected_option].count++;
+      });
+      const totalAnswers = (responses || []).length;
+      Object.values(distribution).forEach(d => {
+        d.percentage = totalAnswers > 0 ? (d.count / totalAnswers) * 100 : 0;
+      });
+
+      // 6. Per-student retry stats (key by email — anonymous students get a
+      // generated anon id client-side, so this is unique per student)
+      const students = {};
+      (responses || []).forEach(r => {
+        const key = r.email || r.name;
+        if (!students[key]) students[key] = { correctAttempt: null, maxAttempt: 0 };
+        students[key].maxAttempt = Math.max(students[key].maxAttempt, r.attempt_number);
+        if (r.is_correct && (students[key].correctAttempt === null || r.attempt_number < students[key].correctAttempt)) {
+          students[key].correctAttempt = r.attempt_number;
+        }
+      });
+
+      const studentList = Object.values(students);
+      const retryStats = {
+        got_correct_first_attempt: studentList.filter(s => s.correctAttempt === 1).length,
+        needed_one_retry: studentList.filter(s => s.correctAttempt === 2).length,
+        needed_multiple_retries: studentList.filter(s => s.correctAttempt !== null && s.correctAttempt > 2).length
+      };
+      const participation = {
+        total_responses: studentList.length,
+        students_pending: studentList.filter(s => s.correctAttempt === null).length
+      };
+
+      return {
+        statusCode: 200,
+        headers: corsHeaders,
+        body: JSON.stringify({
+          success: true,
+          current_question_id: session.current_question_id,
+          current_section: session.current_section,
+          answer_distribution: distribution,
+          retry_stats: retryStats,
+          participation: participation
+        })
+      };
+    }
+
+    // ===== HISTORICAL / REALTIME MODES (full-quiz submissions) =====
     // Build query
     let query = supabase
       .from('submissions')

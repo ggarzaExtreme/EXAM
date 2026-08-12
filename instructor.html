@@ -604,7 +604,6 @@
                     <option value="">Select Quiz...</option>
                     <option value="fabric">Fabric Engine</option>
                     <option value="switch">Switch Engine</option>
-                    <option value="custom_inclass">Custom In-Class</option>
                 </select>
             </div>
 
@@ -761,30 +760,38 @@
                 activeQuizType = result.quiz_type;
 
                 closeCreateSessionModal();
-                displayActiveSession();
+                if (result.resumed) {
+                    alert('Reconnected to your existing active session for "' + result.class_id + '".');
+                }
+                await displayActiveSession(result.current_question_id);
                 refreshInClassData();
             } catch (error) {
                 showError(errorDiv, 'Error: ' + error.message);
             }
         }
 
-        function displayActiveSession() {
+        async function displayActiveSession(currentQuestionId) {
             document.getElementById('createSessionContainer').style.display = 'none';
             document.getElementById('liveSessionContainer').style.display = 'block';
             document.getElementById('activeClassId').textContent = activeClassId;
             document.getElementById('activeQuizType').textContent = activeQuizType;
 
             // Load quiz data for this quiz type
-            loadQuizData(activeQuizType);
+            await loadQuizData(activeQuizType);
+
+            // Sync question index (matters when resuming an existing session)
             currentQuestionIndex = -1;
+            if (currentQuestionId && quizData) {
+                const idx = quizData.findIndex(q => q.id === parseInt(currentQuestionId));
+                if (idx >= 0) currentQuestionIndex = idx;
+            }
         }
 
         async function loadQuizData(quizType) {
             try {
                 const fileName = {
                     'fabric': 'quiz_data_fabric_engine.js',
-                    'switch': 'quiz_data_switch_engine.js',
-                    'custom_inclass': 'quiz_data_custom_inclass.js'
+                    'switch': 'quiz_data_switch_engine.js'
                 }[quizType];
 
                 if (!fileName) {

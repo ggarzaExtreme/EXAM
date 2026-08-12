@@ -63,7 +63,7 @@ CREATE INDEX idx_submissions_student
 -- CLASS SESSIONS: Tracks instructor-controlled in-class quiz sessions
 CREATE TABLE class_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  class_id TEXT UNIQUE NOT NULL,
+  class_id TEXT NOT NULL,  -- unique only among ACTIVE sessions (see partial index below) so IDs like "class7" can be reused
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
@@ -83,7 +83,8 @@ CREATE TABLE class_sessions (
 
 CREATE INDEX idx_class_sessions_active
   ON class_sessions(instructor_id, is_active, updated_at DESC);
-CREATE INDEX idx_class_sessions_class_id
+-- Only one ACTIVE session may use a given class_id; ended sessions free it up
+CREATE UNIQUE INDEX idx_class_sessions_class_id
   ON class_sessions(class_id) WHERE is_active = TRUE;
 
 -- QUESTION RESPONSES: Granular tracking of individual question attempts (with retries)

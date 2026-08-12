@@ -95,7 +95,7 @@ exports.handler = async (event) => {
     if (session.current_question_id) {
       const { data: responses, error: statsError } = await supabase
         .from('question_responses')
-        .select('is_correct, attempt_number')
+        .select('is_correct, attempt_number, final_answer')
         .eq('session_id', session.id)
         .eq('question_id', session.current_question_id);
 

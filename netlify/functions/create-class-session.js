@@ -36,8 +36,8 @@ exports.handler = async (event) => {
       };
     }
 
-    // Validate quiz_type
-    const validQuizTypes = ['fabric', 'switch', 'custom_inclass'];
+    // Validate quiz_type (must have a matching quiz data file)
+    const validQuizTypes = ['fabric', 'switch'];
     if (!validQuizTypes.includes(quiz_type)) {
       return {
         statusCode: 400,
@@ -83,19 +83,39 @@ exports.handler = async (event) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Check if class_id is already in use (must be unique)
+    // Check if class_id is already in use by an active session
     const { data: existingSession, error: checkError } = await supabase
       .from('class_sessions')
-      .select('id')
+      .select('id, instructor_id, quiz_type, session_name, current_question_id, current_section, created_at')
       .eq('class_id', class_id)
       .eq('is_active', true)
       .single();
 
     if (existingSession) {
+      // Same instructor reconnecting (e.g. after a page refresh) — resume it
+      if (existingSession.instructor_id === decoded.userId) {
+        return {
+          statusCode: 200,
+          headers: corsHeaders,
+          body: JSON.stringify({
+            success: true,
+            resumed: true,
+            session_id: existingSession.id,
+            class_id: class_id,
+            quiz_type: existingSession.quiz_type,
+            session_name: existingSession.session_name,
+            current_question_id: existingSession.current_question_id,
+            current_section: existingSession.current_section,
+            is_active: true,
+            created_at: existingSession.created_at
+          })
+        };
+      }
+
       return {
         statusCode: 409,
         headers: corsHeaders,
-        body: JSON.stringify({ error: 'Class ID already in use for an active session' })
+        body: JSON.stringify({ error: 'Class ID already in use by another instructor\'s active session' })
       };
     }
 

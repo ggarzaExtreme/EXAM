@@ -264,6 +264,33 @@
             cursor: not-allowed;
         }
 
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin: 12px 0;
+            text-align: left;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            font-family: inherit;
+            color: #333;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f9faff;
+        }
+
+        .option-btn.selected {
+            border-color: #5B059C;
+            background: #F0EDFF;
+            font-weight: 600;
+        }
+
         .feedback-screen {
             display: none;
             margin-top: 30px;
@@ -562,7 +589,7 @@
                 <h2 style="text-align: center; margin-bottom: 30px;">Assessment Results</h2>
 
                 <div style="text-align: center; margin: 40px 0;">
-                    <div style="display: inline-block; width: 160px; height: 160px; border-radius: 50%; background: linear-gradient(135deg, #20004C 0%, #5B059C 100%); color: white; font-size: 60px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;" id="scoreCircle">0%</div>
+                    <div style="display: inline-flex; width: 160px; height: 160px; border-radius: 50%; background: linear-gradient(135deg, #20004C 0%, #5B059C 100%); color: white; font-size: 60px; font-weight: 700; align-items: center; justify-content: center; margin-bottom: 20px;" id="scoreCircle">0%</div>
                     <div id="scoreText" style="font-size: 18px; color: #333; margin-bottom: 10px; font-weight: 600;"></div>
                     <div id="readinessMessage" style="font-size: 16px; font-weight: 600; padding: 15px; border-radius: 6px; margin: 15px 0;"></div>
                 </div>
@@ -784,15 +811,8 @@
                 isCorrect: isCorrect,
                 question_id: question.id
             };
-
-            // Update topic scores
-            if (!topicScores[question.topic]) {
-                topicScores[question.topic] = { correct: 0, total: 0 };
-            }
-            topicScores[question.topic].total++;
-            if (isCorrect) {
-                topicScores[question.topic].correct++;
-            }
+            // (topic scores are computed once in finishQuiz — accumulating here
+            // would double-count when a student changes their answer)
 
             // Show feedback
             const feedback = document.getElementById('fullQuizFeedback');
@@ -836,10 +856,27 @@
         }
 
         function finishQuiz() {
-            // Calculate final scores
+            // Warn about unanswered questions
+            const unanswered = responses.filter(r => r === null).length;
+            if (unanswered > 0) {
+                if (!confirm(`You have ${unanswered} unanswered question${unanswered > 1 ? 's' : ''}. Finish anyway? (Unanswered questions count as incorrect.)`)) {
+                    return;
+                }
+            }
+
+            // Calculate final scores and topic breakdown from scratch
             let totalCorrect = 0;
-            responses.forEach(r => {
-                if (r && r.isCorrect) totalCorrect++;
+            topicScores = {};
+            quizData.forEach((question, idx) => {
+                const r = responses[idx];
+                if (!topicScores[question.topic]) {
+                    topicScores[question.topic] = { correct: 0, total: 0 };
+                }
+                topicScores[question.topic].total++;
+                if (r && r.isCorrect) {
+                    totalCorrect++;
+                    topicScores[question.topic].correct++;
+                }
             });
 
             const percentage = Math.round((totalCorrect / responses.length) * 100);
@@ -900,7 +937,11 @@
             document.getElementById('fullQuizResultsScreen').classList.add('active');
         }
 
+        let submittingResults = false;
+
         async function submitResults() {
+            if (submittingResults) return;  // prevent duplicate submissions
+            submittingResults = true;
             try {
                 const quizEndTime = new Date();
                 const durationMinutes = Math.round((quizEndTime - quizStartTime) / 60000);
@@ -932,10 +973,12 @@
                     alert('Assessment submitted successfully!');
                     backToModeSelection();
                 } else {
-                    alert('Failed to submit assessment. Your responses were recorded locally.');
+                    alert('Failed to submit assessment. Please try again — your answers are still on screen.');
                 }
             } catch (error) {
                 alert('Error submitting assessment: ' + error.message);
+            } finally {
+                submittingResults = false;
             }
         }
 
@@ -955,7 +998,9 @@
             }
 
             studentName = nameInput;
-            studentEmail = emailInput;
+            // Email is used as the per-student key for attempt tracking in the
+            // database (UNIQUE constraint), so anonymous students need a unique id
+            studentEmail = emailInput || ('anon-' + (window.crypto?.randomUUID?.() || (Date.now() + '-' + Math.random().toString(36).slice(2))));
             classId = classIdInput;
 
             document.getElementById('sessionJoinScreen').classList.remove('active');
@@ -971,10 +1016,14 @@
                 clearInterval(pollingInterval);
             }
 
+            sessionWasActive = false;
+
             // Poll immediately, then every 3 seconds
             pollForQuestion();
             pollingInterval = setInterval(pollForQuestion, 3000);
         }
+
+        let sessionWasActive = false;
 
         async function pollForQuestion() {
             try {
@@ -988,11 +1037,24 @@
 
                 if (!data.session_active) {
                     clearInterval(pollingInterval);
+                    pollingInterval = null;
+
+                    if (!sessionWasActive) {
+                        // Never saw an active session — this is a bad/unknown class ID,
+                        // not an ended session. Send the student back to the join screen.
+                        alert('No active session found for class ID "' + classId + '". Please check the ID with your instructor.');
+                        document.getElementById('inclassQuizScreen').classList.remove('active');
+                        document.getElementById('sessionJoinScreen').classList.add('active');
+                        return;
+                    }
+
                     document.getElementById('waitingForQuestion').style.display = 'none';
                     document.getElementById('questionDisplay').style.display = 'none';
                     document.getElementById('sessionEndedDisplay').style.display = 'block';
                     return;
                 }
+
+                sessionWasActive = true;
 
                 if (!data.current_question_id) {
                     // Still waiting for instructor to start
@@ -1061,16 +1123,22 @@
                 return;
             }
 
-            if (answerSubmitted && currentAttemptNumber > 1) {
-                // Allow retry if incorrect
+            if (answerSubmitted) {
+                // Previous answer was wrong — reset the UI for a retry
+                // (when the answer is correct the button is disabled, so this
+                // branch only runs after an incorrect submission)
                 answerSubmitted = false;
                 selectedAnswer = null;
+                currentAttemptNumber = currentAttemptNumber + 1;
                 document.getElementById('inclassFeedbackScreen').style.display = 'none';
                 document.querySelectorAll('#inclassOptionsContainer input[type="radio"]').forEach(r => r.checked = false);
                 document.getElementById('inclassSubmitBtn').textContent = 'Submit Answer';
                 updateAttemptDisplay();
                 return;
             }
+
+            const submitBtn = document.getElementById('inclassSubmitBtn');
+            submitBtn.disabled = true;  // prevent double-submit while request is in flight
 
             try {
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/submit-question-response', {
@@ -1090,6 +1158,7 @@
 
                 if (!data.success) {
                     alert('Error submitting answer: ' + (data.error || 'Unknown error'));
+                    submitBtn.disabled = false;
                     return;
                 }
 
@@ -1098,18 +1167,18 @@
                 answerSubmitted = true;
 
                 if (data.is_correct) {
-                    document.getElementById('inclassSubmitBtn').textContent = 'Waiting for next question...';
-                    document.getElementById('inclassSubmitBtn').disabled = true;
-
-                    // Keep polling, UI will update when new question arrives
+                    submitBtn.textContent = 'Waiting for next question...';
+                    // stays disabled — polling will re-enable it when a new question arrives
                 } else {
-                    document.getElementById('inclassSubmitBtn').textContent = 'Try Again';
+                    submitBtn.textContent = 'Try Again';
+                    submitBtn.disabled = false;
                 }
 
                 updateAttemptDisplay();
             } catch (error) {
                 console.error('Submission error:', error);
                 alert('Failed to submit answer: ' + error.message);
+                submitBtn.disabled = false;
             }
         }
 

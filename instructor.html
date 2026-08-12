@@ -311,6 +311,10 @@
     </div>
 
     <script>
+        // Configuration: Update with your Netlify site URL
+        // Example: https://my-quiz-site.netlify.app/.netlify/functions
+        const NETLIFY_FUNCTIONS_URL = 'https://extremeassessmentmodule.netlify.app/.netlify/functions';
+
         let sessionToken = null;
         let currentQuiz = null;
         let autoRefreshInterval = null;
@@ -327,7 +331,7 @@
 
             try {
                 // Call authenticate-instructor function
-                const response = await fetch('/.netlify/functions/authenticate-instructor', {
+                const response = await fetch(NETLIFY_FUNCTIONS_URL + '/authenticate-instructor', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -381,7 +385,7 @@
 
             try {
                 // Call get-submissions function
-                const response = await fetch('/.netlify/functions/get-submissions', {
+                const response = await fetch(NETLIFY_FUNCTIONS_URL + '/get-submissions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token: sessionToken, quiz_table: currentQuiz })
@@ -461,7 +465,7 @@
             }
 
             try {
-                const response = await fetch('/.netlify/functions/authenticate-instructor', {
+                const response = await fetch(NETLIFY_FUNCTIONS_URL + '/authenticate-instructor', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })

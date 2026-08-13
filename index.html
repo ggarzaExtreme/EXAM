@@ -463,130 +463,12 @@
         }
     </style>
 
-    <!-- ===== Theme layer =====
-         Three palettes the viewer chooses between; Operations (dark) is the
-         default. Declared after the base styles so these win at equal
-         specificity. Layouts sit on a black or white base per the brand
-         guidelines - no full-page purple. -->
+    <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
+         fields, panels. Page-specific styles below override it. -->
+    <link rel="stylesheet" href="styles.css">
     <style>
-        /* Extreme is the default. Surfaces are always a clear step lighter than
-           the page so panels read as panels; --modal is deliberately opaque so
-           dialogs stay readable over the Network Graphic. */
-        :root, :root[data-theme="extreme"] {
-            --bg:#000000; --surface:rgba(255,255,255,.05); --surface-2:rgba(255,255,255,.08);
-            --line:rgba(255,255,255,.12);
-            --ink:#FFFFFF; --ink-soft:#9A93B0;
-            --accent:#7519F9; --accent-2:#7D76F2; --btn-ink:#FFFFFF;
-            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.12);
-            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.10);
-            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
-            --wait-bg:rgba(255,255,255,.06); --sel-bg:rgba(117,25,249,.18);
-            --modal:#0E0A18;
-            --field:#15111F;
-            color-scheme: dark;
-            --radius:2px;
-            --gb-bg:rgba(11,7,19,.72); --gb-ink:#FFFFFF; --gb-soft:#9A93B0;
-            --gb-line:rgba(255,255,255,.12);
-        }
-        :root[data-theme="ops"] {
-            --bg:#000000; --surface:#0B0713; --surface-2:#140E20; --line:#221A33;
-            --ink:#FFFFFF; --ink-soft:#948CAB;
-            --accent:#7519F9; --accent-2:#9F8CFF; --btn-ink:#FFFFFF;
-            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.13);
-            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.11);
-            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
-            --wait-bg:rgba(255,255,255,.07); --sel-bg:rgba(117,25,249,.16);
-            --modal:#0B0713;
-            --field:#140E20;
-            color-scheme: dark;
-            --radius:4px;
-            --gb-bg:#0B0713; --gb-ink:#FFFFFF; --gb-soft:#948CAB; --gb-line:#221A33;
-        }
-        :root[data-theme="light"] {
-            --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F5F2FB; --line:#E0DBEE;
-            --ink:#14101C; --ink-soft:#635B79;
-            --accent:#5B059C; --accent-2:#5B059C; --btn-ink:#FFFFFF;
-            --ok:#0F7A52; --ok-bg:#E3F5EC;
-            --bad:#B4232C; --bad-bg:#FBEAEB;
-            --warn:#8A5A00; --warn-bg:#FFF6E0;
-            --wait-bg:#EDEAF6; --sel-bg:#F2ECFB;
-            --modal:#FFFFFF;
-            --field:#FFFFFF;
-            color-scheme: light;
-            --radius:10px;
-            --gb-bg:#20004C; --gb-ink:#FFFFFF; --gb-soft:#CFC3F4; --gb-line:rgba(255,255,255,.22);
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--ink);
-            padding: 0;
-        }
-
-        .network-graphic {
-            position: fixed; inset: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; opacity: .55;
-        }
-
-        .container {
-            position: relative; z-index: 1;
-            max-width: 940px; margin: 0 auto; background: transparent;
-            border-radius: 0; box-shadow: none; overflow: visible;
-        }
-
-        /* ===== Global bar - identical on every screen ===== */
-        .globalbar {
-            position: sticky; top: 0; z-index: 20;
-            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-            padding: 11px 18px; background: var(--gb-bg);
-            border-bottom: 1px solid var(--gb-line);
-            backdrop-filter: blur(8px);
-        }
-        .gb-home {
-            display: inline-flex; align-items: center; gap: 6px;
-            font-family: inherit; font-size: 12px; font-weight: 700;
-            padding: 7px 13px; border-radius: var(--radius);
-            border: 1px solid var(--gb-line); background: transparent;
-            color: var(--gb-ink); cursor: pointer; transition: background .15s;
-        }
-        .gb-home:hover { background: rgba(255,255,255,.08); }
-        .gb-wordmark {
-            font-size: 11px; font-weight: 700; letter-spacing: .16em;
-            text-transform: uppercase; color: var(--gb-ink); white-space: nowrap;
-        }
-        .gb-wordmark b { color: var(--accent-2); font-weight: 700; }
-        .gb-ctx {
-            font-size: 11.5px; color: var(--gb-soft); white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis;
-        }
-        .gb-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-        .gb-link {
-            font-size: 11.5px; font-weight: 700; color: var(--gb-soft);
-            text-decoration: none; white-space: nowrap;
-        }
-        .gb-link:hover { color: var(--gb-ink); }
-        .gb-theme {
-            display: inline-flex; border: 1px solid var(--gb-line);
-            border-radius: 100px; overflow: hidden;
-        }
-        .gb-theme button {
-            font-family: inherit; font-size: 10px; font-weight: 700;
-            letter-spacing: .05em; text-transform: uppercase;
-            padding: 6px 10px; border: 0; background: transparent;
-            color: var(--gb-soft); cursor: pointer;
-        }
-        .gb-theme button[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
-        .gb-theme button:hover { color: var(--gb-ink); }
-
-        .page-title {
-            padding: 26px 18px 0; text-align: center;
-        }
-        .page-title h1 {
-            font-size: clamp(19px, 3vw, 25px); font-weight: 700;
-            letter-spacing: -.01em; color: var(--ink); margin: 0;
-        }
-
-        .content { padding: 26px 18px 48px; background: transparent; }
+        .container { max-width: 940px; }
+        .content { padding: 26px 18px 48px; background: transparent; --card-pad: 26px; }
 
         /* ===== Action row - every button for the screen, above all
                 variable-height content so controls never shift ===== */
@@ -596,33 +478,10 @@
             background: var(--surface-2); border: 1px solid var(--line);
             border-radius: var(--radius);
         }
-        /* ===== Icons: stroke-only, single weight, currentColor ===== */
-        .ic {
-            width: 1.05em; height: 1.05em; flex: none;
-            fill: none; stroke: currentColor; stroke-width: 1.75;
-            stroke-linecap: round; stroke-linejoin: round;
-            vertical-align: -0.16em;
-        }
-        .ic-sm { width: .95em; height: .95em; }
-
-        /* Official lockup. Every theme's global bar is dark, so the white
-           logo is the correct one throughout - it is never recoloured. */
-        /* 27px keeps the wordmark inside the lockup legible; below ~22px the
-           "Networks" text stops reading. */
-        .gb-logo { height: 27px; width: auto; display: block; flex: none; }
-        @media (max-width: 600px) { .gb-logo { height: 21px; } }
-
-        .btn, .gb-home, .gb-link, .review-link {
-            display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-        }
-        .mode-arrow .ic { width: 24px; height: 24px; stroke-width: 1.6; }
-
         .actionrow > * { margin: 0; }
         .actionrow .btn { width: auto; margin: 0; }
         .actionrow .grow { flex: 1 1 160px; }
         .actionrow .right { margin: 0 0 0 auto; }
-        /* A transparent border keeps solid and outlined buttons the same height */
-        .btn { border: 1px solid transparent; }
 
         /* ===== Status strip - always rendered, fixed height ===== */
         .statusstrip {
@@ -632,34 +491,21 @@
             background: var(--surface); font-size: 12px; color: var(--ink-soft);
         }
         .statusstrip b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
-        /* Inherited margins on children make align-items:center centre the outer
-           box, which leaves the text visually off-centre. Zero them and give
-           every child the same line box. */
+        /* zero child margins so align-items:center centres the text, not the box */
         .statusstrip > * { margin: 0; line-height: 1.25; }
         .statusstrip .right { margin: 0 0 0 auto; }
-        .chip {
-            font-size: 10px; font-weight: 700; letter-spacing: .07em;
-            text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
-            background: var(--wait-bg); color: var(--ink-soft);
-        }
-        .chip.live { background: var(--ok-bg); color: var(--ok); }
         .progbar { flex: 1; max-width: 160px; height: 5px; border-radius: 100px;
             background: var(--line); overflow: hidden; }
         .progbar i { display: block; height: 100%; background: var(--accent);
             transition: width .3s ease; }
 
-        /* In-class: the student's browser is never told the total question
-           count, so progress is shown as questions seen rather than a
-           percentage of an unknown whole. */
+        /* In-class progress: questions seen, not a % of an unknown total */
         .qsteps { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-        .qstep {
-            width: 16px; height: 5px; border-radius: 100px; background: var(--line);
-        }
+        .qstep { width: 16px; height: 5px; border-radius: 100px; background: var(--line); }
         .qstep.done { background: var(--accent-2); }
         .qstep.now { background: var(--accent); box-shadow: 0 0 0 2px var(--sel-bg); }
 
-        /* ===== Reserved feedback slot - height exists before content does,
-                so answering never moves the page ===== */
+        /* ===== Reserved feedback slot - height exists before content does ===== */
         .fbslot { margin-top: 16px; min-height: 96px; }
         .fbslot.empty {
             border: 1px dashed var(--line); border-radius: var(--radius);
@@ -667,7 +513,6 @@
             font-size: 12px; color: var(--ink-soft); opacity: .7;
         }
 
-        /* ===== Surfaces retuned to tokens ===== */
         .screen { color: var(--ink); }
         .question-counter { color: var(--ink-soft); font-weight: 700; font-size: 11px;
             letter-spacing: .12em; text-transform: uppercase; }
@@ -688,8 +533,6 @@
             color: var(--ink); border-radius: var(--radius);
             width: 100%; text-align: left;
         }
-        /* the real radio stays focusable for keyboard and screen readers,
-           but the letter badge is what people see */
         .option input[type="radio"] {
             position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0;
         }
@@ -729,58 +572,35 @@
         .feedback-text { color: var(--ink-soft); }
         .attempt-info { color: var(--ink-soft); border-top: 1px solid var(--line); }
 
-        .btn {
-            background: var(--accent); color: var(--btn-ink);
-            border-radius: var(--radius); font-weight: 700;
-        }
-        .btn:hover:not(:disabled) { filter: brightness(1.12); }
-        .btn:disabled { opacity: .45; cursor: not-allowed; }
-        .btn-secondary {
-            background: transparent; color: var(--ink); border: 1px solid var(--line);
-        }
-        .btn-secondary:hover:not(:disabled) { border-color: var(--accent); background: var(--sel-bg); }
-
-        .info-box, .waiting-indicator {
-            background: var(--surface); border: 1px solid var(--line);
-            border-left: 3px solid var(--accent); border-radius: var(--radius);
-            color: var(--ink-soft);
-        }
+        .info-box, .waiting-indicator { border-left: 3px solid var(--accent); color: var(--ink-soft); }
         .info-box h3 { color: var(--ink); }
-
-        .form-group label { color: var(--ink); font-weight: 700; }
-        /* Opaque fill: translucent --surface tokens render as white-on-white
-           inside native select popups, which composite over the browser's own
-           popup surface rather than the page. */
-        .form-group input, input[type="text"], input[type="email"],
-        input[type="search"], select {
-            background: var(--field); border: 1px solid var(--line);
-            color: var(--ink); border-radius: var(--radius);
-        }
-        select option, select optgroup { background: var(--field); color: var(--ink); }
-        .form-group input:focus { border-color: var(--accent); outline: none; }
-        .form-group input::placeholder { color: var(--ink-soft); }
         .radio-option {
-            background: var(--surface); border: 1px solid var(--line);
+            background: var(--field); border: 1px solid var(--line);
             border-radius: var(--radius);
         }
         .radio-option label { color: var(--ink); }
-
         h2 { color: var(--ink) !important; }
 
-        :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+        /* ===== Form card: the shared panel, sized for a short form ===== */
+        .formcard {
+            max-width: 430px; margin: 26px auto 0; padding: 30px 30px 26px;
+        }
+        .form-lede {
+            font-size: 13px; color: var(--ink-soft); margin: -6px 0 20px; line-height: 1.5;
+        }
+        .form-actions { display: flex; gap: 9px; margin-top: 22px; }
+        .form-actions .btn-primary { flex: 1; }
 
-        /* ===== Results page ===== */
+        /* ===== Results page (layout only; panel visuals are shared) ===== */
         .res-hero {
             display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 30px;
             align-items: center; padding: 26px 24px; margin-bottom: 18px;
-            background: var(--surface); border: 1px solid var(--line);
-            border-radius: var(--radius);
         }
         .res-ring { position: relative; width: 132px; height: 132px; flex: none; }
         .res-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
         .ring-track { fill: none; stroke: var(--line); stroke-width: 9; }
         .ring-fill {
-            fill: none; stroke: url(#none); stroke: var(--accent-2); stroke-width: 9;
+            fill: none; stroke: var(--accent-2); stroke-width: 9;
             stroke-linecap: round; stroke-dasharray: 327; stroke-dashoffset: 327;
             transition: stroke-dashoffset .7s ease;
         }
@@ -811,28 +631,12 @@
             margin: 0; font-size: 19px; font-weight: 700; color: var(--ink);
             font-variant-numeric: tabular-nums;
         }
-
-        .res-section {
-            padding: 22px 24px; margin-bottom: 18px;
-            background: var(--surface); border: 1px solid var(--line);
-            border-radius: var(--radius);
-        }
-        .res-section h3 {
-            font-size: 11px; font-weight: 700; letter-spacing: .12em;
-            text-transform: uppercase; color: var(--ink-soft);
-            margin: 0 0 18px; display: flex; align-items: baseline; gap: 10px;
-        }
-        .res-section h3 span {
-            font-size: 11px; font-weight: 400; letter-spacing: .02em;
-            text-transform: none; margin-left: auto; color: var(--ink-soft);
-        }
+        .res-section { padding: 22px 24px; margin-bottom: 18px; }
         .res-note { font-size: 12.5px; color: var(--ink-soft); margin: -8px 0 16px; }
 
         .topic-row { margin-bottom: 17px; }
         .topic-row:last-child { margin-bottom: 0; }
-        .topic-row .tr-top {
-            display: flex; align-items: center; gap: 10px; margin-bottom: 7px;
-        }
+        .topic-row .tr-top { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
         .topic-row .tr-name { font-size: 14px; font-weight: 700; color: var(--ink); }
         .topic-row .tr-frac {
             margin-left: auto; font-size: 12px; color: var(--ink-soft);
@@ -842,9 +646,7 @@
             font-size: 13px; font-weight: 700; min-width: 42px; text-align: right;
             font-variant-numeric: tabular-nums;
         }
-        .topic-row .tr-bar {
-            height: 7px; border-radius: 100px; background: var(--line); overflow: hidden;
-        }
+        .topic-row .tr-bar { height: 7px; border-radius: 100px; background: var(--line); overflow: hidden; }
         .topic-row .tr-bar i { display: block; height: 100%; border-radius: 100px; }
 
         .review-item {
@@ -854,10 +656,9 @@
         .review-item:last-child { border-bottom: none; }
         .review-item .ri-body { flex: 1; min-width: 0; }
         .review-item .ri-topic { font-size: 14px; font-weight: 700; color: var(--ink); }
-        .review-item .ri-detail {
-            font-size: 12px; color: var(--ink-soft); margin-top: 3px;
-        }
+        .review-item .ri-detail { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
         .review-link {
+            display: inline-flex; align-items: center; gap: 6px;
             font-size: 11.5px; font-weight: 700; letter-spacing: .04em;
             padding: 7px 13px; border-radius: var(--radius); white-space: nowrap;
             border: 1px solid var(--line); color: var(--accent-2);
@@ -865,51 +666,23 @@
         }
         .review-link:hover { border-color: var(--accent-2); background: var(--sel-bg); }
 
-        @media (max-width: 640px) {
-            .res-hero { grid-template-columns: 1fr; gap: 20px; justify-items: start; }
-        }
-
-        .screen-lede {
-            text-align: center; font-size: 14px; color: var(--ink-soft);
-            margin: 0 auto 26px; max-width: 46ch;
-        }
-
         /* ===== Home hero =====
-           The hero text is inset by the mode cards' border + padding so every
-           text left edge on the page lines up, while the cards still frame
-           slightly wider. --card-pad is the single source for both. */
-        .content { --card-pad: 26px; }
+           Hero text is inset by the mode cards' border + padding so every text
+           left edge on the page shares one line. --card-pad is the single
+           source for both. */
         .hero {
-            padding: 44px 0 6px;
+            padding: 18px 0 0;
             padding-left: calc(var(--card-pad) + 1px);
         }
         .hero h1 {
-            font-size: clamp(38px, 8vw, 76px); font-weight: 700; line-height: .98;
-            letter-spacing: -.03em; color: var(--ink); margin: 0 0 22px;
+            font-size: clamp(30px, 5.4vw, 54px); font-weight: 700; line-height: 1.06;
+            letter-spacing: -.025em; color: var(--ink); margin: 0;
             text-wrap: balance;
         }
-        .hero h1 .grad {
-            background: linear-gradient(96deg, #A98BFF 0%, #7519F9 48%, #7D76F2 100%);
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-        }
-        .hero p {
-            font-size: clamp(15px, 2vw, 18px); color: var(--ink-soft);
-            max-width: 52ch; line-height: 1.5; margin: 0;
-        }
-        /* The acronym carries the brand; this line says what it stands for, with
-           the letters that form EXAM picked out in accent. */
-        .hero-expand {
-            font-size: clamp(17px, 2.4vw, 22px) !important; font-weight: 500;
-            color: var(--ink-soft) !important; letter-spacing: -.005em;
-            margin: -6px 0 18px !important;
-        }
-        .hero-expand b { font-weight: 700; color: var(--accent-2); }
-
         .hero-rule {
             height: 2px; border-radius: 2px;
-            /* left inset written into the shorthand so it cannot be reset by a
-               later `margin` declaration */
-            margin: 34px 0 30px calc(var(--card-pad) + 1px);
+            /* left inset inside the shorthand so a later `margin` cannot reset it */
+            margin: 26px 0 26px calc(var(--card-pad) + 1px);
             background: linear-gradient(90deg, #20004C, #5B059C 28%, #7519F9 62%, #7D76F2);
         }
 
@@ -935,22 +708,18 @@
         }
         .mode:hover::before, .mode:focus-visible::before { transform: scaleY(1); }
         .mode-kicker {
-            display: block;
-            font-size: 10px; font-weight: 700; letter-spacing: .16em;
+            display: block; font-size: 10px; font-weight: 700; letter-spacing: .16em;
             text-transform: uppercase; color: var(--accent-2); margin-bottom: 9px;
         }
         .mode-title {
-            display: block;
-            font-size: clamp(20px, 3vw, 27px); font-weight: 700; line-height: 1.1;
-            letter-spacing: -.015em; margin-bottom: 8px;
+            display: block; font-size: clamp(20px, 3vw, 27px); font-weight: 700;
+            line-height: 1.1; letter-spacing: -.015em; margin-bottom: 8px;
         }
         .mode-desc {
-            display: block;
-            font-size: 14px; color: var(--ink-soft); line-height: 1.45; max-width: 46ch;
+            display: block; font-size: 14px; color: var(--ink-soft);
+            line-height: 1.45; max-width: 46ch;
         }
-        .mode-meta {
-            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px;
-        }
+        .mode-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
         .mode-tag {
             font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
             text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
@@ -960,6 +729,7 @@
             font-size: 26px; font-weight: 700; color: var(--accent-2);
             transition: transform .22s ease; line-height: 1;
         }
+        .mode-arrow .ic { width: 24px; height: 24px; stroke-width: 1.6; }
         .mode:hover .mode-arrow, .mode:focus-visible .mode-arrow { transform: translateX(5px); }
 
         @media (prefers-reduced-motion: reduce) {
@@ -968,16 +738,16 @@
         }
 
         @media (max-width: 600px) {
-            .globalbar { padding: 9px 12px; gap: 8px; }
-            .gb-ctx { display: none; }
-            .content { padding: 20px 12px 40px; }
+            .content { padding: 20px 12px 40px; --card-pad: 20px; }
             .actionrow .btn { flex: 1 1 auto; }
-            .content { --card-pad: 20px; }
-            .hero { padding: 26px 0 2px; padding-left: calc(var(--card-pad) + 1px); }
-            .hero-rule { margin: 24px 0 22px calc(var(--card-pad) + 1px); }
+            .hero { padding: 14px 0 0; padding-left: calc(var(--card-pad) + 1px); }
+            .hero-rule { margin: 20px 0 20px calc(var(--card-pad) + 1px); }
             .mode { gap: 12px; }
+            .formcard { padding: 22px 18px 20px; }
         }
     </style>
+
+
     <script src="theme.js"></script>
 </head>
 <body>
@@ -1067,14 +837,7 @@
             <!-- Mode Selection Screen -->
             <div class="screen active" id="modeSelectionScreen">
                 <div class="hero">
-                    <h1>EXAM<span class="grad">.</span></h1>
-                    <p class="hero-expand">
-                        <b>EX</b>treme <b>A</b>ssessment <b>M</b>odule
-                    </p>
-                    <p>
-                        Find out what you know before class, prove what stuck afterwards,
-                        or answer along with the room in a live session.
-                    </p>
+                    <h1><span class="grad">EX</span>treme <span class="grad">A</span>ssessment <span class="grad">M</span>odule</h1>
                 </div>
 
                 <div class="hero-rule"></div>
@@ -1082,16 +845,16 @@
                 <div class="modes">
                     <button class="mode" onclick="selectMode('full')">
                         <span>
-                            <span class="mode-kicker">Self-paced</span>
-                            <span class="mode-title">Full Assessment</span>
+                            <span class="mode-kicker">Before your class</span>
+                            <span class="mode-title">Pre-Class Knowledge Check</span>
                             <span class="mode-desc">
-                                Work through the whole question bank at your own speed.
-                                Every answer explains itself, and you finish with a score
-                                broken down by topic.
+                                A self-paced check of the fundamentals your course builds
+                                on. Each answer is explained as you go, and your score is
+                                broken down by topic at the end.
                             </span>
                             <span class="mode-meta">
-                                <span class="mode-tag">Pre-class</span>
-                                <span class="mode-tag">Post-class</span>
+                                <span class="mode-tag">Self-paced</span>
+                                <span class="mode-tag">Instant feedback</span>
                                 <span class="mode-tag">Topic breakdown</span>
                             </span>
                         </span>
@@ -1119,67 +882,76 @@
 
             <!-- Full Quiz Mode: Student Info Screen -->
             <div class="screen" id="studentInfoScreen">
-                <h2 style="text-align: center; margin-bottom: 6px;">Before we begin</h2>
-                <p class="screen-lede">Your name is shown to your instructor with your results.</p>
+                <div class="panel formcard">
+                    <h3 class="panel-h">Before We Begin</h3>
+                    <p class="form-lede">Your name is shown to your instructor with your results.</p>
 
-                <div class="form-group">
-                    <label for="studentName">Full Name</label>
-                    <input type="text" id="studentName" placeholder="Enter your full name">
-                </div>
+                    <div class="form-group">
+                        <label for="studentName">Full Name</label>
+                        <input type="text" id="studentName" placeholder="Enter your full name">
+                    </div>
 
-                <div class="form-group">
-                    <label for="studentEmail">Email (optional)</label>
-                    <input type="email" id="studentEmail" placeholder="Enter your email">
-                </div>
+                    <div class="form-group">
+                        <label for="studentEmail">Email (optional)</label>
+                        <input type="email" id="studentEmail" placeholder="Enter your email">
+                    </div>
 
-                <div class="form-group">
-                    <label>Which assessment are you taking?</label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="class-pretraining" name="class_type" value="pretraining" checked>
-                            <label for="class-pretraining">Pre-Class Knowledge Assessment</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="class-postclass" name="class_type" value="post_class">
-                            <label for="class-postclass">Post-Class Review/Feedback</label>
+                    <div class="form-group">
+                        <label>Which assessment are you taking?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="class-pretraining" name="class_type" value="pretraining" checked>
+                                <label for="class-pretraining">Pre-Class Knowledge Check</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="class-postclass" name="class_type" value="post_class">
+                                <label for="class-postclass">Post-Class Review</label>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div style="text-align: center; margin-top: 40px;">
-                    <button class="btn" onclick="startFullQuiz()">Start Assessment</button>
-                    <button class="btn btn-secondary" onclick="backToModeSelection()"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Back</button>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="startFullQuiz()">
+                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-play"></use></svg>
+                            <span class="btn-label">Start Assessment</span>
+                        </button>
+                        <button class="btn btn-quiet" onclick="backToModeSelection()">
+                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Back
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- In-Class Mode: Session Join Screen -->
             <div class="screen" id="sessionJoinScreen">
-                <h2 style="text-align: center; margin-bottom: 6px;">Join your class</h2>
-                <p class="screen-lede">Your instructor will read out the class ID.</p>
+                <div class="panel formcard">
+                    <h3 class="panel-h">Join Your Class</h3>
+                    <p class="form-lede">Your instructor will read out the class ID.</p>
 
-                <div class="info-box">
-                    <h3>How to join:</h3>
-                    <p>Your instructor will provide a class ID. Enter it below to join the live session.</p>
-                </div>
+                    <div class="form-group">
+                        <label for="studentNameInClass">Full Name</label>
+                        <input type="text" id="studentNameInClass" placeholder="Enter your full name">
+                    </div>
 
-                <div class="form-group">
-                    <label for="studentNameInClass">Full Name</label>
-                    <input type="text" id="studentNameInClass" placeholder="Enter your full name">
-                </div>
+                    <div class="form-group">
+                        <label for="studentEmailInClass">Email (optional)</label>
+                        <input type="email" id="studentEmailInClass" placeholder="Enter your email">
+                    </div>
 
-                <div class="form-group">
-                    <label for="studentEmailInClass">Email (optional)</label>
-                    <input type="email" id="studentEmailInClass" placeholder="Enter your email">
-                </div>
+                    <div class="form-group">
+                        <label for="classId">Class ID</label>
+                        <input type="text" id="classId" placeholder="e.g., class7" style="text-transform: lowercase;">
+                    </div>
 
-                <div class="form-group">
-                    <label for="classId">Class ID</label>
-                    <input type="text" id="classId" placeholder="e.g., class7 or fabric-jan15" style="text-transform: lowercase;">
-                </div>
-
-                <div style="text-align: center; margin-top: 40px;">
-                    <button class="btn" onclick="joinInClassSession()">Join Session</button>
-                    <button class="btn btn-secondary" onclick="backToModeSelection()"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Back</button>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="joinInClassSession()">
+                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-live"></use></svg>
+                            <span class="btn-label">Join Session</span>
+                        </button>
+                        <button class="btn btn-quiet" onclick="backToModeSelection()">
+                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Back
+                        </button>
+                    </div>
                 </div>
             </div>
 

@@ -1,4 +1,4 @@
-# EXAM — Quick Reference
+# Quick Reference Guide
 
 ## API Contracts
 

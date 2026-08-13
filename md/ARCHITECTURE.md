@@ -1,4 +1,4 @@
-# EXAM — System Architecture
+# System Architecture
 
 ## Overview
 

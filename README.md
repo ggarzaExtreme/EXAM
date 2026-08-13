@@ -1,4 +1,4 @@
-# EXAM — Extreme Assessment Module
+# Extreme Networks Knowledge Assessment Platform
 
 **EX**treme **A**ssessment **M**odule — the Learning &amp; Development assessment
 tool for Extreme Networks training. Two modes: self-paced assessments taken
@@ -82,9 +82,14 @@ sql/
 
 package.json                    Function dependencies (@supabase/supabase-js, jsonwebtoken)
 
+styles.css                      Shared design system (themes, buttons, panels)
+theme.js                        Theme switching + Network Graphic canvas
+assets/                         Official logo lockups (white/black/colour)
+
 md/
 ├── DEPLOYMENT_GUIDE.md         Step-by-step setup
 ├── ARCHITECTURE.md             Technical deep-dive
+├── DISPLAYS.md                 Inventory of every view and its purpose
 ├── ENVIRONMENT_VARIABLES.md    How to configure secrets
 └── QUICK_REFERENCE.md          API contracts, schema, common tasks
 ```

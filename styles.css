@@ -1,0 +1,448 @@
+/* ============================================================================
+   Shared design system for the assessment platform.
+
+   Loaded by index.html and instructor.html BEFORE their own <style> blocks, so
+   page-specific rules override these at equal specificity.
+
+   Everything in here was previously duplicated in both pages: the three theme
+   palettes, the icon and logo treatment, the global bar, button roles, form
+   fields and the panel/card pattern.
+
+   Layouts sit on a black or white base per the brand guidelines - purple is
+   carried by accents, data and the Network Graphic, never as a page flood.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------- tokens --
+   --surface / --surface-2 may be translucent; --field and --modal never are,
+   because native select popups and dialogs composite over their own surface
+   rather than the page (translucent there reads as white-on-white).          */
+
+:root,
+:root[data-theme="extreme"] {
+    --bg: #000000;
+    --surface: rgba(255, 255, 255, .05);
+    --surface-2: rgba(255, 255, 255, .08);
+    --line: rgba(255, 255, 255, .12);
+    --ink: #FFFFFF;
+    --ink-soft: #9A93B0;
+    --accent: #7519F9;
+    --accent-2: #7D76F2;
+    --btn-ink: #FFFFFF;
+    --ok: #3ED88A;      --ok-bg: rgba(62, 216, 138, .12);
+    --bad: #FF6B7A;     --bad-bg: rgba(255, 107, 122, .10);
+    --warn: #FFC466;    --warn-bg: rgba(255, 196, 102, .12);
+    --wait-bg: rgba(255, 255, 255, .06);
+    --sel-bg: rgba(117, 25, 249, .18);
+    --bar-i: rgba(125, 118, 242, .42);
+    --bar-c: #7519F9;
+    --field: #15111F;
+    --modal: #0E0A18;
+    --radius: 2px;
+    --gb-bg: rgba(11, 7, 19, .72);
+    --gb-ink: #FFFFFF;
+    --gb-soft: #9A93B0;
+    --gb-line: rgba(255, 255, 255, .12);
+    color-scheme: dark;
+}
+
+:root[data-theme="ops"] {
+    --bg: #000000;
+    --surface: #0B0713;
+    --surface-2: #140E20;
+    --line: #221A33;
+    --ink: #FFFFFF;
+    --ink-soft: #948CAB;
+    --accent: #7519F9;
+    --accent-2: #9F8CFF;
+    --btn-ink: #FFFFFF;
+    --ok: #3ED88A;      --ok-bg: rgba(62, 216, 138, .13);
+    --bad: #FF6B7A;     --bad-bg: rgba(255, 107, 122, .11);
+    --warn: #FFC466;    --warn-bg: rgba(255, 196, 102, .12);
+    --wait-bg: rgba(255, 255, 255, .07);
+    --sel-bg: rgba(117, 25, 249, .16);
+    --bar-i: #3A2A63;
+    --bar-c: #7519F9;
+    --field: #140E20;
+    --modal: #0B0713;
+    --radius: 4px;
+    --gb-bg: #0B0713;
+    --gb-ink: #FFFFFF;
+    --gb-soft: #948CAB;
+    --gb-line: #221A33;
+    color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+    --bg: #FFFFFF;
+    --surface: #FFFFFF;
+    --surface-2: #F5F2FB;
+    --line: #E0DBEE;
+    --ink: #14101C;
+    --ink-soft: #635B79;
+    --accent: #5B059C;
+    --accent-2: #5B059C;
+    --btn-ink: #FFFFFF;
+    --ok: #0F7A52;      --ok-bg: #E3F5EC;
+    --bad: #B4232C;     --bad-bg: #FBEAEB;
+    --warn: #8A5A00;    --warn-bg: #FFF6E0;
+    --wait-bg: #EDEAF6;
+    --sel-bg: #F2ECFB;
+    --bar-i: #CFC3F4;
+    --bar-c: #5B059C;
+    --field: #FFFFFF;
+    --modal: #FFFFFF;
+    --radius: 10px;
+    --gb-bg: #20004C;
+    --gb-ink: #FFFFFF;
+    --gb-soft: #CFC3F4;
+    --gb-line: rgba(255, 255, 255, .22);
+    color-scheme: light;
+}
+
+/* ------------------------------------------------------------------ base -- */
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    padding: 0;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    margin: 0 auto;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+}
+
+/* The Network Graphic carries the gradients for the Extreme theme. */
+.network-graphic {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: .55;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-2);
+    outline-offset: 2px;
+}
+
+/* ----------------------------------------------------------------- icons --
+   Stroke only, single weight, currentColor - so one set serves every theme
+   without recoloured copies, per the brand icon guidance.                   */
+
+.ic {
+    width: 1.05em;
+    height: 1.05em;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: -0.16em;
+}
+
+.ic-sm { width: .95em; height: .95em; }
+
+/* ------------------------------------------------------------ global bar --
+   Identical markup and position on every page: Home far left, theme far
+   right. Every theme's bar is dark, so the white logo is correct throughout
+   and is never recoloured.                                                  */
+
+.globalbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 11px 18px;
+    background: var(--gb-bg);
+    border-bottom: 1px solid var(--gb-line);
+    backdrop-filter: blur(8px);
+}
+
+.gb-logo {
+    height: 27px;
+    width: auto;
+    display: block;
+    flex: none;
+}
+
+.gb-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 13px;
+    border-radius: var(--radius);
+    border: 1px solid var(--gb-line);
+    background: transparent;
+    color: var(--gb-ink);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s;
+}
+
+.gb-home:hover { background: rgba(255, 255, 255, .08); }
+
+.gb-ctx {
+    font-size: 11.5px;
+    color: var(--gb-soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gb-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--gb-soft);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.gb-link:hover { color: var(--gb-ink); }
+
+.gb-theme {
+    display: inline-flex;
+    border: 1px solid var(--gb-line);
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.gb-theme button {
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    border: 0;
+    background: transparent;
+    color: var(--gb-soft);
+    cursor: pointer;
+}
+
+.gb-theme button[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
+.gb-theme button:hover { color: var(--gb-ink); }
+
+/* --------------------------------------------------------------- buttons --
+   Three roles, one size, so intent is readable at a glance:
+     .btn-primary  solid accent  - the action that moves things forward
+     .btn-quiet    outlined      - supporting actions
+     .btn-danger   outlined red  - destructive, fills on hover
+   Buttons carry an icon plus a .btn-label span; JS writes to the span so a
+   label change never deletes the icon.                                      */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    padding: 10px 18px;
+    width: auto;
+    border-radius: var(--radius);
+    /* width/style only - a `border` shorthand here would also set
+       border-color and beat the role classes below on specificity */
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    background: var(--accent);
+    color: var(--btn-ink);
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s, filter .15s;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn:hover:not(:disabled) { filter: brightness(1.14); transform: none; box-shadow: none; }
+.btn:disabled { opacity: .42; cursor: not-allowed; }
+
+.btn-primary { background: var(--accent); color: #FFFFFF; border-color: var(--accent); }
+
+.btn-quiet,
+.btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--line);
+}
+.btn-quiet:hover:not(:disabled),
+.btn-secondary:hover:not(:disabled) {
+    border-color: var(--accent-2);
+    background: var(--sel-bg);
+    filter: none;
+}
+
+.btn-danger { background: transparent; color: var(--bad); border-color: var(--bad); }
+.btn-danger:hover:not(:disabled) { background: var(--bad-bg); filter: none; }
+
+.btn-full { width: 100%; }
+
+/* ---------------------------------------------------------------- fields --
+   Opaque --field fill: see the token note above.                            */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+select {
+    background: var(--field);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: var(--radius);
+    font-family: inherit;
+}
+
+select option,
+select optgroup { background: var(--field); color: var(--ink); }
+
+input::placeholder { color: var(--ink-soft); }
+
+input:focus,
+select:focus { border-color: var(--accent); outline: none; }
+
+.form-group { margin-bottom: 16px; text-align: left; }
+
+.form-group label {
+    display: block;
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+.form-group input { width: 100%; padding: 11px 13px; font-size: 14px; }
+
+/* ----------------------------------------------------------------- panel --
+   The single card pattern. Every boxed region on either page uses it, either
+   directly or by being listed here.                                         */
+
+.panel,
+.an-card,
+.session-info,
+.student-responses,
+.answer-distribution,
+.retry-stats,
+.login-screen,
+.res-section,
+.res-hero,
+.info-box,
+.waiting-indicator {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+}
+
+/* Uppercase tracked section heading used inside panels. */
+.panel-h,
+.an-card h3,
+.student-responses h3,
+.res-section h3,
+.login-screen h3 {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-soft) !important;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+/* Trailing note inside a panel heading, pushed right. */
+.panel-h span,
+.an-card h3 span,
+.student-responses h3 span,
+.res-section h3 span {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: .02em;
+    text-transform: none;
+    color: var(--ink-soft);
+}
+
+/* Small-caps overline used above a title. */
+.overline {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    margin: 0 0 10px;
+}
+
+/* Short brand rule used to anchor a heading. */
+.brand-rule {
+    display: block;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #20004C, #5B059C 30%, #7519F9 65%, #7D76F2);
+}
+
+/* Gradient-filled text, used sparingly on one word or the acronym letters. */
+.grad {
+    background: linear-gradient(96deg, #A98BFF 0%, #7519F9 52%, #7D76F2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* ------------------------------------------------------------ status bits -- */
+
+.chip {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: var(--wait-bg);
+    color: var(--ink-soft);
+}
+
+.chip.ok   { background: var(--ok-bg);  color: var(--ok); }
+.chip.bad  { background: var(--bad-bg); color: var(--bad); }
+.chip.live { background: var(--ok-bg);  color: var(--ok); }
+
+.error-message { background: var(--bad-bg); color: var(--bad); }
+.success-message { background: var(--ok-bg); color: var(--ok); }
+
+.num, .tabular { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 600px) {
+    .globalbar { padding: 9px 12px; gap: 8px; }
+    .gb-ctx { display: none; }
+    .gb-logo { height: 21px; }
+}

@@ -249,11 +249,13 @@ body {
 
 /* --------------------------------------------------------------- buttons --
    Three roles, one size, so intent is readable at a glance:
-     .btn-primary  solid accent  - the action that moves things forward
-     .btn-quiet    outlined      - supporting actions
-     .btn-danger   outlined red  - destructive, fills on hover
-   Buttons carry an icon plus a .btn-label span; JS writes to the span so a
-   label change never deletes the icon.                                      */
+     .btn-primary   solid accent  - the action that moves things forward
+     .btn-secondary outlined      - supporting actions
+     .btn-danger    outlined red  - destructive, fills on hover
+   Every button carries an icon plus a .btn-label span; JS writes to the span
+   so a label change never deletes the icon. Always give a button a role
+   class - a bare .btn inherits the accent fill but not the accent border,
+   which is why the two used to look subtly different side by side.          */
 
 .btn {
     display: inline-flex;
@@ -285,13 +287,11 @@ body {
 
 .btn-primary { background: var(--accent); color: #FFFFFF; border-color: var(--accent); }
 
-.btn-quiet,
 .btn-secondary {
     background: transparent;
     color: var(--ink);
     border-color: var(--line);
 }
-.btn-quiet:hover:not(:disabled),
 .btn-secondary:hover:not(:disabled) {
     border-color: var(--accent-2);
     background: var(--sel-bg);
@@ -492,8 +492,75 @@ select:focus { border-color: var(--accent); outline: none; }
 
 .num, .tabular { font-variant-numeric: tabular-nums; }
 
+/* ---------------------------------------------------------------- toasts --
+   Transient status ("Now showing question 3", "Reconnected to your session")
+   used to render as an inline banner, which pushed the whole page down each
+   time it appeared and pulled it back up when it left. Toasts float above the
+   layout instead, so nothing below them ever moves.                         */
+
+.toast-stack {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 60;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+    max-width: min(380px, calc(100vw - 36px));
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent-2);
+    background: color-mix(in srgb, var(--modal) 88%, transparent);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .45), 0 2px 8px rgba(0, 0, 0, .18);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.4;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .22s ease, transform .22s ease;
+}
+
+.toast.in { opacity: 1; transform: translateY(0); }
+
+.toast .ic { margin-top: 1px; color: var(--accent-2); }
+.toast.ok     { border-left-color: var(--ok); }
+.toast.ok .ic { color: var(--ok); }
+.toast.warn     { border-left-color: var(--warn); }
+.toast.warn .ic { color: var(--warn); }
+.toast.error     { border-left-color: var(--bad); }
+.toast.error .ic { color: var(--bad); }
+
+@media (max-width: 600px) {
+    .toast-stack { right: 12px; left: 12px; bottom: 12px; max-width: none; }
+}
+
+/* ------------------------------------------------------------ filter bar --
+   Groups a view's filters into a panel so they read as one control surface
+   rather than floating loose above the content.                            */
+
+.filter-bar {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 18px;
+}
+
+.filter-bar .controls { gap: 10px; }
+
 @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
+    .toast { transition: none; }
 }
 
 @media (max-width: 600px) {

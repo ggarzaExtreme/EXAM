@@ -145,12 +145,16 @@ question on demand with a "Next Question" button (one API call per click).
    **resumed** instead (page-refresh recovery); another instructor's ID → 409.
 2. **Join** — students enter the class ID (no auth). Students without an email
    get a client-generated `anon-<uuid>` participant id, which keys their
-   attempt tracking.
+   attempt tracking. Joining an ID with no session yet is expected — the class
+   is usually seated before the instructor opens the session — so the student
+   simply waits on the in-class screen and presses Check for Question when
+   told to. Only a session that *was* seen active and then went inactive
+   renders the "Session Ended" state.
 3. **Advance** — instructor calls `advance-question` to set
    `current_question_id`; the response includes stats for the question just
    left. Students pick up the new question by clicking "Next Question"
    (one `get-current-question` call; if the instructor hasn't advanced, a
-   lightweight "not yet" message shows and nothing changes). The payload
+   "not yet" toast appears and nothing changes). The payload
    strips `isCorrect`/`feedback` — grading is server-side only.
 4. **Answer** — students call `submit-question-response`. The server loads the
    bundled quiz data, grades the answer, computes `attempt_number`, and stores

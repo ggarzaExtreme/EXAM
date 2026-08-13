@@ -16,7 +16,7 @@
 
         body {
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            background: linear-gradient(135deg, #20004C 0%, var(--accent) 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -31,7 +31,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
+            background: linear-gradient(135deg, #20004C 0%, var(--accent) 100%);
             color: white;
             padding: 40px 30px;
             text-align: center;
@@ -107,64 +107,7 @@
             text-align: left;
         }
 
-        .form-group label {
-            display: block;
-            color: var(--ink);
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #E8E3FF;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #5B059C;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #20004C 0%, #5B059C 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(91, 5, 156, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
-        .btn-secondary {
-            background: #F0EDFF;
-            color: #5B059C;
-        }
-
-        .btn-secondary:hover {
-            box-shadow: 0 5px 20px rgba(91, 5, 156, 0.2);
-        }
-
-        .error-message {
+.error-message {
             background: #fee2e2;
             color: #991b1b;
             padding: 12px;
@@ -196,7 +139,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 30px;
-            border-bottom: 2px solid #E8E3FF;
+            border-bottom: 1px solid var(--line);
         }
 
         .tab-btn {
@@ -213,12 +156,12 @@
         }
 
         .tab-btn:hover {
-            color: #5B059C;
+            color: var(--accent);
         }
 
         .tab-btn.active {
-            color: #5B059C;
-            border-bottom-color: #5B059C;
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
 
         .poll-controls {
@@ -254,16 +197,7 @@
             align-items: center;
         }
 
-        .controls select {
-            padding: 10px 15px;
-            border: 2px solid #E8E3FF;
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-            cursor: pointer;
-        }
-
-        .session-info {
+.session-info {
             border-left: 3px solid var(--accent);
             padding: 20px;
             border-radius: 6px;
@@ -300,7 +234,7 @@
 
         .answer-distribution {
             background: white;
-            border: 2px solid #E8E3FF;
+            border: 1px solid var(--line);
             padding: 20px;
             border-radius: 6px;
             margin-bottom: 20px;
@@ -330,7 +264,7 @@
         }
 
         .chart-legend .swatch.initial { background: #c4b5fd; }
-        .chart-legend .swatch.cumulative { background: linear-gradient(180deg, #667eea 0%, #5B059C 100%); }
+        .chart-legend .swatch.cumulative { background: linear-gradient(180deg, var(--accent-2) 0%, var(--accent) 100%); }
 
         .answer-chart {
             display: flex;
@@ -338,7 +272,7 @@
             gap: 8px;
             height: 190px;
             padding: 10px 4px 0;
-            border-bottom: 2px solid #E8E3FF;
+            border-bottom: 1px solid var(--line);
         }
 
         .chart-group {
@@ -372,7 +306,7 @@
         }
 
         .chart-bar.initial { background: #c4b5fd; }
-        .chart-bar.cumulative { background: linear-gradient(180deg, #667eea 0%, #5B059C 100%); }
+        .chart-bar.cumulative { background: linear-gradient(180deg, var(--accent-2) 0%, var(--accent) 100%); }
 
         .chart-bar .bar-count {
             position: absolute;
@@ -444,7 +378,7 @@
         }
 
         .bar-container {
-            background: #E8E3FF;
+            background: var(--line);
             border-radius: 4px;
             overflow: hidden;
             height: 30px;
@@ -453,7 +387,7 @@
         }
 
         .bar-fill {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, var(--accent-2) 0%, #764ba2 100%);
             height: 100%;
             display: flex;
             align-items: center;
@@ -467,7 +401,7 @@
 
         .student-responses {
             background: white;
-            border: 2px solid #E8E3FF;
+            border: 1px solid var(--line);
             padding: 20px;
             border-radius: 6px;
             margin-bottom: 20px;
@@ -484,7 +418,7 @@
             align-items: center;
             gap: 12px;
             padding: 10px 0;
-            border-bottom: 1px solid #E8E3FF;
+            border-bottom: 1px solid var(--line);
             font-size: 14px;
         }
 
@@ -506,7 +440,7 @@
             text-align: center;
             font-weight: 700;
             font-family: 'DM Sans', monospace;
-            color: #5B059C;
+            color: var(--accent);
         }
 
         /* The opening answer is de-emphasised so "Now" reads as the live value */
@@ -526,7 +460,7 @@
             letter-spacing: 0.04em;
             color: #8a8a8a;
             font-weight: 600;
-            border-bottom: 2px solid #E8E3FF;
+            border-bottom: 1px solid var(--line);
             padding-bottom: 6px;
         }
 
@@ -565,7 +499,7 @@
 
         .retry-stats {
             background: white;
-            border: 2px solid #E8E3FF;
+            border: 1px solid var(--line);
             padding: 20px;
             border-radius: 6px;
             margin-bottom: 20px;
@@ -581,7 +515,7 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid #E8E3FF;
+            border-bottom: 1px solid var(--line);
             font-size: 14px;
         }
 
@@ -605,7 +539,7 @@
         }
 
         .response-card {
-            border: 2px solid #E8E3FF;
+            border: 1px solid var(--line);
             border-radius: 6px;
             padding: 15px;
         }
@@ -643,10 +577,6 @@
 
             .controls {
                 flex-direction: column;
-                width: 100%;
-            }
-
-            .controls select {
                 width: 100%;
             }
 
@@ -703,7 +633,7 @@
     <!-- ===== Theme layer (shared palettes with index.html) ===== -->
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="stylesheet" href="styles.css?v=3">
     <style>
         .container { max-width: 1240px; }
         .content { padding: 24px 18px 48px; background: transparent; }
@@ -933,7 +863,7 @@
             .session-controls .btn { flex: 1 1 auto; }
         }
     </style>
-    <script src="theme.js"></script>
+    <script src="theme.js?v=2"></script>
 </head>
 <body>
     <!-- Icon sprite. Single line weight, no fills, currentColor - per the
@@ -997,6 +927,16 @@
             <symbol id="ic-clock" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="8.5"/>
                 <path d="M12 7v5.2l3.4 2"/>
+            </symbol>
+            <symbol id="ic-info" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8.5"/>
+                <path d="M12 11v5.5"/>
+                <path d="M12 7.8v.4"/>
+            </symbol>
+            <symbol id="ic-alert" viewBox="0 0 24 24">
+                <path d="M12 4.2 21 19.4a1 1 0 0 1-.87 1.5H3.87A1 1 0 0 1 3 19.4z"/>
+                <path d="M12 10v4"/>
+                <path d="M12 16.9v.3"/>
             </symbol>
         </defs>
     </svg>
@@ -1075,19 +1015,17 @@
 
                 <!-- In-Class Live Tab -->
                 <div id="inclassSection" class="tab-content active">
-                    <div class="dashboard-header">
-                        <h2 style="color: var(--ink);">In-Class Live Sessions</h2>
-                    </div>
-
-                    <!-- Status banner: lives outside both containers so it stays
-                         visible whether or not a session is active -->
-                    <div id="liveStatusMsg" style="display: none; margin-bottom: 20px; padding: 12px 15px; border-radius: 6px; font-size: 14px;"></div>
+                    <!-- No page heading here: the tab above already names this
+                         view, and the session panel names itself. -->
 
                     <div id="createSessionContainer">
                         <div class="info-box" style="border-left: 3px solid var(--accent); padding: 20px; border-radius: 6px; text-align: center;">
                             <h3 style="color: var(--accent-2); margin-bottom: 10px;">No Active Session</h3>
                             <p style="color: var(--ink-soft); margin-bottom: 15px;">Create a new in-class session to begin monitoring student responses in real-time.</p>
-                            <button class="btn" onclick="showCreateSessionModal()">Create New Session</button>
+                            <button class="btn btn-primary" onclick="showCreateSessionModal()">
+                                <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-plus"></use></svg>
+                                <span class="btn-label">Create New Session</span>
+                            </button>
                         </div>
                     </div>
 
@@ -1130,7 +1068,7 @@
                                  neutral outlines are supporting actions, and the
                                  destructive action is pushed to the far right. -->
                             <div class="session-controls">
-                                <button class="btn btn-quiet" id="prevQuestionBtn" onclick="previousQuestion()">
+                                <button class="btn btn-secondary" id="prevQuestionBtn" onclick="previousQuestion()">
                                     <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg>
                                     <span class="btn-label">Previous</span>
                                 </button>
@@ -1138,7 +1076,7 @@
                                     <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-play" id="nextBtnIcon"></use></svg>
                                     <span class="btn-label">Start Quiz (Q1)</span>
                                 </button>
-                                <button class="btn btn-quiet" id="refreshLiveBtn" onclick="refreshInClassData()">
+                                <button class="btn btn-secondary" id="refreshLiveBtn" onclick="refreshInClassData()">
                                     <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-refresh"></use></svg>
                                     <span class="btn-label">Refresh</span>
                                 </button>
@@ -1202,8 +1140,8 @@
 
                 <!-- Student Submissions Tab -->
                 <div id="historicalSection" class="tab-content">
-                    <div class="dashboard-header">
-                        <h2 style="color: var(--ink);">Student Submissions</h2>
+                    <!-- Filter bar only; the tab above names this view. -->
+                    <div class="filter-bar">
                         <div class="controls">
                             <select id="quizSelect" onchange="changeQuiz()">
                                 <option value="">Select Quiz...</option>
@@ -1223,11 +1161,13 @@
                                 <input type="search" id="studentSearch" placeholder="Filter by name or email"
                                        oninput="renderAnalytics()">
                             </span>
-                            <button class="btn btn-quiet" onclick="refreshData()">
-                                <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-refresh"></use></svg>Refresh
+                            <button class="btn btn-primary" onclick="refreshData()">
+                                <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-refresh"></use></svg>
+                                <span class="btn-label">Refresh</span>
                             </button>
-                            <button class="btn btn-quiet" onclick="downloadCsv()">
-                                <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-download"></use></svg>Export CSV
+                            <button class="btn btn-secondary" onclick="downloadCsv()">
+                                <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-download"></use></svg>
+                                <span class="btn-label">Export CSV</span>
                             </button>
                         </div>
                     </div>
@@ -1310,8 +1250,14 @@
             </div>
 
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-                <button class="btn btn-secondary" onclick="closeCreateSessionModal()">Cancel</button>
-                <button class="btn" onclick="createSession()">Create Session</button>
+                <button class="btn btn-secondary" onclick="closeCreateSessionModal()">
+                    <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-x"></use></svg>
+                    <span class="btn-label">Cancel</span>
+                </button>
+                <button class="btn btn-primary" onclick="createSession()">
+                    <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-plus"></use></svg>
+                    <span class="btn-label">Create Session</span>
+                </button>
             </div>
         </div>
     </div>
@@ -1481,7 +1427,6 @@
 
             // Start from a clean panel — never show a previous session's numbers
             clearQuestionStats();
-            setLiveStatus(null);
             pendingEndConfirm = false;
             setBtnLabel('endSessionBtn', 'End Session');
             document.getElementById('endSessionBtn').disabled = false;
@@ -1579,7 +1524,6 @@
                     return;
                 }
 
-                restoreLiveContext();
                 displayAnswerDistribution(result.answer_distribution, result.initial_distribution);
                 displayRetryStats(result.retry_stats, result.participation);
                 displayStudentResponses(result.students);
@@ -1614,42 +1558,15 @@
             }
         }
 
-        // 'info' messages describe the current state (e.g. which question is
-        // live) and persist until replaced. Errors/warnings are transient
-        // overlays: once a refresh succeeds, the info message returns.
-        let liveContextMsg = null;
-
+        // Live status goes to a corner toast (theme.js) rather than an inline
+        // banner. The banner grew and shrank the page every time a message
+        // appeared or cleared, which moved the controls under the instructor's
+        // cursor mid-class. Anything that must persist - which question is
+        // live, how many have answered - is already rendered in the panels
+        // below, so these messages only need to be transient.
         function setLiveStatus(message, type) {
-            const el = document.getElementById('liveStatusMsg');
-            const kind = type || 'info';
-
-            if (!message) {
-                liveContextMsg = null;
-                el.style.display = 'none';
-                return;
-            }
-            if (kind === 'info') {
-                liveContextMsg = message;
-            }
-
-            const palette = {
-                error: { bg: '#F8D7DA', fg: '#721C24' },
-                warn:  { bg: '#FFF3CD', fg: '#856404' },
-                info:  { bg: '#D1E7DD', fg: '#155724' }
-            }[kind];
-            el.style.background = palette.bg;
-            el.style.color = palette.fg;
-            el.textContent = message;
-            el.style.display = 'block';
-        }
-
-        // Called after a successful refresh: drop a stale error, keep context
-        function restoreLiveContext() {
-            if (liveContextMsg) {
-                setLiveStatus(liveContextMsg, 'info');
-            } else {
-                document.getElementById('liveStatusMsg').style.display = 'none';
-            }
+            if (!message) return;         // nothing to clear; toasts self-expire
+            window.toast(message, type || 'info');
         }
 
         // Clears the per-question panels so stats from the previous question
@@ -1894,7 +1811,6 @@
             const prevBtn = document.getElementById('prevQuestionBtn');
             nextBtn.disabled = true;
             prevBtn.disabled = true;
-            setLiveStatus(null);
 
             try {
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/advance-question', {
@@ -1956,7 +1872,6 @@
                     if (pendingEndConfirm) {
                         pendingEndConfirm = false;
                         setBtnLabel('endSessionBtn', 'End Session');
-                        setLiveStatus(null);
                     }
                 }, 8000);
                 return;
@@ -2357,7 +2272,7 @@
         }
 
         function downloadCsv() {
-            if (!currentQuiz) { alert('Pick a quiz first.'); return; }
+            if (!currentQuiz) { window.toast('Pick a quiz before downloading.', 'warn'); return; }
             const days = parseInt(document.getElementById('rangeSelect').value, 10) || 0;
             const rows = filteredRows();
             const head = ['Name','Email','Date','Score %','Correct','Total','Duration (min)'];

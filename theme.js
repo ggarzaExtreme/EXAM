@@ -1,4 +1,7 @@
-// Shared theme system for the assessment platform.
+// Shared browser-side UI module for the assessment platform.
+//   1. Theme system (three palettes + the Network Graphic canvas)
+//   2. toast() - transient status messages that float above the layout
+//
 // Three palettes, chosen by the viewer and remembered per browser:
 //   extreme - Network Graphic (dark base + animated node/edge canvas). Default.
 //   ops     - Operations (flat dark, no canvas).
@@ -168,6 +171,73 @@
         window.removeEventListener('resize', netCanvas._resize);
         netCanvas.remove();
         netCanvas = null;
+    }
+
+    // ===== Toasts =====
+    // Status that used to render inline and shove the page around. Toasts are
+    // fixed-position, so showing or hiding one never reflows the content.
+    var ICONS = { info: 'ic-info', ok: 'ic-check', warn: 'ic-alert', error: 'ic-x' };
+    var LIFETIMES = { info: 4200, ok: 4200, warn: 6000, error: 9000 };
+
+    function stack() {
+        var el = document.querySelector('.toast-stack');
+        if (!el) {
+            el = document.createElement('div');
+            el.className = 'toast-stack';
+            // polite: announced without interrupting whatever has focus
+            el.setAttribute('role', 'status');
+            el.setAttribute('aria-live', 'polite');
+            document.body.appendChild(el);
+        }
+        return el;
+    }
+
+    // toast(message, type) - type: 'info' | 'ok' | 'warn' | 'error'
+    // Errors linger longer than confirmations; nothing blocks the UI.
+    window.toast = function (message, type) {
+        if (!message) return;
+        if (!document.body) {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.toast(message, type);
+            }, { once: true });
+            return;
+        }
+
+        var kind = LIFETIMES[type] ? type : 'info';
+        var host = stack();
+
+        // Replacing an identical message restarts its timer instead of stacking
+        var existing = Array.prototype.find.call(host.children, function (t) {
+            return t.dataset.msg === message;
+        });
+        if (existing) {
+            clearTimeout(Number(existing.dataset.timer));
+            existing.dataset.timer = String(setTimeout(function () { dismiss(existing); }, LIFETIMES[kind]));
+            return;
+        }
+
+        var el = document.createElement('div');
+        el.className = 'toast ' + kind;
+        el.dataset.msg = message;
+        el.innerHTML = '<svg class="ic ic-sm" aria-hidden="true"><use href="#' +
+            ICONS[kind] + '"></use></svg><span></span>';
+        el.querySelector('span').textContent = message;
+        el.addEventListener('click', function () { dismiss(el); });
+        host.appendChild(el);
+
+        // keep at most four on screen
+        while (host.children.length > 4) dismiss(host.firstElementChild, true);
+
+        requestAnimationFrame(function () { el.classList.add('in'); });
+        el.dataset.timer = String(setTimeout(function () { dismiss(el); }, LIFETIMES[kind]));
+    };
+
+    function dismiss(el, now) {
+        if (!el || el.dataset.going) return;
+        el.dataset.going = '1';
+        clearTimeout(Number(el.dataset.timer));
+        el.classList.remove('in');
+        setTimeout(function () { if (el.parentNode) el.remove(); }, now ? 0 : 220);
     }
 
     // Apply the stored theme as early as possible so the page never flashes

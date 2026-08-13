@@ -465,7 +465,7 @@
 
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="stylesheet" href="styles.css?v=3">
     <style>
         .container { max-width: 940px; }
         .content { padding: 26px 18px 48px; background: transparent; --card-pad: 26px; }
@@ -748,7 +748,7 @@
     </style>
 
 
-    <script src="theme.js"></script>
+    <script src="theme.js?v=2"></script>
 </head>
 <body>
     <!-- Icon sprite. Single line weight, no fills, currentColor - per the
@@ -812,6 +812,16 @@
             <symbol id="ic-clock" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="8.5"/>
                 <path d="M12 7v5.2l3.4 2"/>
+            </symbol>
+            <symbol id="ic-info" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8.5"/>
+                <path d="M12 11v5.5"/>
+                <path d="M12 7.8v.4"/>
+            </symbol>
+            <symbol id="ic-alert" viewBox="0 0 24 24">
+                <path d="M12 4.2 21 19.4a1 1 0 0 1-.87 1.5H3.87A1 1 0 0 1 3 19.4z"/>
+                <path d="M12 10v4"/>
+                <path d="M12 16.9v.3"/>
             </symbol>
         </defs>
     </svg>
@@ -915,8 +925,9 @@
                             <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-play"></use></svg>
                             <span class="btn-label">Start Assessment</span>
                         </button>
-                        <button class="btn btn-quiet" onclick="backToModeSelection()">
-                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Back
+                        <button class="btn btn-secondary" onclick="backToModeSelection()">
+                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg>
+                            <span class="btn-label">Back</span>
                         </button>
                     </div>
                 </div>
@@ -948,8 +959,9 @@
                             <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-live"></use></svg>
                             <span class="btn-label">Join Session</span>
                         </button>
-                        <button class="btn btn-quiet" onclick="backToModeSelection()">
-                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Back
+                        <button class="btn btn-secondary" onclick="backToModeSelection()">
+                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg>
+                            <span class="btn-label">Back</span>
                         </button>
                     </div>
                 </div>
@@ -959,9 +971,18 @@
                  reserved feedback slot so answering never shifts the page) -->
             <div class="screen" id="fullQuizScreen">
                 <div class="actionrow">
-                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Previous</button>
-                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()">Next <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-right"></use></svg></button>
-                    <button class="btn right" id="submitBtn" onclick="finishQuiz()">Finish Quiz</button>
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()">
+                        <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg>
+                        <span class="btn-label">Previous</span>
+                    </button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()">
+                        <span class="btn-label">Next</span>
+                        <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-right"></use></svg>
+                    </button>
+                    <button class="btn btn-primary right" id="submitBtn" onclick="finishQuiz()">
+                        <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-check"></use></svg>
+                        <span class="btn-label">Finish Quiz</span>
+                    </button>
                 </div>
 
                 <div class="statusstrip">
@@ -987,8 +1008,14 @@
             <!-- Full Quiz Mode: Results Screen -->
             <div class="screen" id="fullQuizResultsScreen">
                 <div class="actionrow">
-                    <button class="btn" onclick="submitResults()">Submit Results</button>
-                    <button class="btn btn-secondary" onclick="backToModeSelection()"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Start Over</button>
+                    <button class="btn btn-primary" id="submitResultsBtn" onclick="submitResults()">
+                        <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-check"></use></svg>
+                        <span class="btn-label">Submit Results</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="backToModeSelection()">
+                        <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg>
+                        <span class="btn-label">Start Over</span>
+                    </button>
                     <span class="chip right" id="resultsSubmitState">Not submitted yet</span>
                 </div>
 
@@ -1037,7 +1064,7 @@
             <div class="screen" id="inclassQuizScreen">
                 <!-- Every button for this screen, above all variable content -->
                 <div class="actionrow" id="inclassCheckControls">
-                    <button class="btn grow" id="inclassSubmitBtn" onclick="submitInClassAnswer()">
+                    <button class="btn btn-primary grow" id="inclassSubmitBtn" onclick="submitInClassAnswer()">
                         <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-check"></use></svg>
                         <span class="btn-label">Submit Answer</span>
                     </button>
@@ -1055,8 +1082,6 @@
                     <span class="chip" id="attemptDisplay">Attempt 1</span>
                 </div>
 
-                <div id="checkStatusMsg" style="display: none; padding: 12px 15px; background: var(--warn-bg); color: var(--warn); border-radius: var(--radius); margin-bottom: 14px; font-size: 14px;"></div>
-
                 <!-- Waiting State -->
                 <div id="waitingForQuestion" class="waiting-indicator">
                     <p>Waiting for the instructor to start the quiz.</p>
@@ -1068,8 +1093,6 @@
                     <span class="topic-badge" id="inclassTopicBadge"></span>
                     <div class="question-text" id="inclassQuestionText"></div>
                     <div class="options" id="inclassOptionsContainer"></div>
-                    <div id="answerStatusMsg" style="display: none; margin-top: 12px; padding: 12px 15px; background: var(--warn-bg); color: var(--warn); border-radius: var(--radius); font-size: 14px;"></div>
-
                     <div class="fbslot empty" id="inclassSlot">
                         <span id="inclassSlotHint">Submit an answer to see feedback</span>
                         <div class="feedback-screen" id="inclassFeedbackScreen">
@@ -1085,7 +1108,10 @@
                     <div class="info-box">
                         <h3>Session Ended</h3>
                         <p>The instructor has ended this session. Thank you for participating!</p>
-                        <button class="btn" onclick="backToModeSelection()" style="margin-top: 20px;"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Start New Quiz</button>
+                        <button class="btn btn-primary" onclick="backToModeSelection()" style="margin-top: 20px;">
+                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg>
+                            <span class="btn-label">Start New Quiz</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1228,7 +1254,8 @@
             const classInput = document.querySelector('input[name="class_type"]:checked').value;
 
             if (!nameInput) {
-                alert('Please enter your name');
+                window.toast('Please enter your name to continue.', 'warn');
+                document.getElementById('studentName').focus();
                 return;
             }
 
@@ -1239,7 +1266,7 @@
             try {
                 await loadQuizDataFile(classType);
             } catch (error) {
-                alert('Failed to load quiz: ' + error.message);
+                window.toast('Failed to load quiz: ' + error.message, 'error');
                 return;
             }
 
@@ -1554,12 +1581,14 @@
             const classIdInput = document.getElementById('classId').value.trim().toLowerCase();
 
             if (!nameInput) {
-                alert('Please enter your name');
+                window.toast('Please enter your name to join the session.', 'warn');
+                document.getElementById('studentNameInClass').focus();
                 return;
             }
 
             if (!classIdInput) {
-                alert('Please enter a class ID');
+                window.toast('Please enter the class ID your instructor gave you.', 'warn');
+                document.getElementById('classId').focus();
                 return;
             }
 
@@ -1587,8 +1616,6 @@
             document.getElementById('inclassCheckControls').style.display = '';
             setBtnLabel('nextQuestionBtn', 'Check for Question');
             document.getElementById('inclassSubmitBtn').disabled = true;
-            setCheckStatus(null);
-            setAnswerStatus(null);
 
             sessionWasActive = false;
             checkForQuestion(false);  // one initial check on join
@@ -1596,14 +1623,12 @@
 
         let sessionWasActive = false;
 
-        function setCheckStatus(message) {
-            const msg = document.getElementById('checkStatusMsg');
-            if (!message) {
-                msg.style.display = 'none';
-                return;
-            }
-            msg.textContent = message;
-            msg.style.display = 'block';
+        // Both status helpers hand off to the corner toast in theme.js. As
+        // inline banners they inserted and removed a block mid-screen, which
+        // pushed the question and its options up and down while a student was
+        // reading them. Toasts float above the layout, so nothing moves.
+        function setCheckStatus(message, type) {
+            if (message) window.toast(message, type || 'info');
         }
 
         // Button handler: one on-demand check, briefly debounced
@@ -1631,11 +1656,19 @@
 
                 if (!data.session_active) {
                     if (!sessionWasActive) {
-                        // Never saw an active session — this is a bad/unknown class ID,
-                        // not an ended session. Send the student back to the join screen.
-                        alert('No active session found for class ID "' + classId + '". Please check the ID with your instructor.');
-                        document.getElementById('inclassQuizScreen').classList.remove('active');
-                        document.getElementById('sessionJoinScreen').classList.add('active');
+                        // No session under this ID yet. Students routinely join
+                        // before the instructor opens the session, so hold them
+                        // on the waiting screen instead of bouncing them back to
+                        // the join form — the instructor will tell the room when
+                        // to press Check for Question. (A genuinely wrong ID just
+                        // never advances; Home in the global bar is the way out.)
+                        document.getElementById('waitingForQuestion').style.display = 'block';
+                        document.getElementById('questionDisplay').style.display = 'none';
+                        document.getElementById('inclassSubmitBtn').disabled = true;
+                        if (fromButton) {
+                            setCheckStatus('Session "' + classId + '" has not been opened yet — ' +
+                                'wait for your instructor, then check again.', 'warn');
+                        }
                         return;
                     }
 
@@ -1670,7 +1703,6 @@
                     currentQuestionId = data.current_question_id;
                     selectedAnswer = null;
                     currentAttemptNumber = 1;
-                    setCheckStatus(null);
                     setBtnLabel('nextQuestionBtn', 'Next Question');
                     displayQuestion(data.question_data);
                 } else if (fromButton) {
@@ -1679,7 +1711,7 @@
             } catch (error) {
                 console.error('Question check error:', error);
                 if (fromButton) {
-                    setCheckStatus("Couldn't reach the server — please try again.");
+                    setCheckStatus("Couldn't reach the server — please try again.", 'error');
                 }
             }
         }
@@ -1736,23 +1768,15 @@
             setFeedbackVisible('inclassSlot', 'inclassSlotHint', 'inclassFeedbackScreen', false);
             setBtnLabel('inclassSubmitBtn', 'Submit Answer');
             document.getElementById('inclassSubmitBtn').disabled = false;
-            setAnswerStatus(null);
             updateAttemptDisplay();
         }
 
         function selectAnswer(index) {
             selectedAnswer = index;
-            setAnswerStatus(null);
         }
 
-        function setAnswerStatus(message) {
-            const el = document.getElementById('answerStatusMsg');
-            if (!message) {
-                el.style.display = 'none';
-                return;
-            }
-            el.textContent = message;
-            el.style.display = 'block';
+        function setAnswerStatus(message, type) {
+            if (message) window.toast(message, type || 'warn');
         }
 
         // Disables the options once the question has been answered correctly
@@ -1786,8 +1810,6 @@
             const submitBtn = document.getElementById('inclassSubmitBtn');
             submitBtn.disabled = true;  // prevent double-submit while request is in flight
             setBtnLabel('inclassSubmitBtn', 'Submitting…');
-            setAnswerStatus(null);
-            setCheckStatus(null);       // clear any stale "not yet" message
 
             try {
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/submit-question-response', {
@@ -1813,7 +1835,7 @@
                     if (data.code === 'question_changed' || /does not match current question/i.test(err)) {
                         setAnswerStatus('The instructor has moved on to a new question. Click "Next Question" below to catch up.');
                     } else {
-                        setAnswerStatus('Could not submit: ' + (err || 'unknown error') + '. Please try again.');
+                        setAnswerStatus('Could not submit: ' + (err || 'unknown error') + '. Please try again.', 'error');
                     }
                     submitBtn.disabled = false;
                     setBtnLabel('inclassSubmitBtn', 'Submit Answer');
@@ -1837,7 +1859,7 @@
                 updateAttemptDisplay();
             } catch (error) {
                 console.error('Submission error:', error);
-                setAnswerStatus("Couldn't reach the server. Please try again.");
+                setAnswerStatus("Couldn't reach the server. Please try again.", 'error');
                 submitBtn.disabled = false;
                 setBtnLabel('inclassSubmitBtn', 'Submit Answer');
             }

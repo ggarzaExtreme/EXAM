@@ -703,32 +703,32 @@
     <!-- ===== Theme layer (shared palettes with index.html) ===== -->
     <style>
         :root, :root[data-theme="extreme"] {
-            --bg:#07050D; --surface:rgba(28,21,45,.82); --surface-2:rgba(40,30,64,.9);
-            --line:rgba(159,140,255,.24);
-            --ink:#FFFFFF; --ink-soft:#B4ACC9;
-            --accent:#7519F9; --accent-2:#A98BFF; --btn-ink:#FFFFFF;
-            --ok:#4FE39A; --ok-bg:rgba(79,227,154,.16);
-            --bad:#FF8792; --bad-bg:rgba(255,135,146,.15);
-            --warn:#FFD08A; --warn-bg:rgba(255,208,138,.15);
-            --wait-bg:rgba(255,255,255,.10); --sel-bg:rgba(117,25,249,.26);
-            --bar-i:#5B4A8C; --bar-c:#7519F9;
-            --modal:#181231;
-            --radius:3px;
-            --gb-bg:rgba(16,11,30,.86); --gb-ink:#FFFFFF; --gb-soft:#B4ACC9;
-            --gb-line:rgba(159,140,255,.26);
+            --bg:#000000; --surface:rgba(255,255,255,.05); --surface-2:rgba(255,255,255,.08);
+            --line:rgba(255,255,255,.12);
+            --ink:#FFFFFF; --ink-soft:#9A93B0;
+            --accent:#7519F9; --accent-2:#7D76F2; --btn-ink:#FFFFFF;
+            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.12);
+            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.10);
+            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
+            --wait-bg:rgba(255,255,255,.06); --sel-bg:rgba(117,25,249,.18);
+            --bar-i:rgba(125,118,242,.42); --bar-c:#7519F9;
+            --modal:#0E0A18;
+            --radius:2px;
+            --gb-bg:rgba(11,7,19,.72); --gb-ink:#FFFFFF; --gb-soft:#9A93B0;
+            --gb-line:rgba(255,255,255,.12);
         }
         :root[data-theme="ops"] {
-            --bg:#0A0713; --surface:#171226; --surface-2:#221A38; --line:#352A4E;
-            --ink:#FFFFFF; --ink-soft:#ABA3C1;
-            --accent:#7519F9; --accent-2:#A98BFF; --btn-ink:#FFFFFF;
-            --ok:#4FE39A; --ok-bg:rgba(79,227,154,.16);
-            --bad:#FF8792; --bad-bg:rgba(255,135,146,.15);
-            --warn:#FFD08A; --warn-bg:rgba(255,208,138,.15);
-            --wait-bg:rgba(255,255,255,.10); --sel-bg:rgba(117,25,249,.24);
-            --bar-i:#4A3B70; --bar-c:#7519F9;
-            --modal:#171226;
+            --bg:#000000; --surface:#0B0713; --surface-2:#140E20; --line:#221A33;
+            --ink:#FFFFFF; --ink-soft:#948CAB;
+            --accent:#7519F9; --accent-2:#9F8CFF; --btn-ink:#FFFFFF;
+            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.13);
+            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.11);
+            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
+            --wait-bg:rgba(255,255,255,.07); --sel-bg:rgba(117,25,249,.16);
+            --bar-i:#3A2A63; --bar-c:#7519F9;
+            --modal:#0B0713;
             --radius:4px;
-            --gb-bg:#120D20; --gb-ink:#FFFFFF; --gb-soft:#ABA3C1; --gb-line:#352A4E;
+            --gb-bg:#0B0713; --gb-ink:#FFFFFF; --gb-soft:#948CAB; --gb-line:#221A33;
         }
         :root[data-theme="light"] {
             --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F5F2FB; --line:#E0DBEE;
@@ -819,6 +819,13 @@
         .student-head, .student-head .student-name, .student-head .student-answer,
         .student-head .student-tries { color: var(--ink-soft); }
         .student-head { border-bottom-color: var(--line); }
+        /* Stray bottom margins made align-items:center centre the outer box,
+           leaving the name and answer columns sitting 4px high */
+        .student-row > * { margin: 0; line-height: 1.3; }
+        /* Same height for solid and outlined buttons so control rows read level */
+        .btn { border: 1px solid transparent; }
+        .session-controls, .dashboard-header, .controls, .poll-controls { align-items: center; }
+        .session-controls > *, .dashboard-header > *, .controls > * { margin: 0; }
         .chart-bar.initial { background: var(--bar-i); }
         .chart-bar.cumulative { background: var(--bar-c); }
         .chart-bar .bar-count { color: var(--ink-soft); }
@@ -887,6 +894,88 @@
         .error-message { background: var(--bad-bg); color: var(--bad); }
         .success-message { background: var(--ok-bg); color: var(--ok); }
         .btn-secondary { background: transparent; }
+
+        /* ===== Analytics ===== */
+        #studentSearch, #rangeSelect {
+            padding: 9px 13px; border: 1px solid var(--line); border-radius: var(--radius);
+            background: var(--surface-2); color: var(--ink); font-family: inherit; font-size: 13px;
+        }
+        .kpi-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+            gap: 12px; margin-bottom: 20px;
+        }
+        .kpi {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); padding: 14px 16px;
+        }
+        .kpi dt {
+            font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+            color: var(--ink-soft); margin: 0 0 6px;
+        }
+        .kpi dd {
+            margin: 0; font-size: 25px; font-weight: 700; color: var(--ink);
+            font-variant-numeric: tabular-nums; line-height: 1;
+        }
+        .kpi .kpi-sub { font-size: 11px; color: var(--ink-soft); margin-top: 5px; font-weight: 400; }
+
+        .an-split {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px; margin-bottom: 16px;
+        }
+        .an-card {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px;
+        }
+        .an-split .an-card { margin-bottom: 0; }
+        .an-card h3 {
+            font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+            color: var(--ink-soft) !important; margin: 0 0 16px;
+            display: flex; align-items: baseline; gap: 10px;
+        }
+        .an-card h3 span {
+            margin-left: auto; font-size: 11px; font-weight: 400; letter-spacing: .02em;
+            text-transform: none; color: var(--ink-soft);
+        }
+
+        /* horizontal bar rows, shared by distribution / topics / questions */
+        .bar-row { display: grid; grid-template-columns: minmax(96px, 26%) 1fr auto;
+            gap: 12px; align-items: center; padding: 6px 0; font-size: 13px; }
+        .bar-row > * { margin: 0; }
+        .bar-row .bl { color: var(--ink-soft); white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; }
+        .bar-row .bt { height: 8px; border-radius: 100px; background: var(--line); overflow: hidden; }
+        .bar-row .bt i { display: block; height: 100%; border-radius: 100px; }
+        .bar-row .bv { font-weight: 700; font-variant-numeric: tabular-nums;
+            min-width: 74px; text-align: right; color: var(--ink); font-size: 12.5px; }
+        .bar-row.wide { grid-template-columns: 1fr auto; }
+        .bar-row .bq { color: var(--ink); }
+        .bar-row .bq em { font-style: normal; color: var(--ink-soft); font-size: 11.5px; display: block;
+            margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .an-tablewrap { overflow-x: auto; }
+        .an-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .an-table th {
+            text-align: left; font-size: 9.5px; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase; color: var(--ink-soft); padding: 8px 10px;
+            border-bottom: 1px solid var(--line); cursor: pointer; white-space: nowrap;
+        }
+        .an-table th:hover { color: var(--accent-2); }
+        .an-table th.num, .an-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+        .an-table th[aria-sort]::after { content: " ▲"; font-size: 8px; }
+        .an-table th[aria-sort="descending"]::after { content: " ▼"; }
+        .an-table td {
+            padding: 9px 10px; border-bottom: 1px solid var(--line); color: var(--ink-soft);
+        }
+        .an-table tbody tr:last-child td { border-bottom: none; }
+        .an-table .st-name { color: var(--ink); font-weight: 700; }
+        .an-table .st-mail { color: var(--ink-soft); font-size: 11px; display: block; margin-top: 2px; }
+        .score-pill {
+            display: inline-block; min-width: 46px; text-align: center; padding: 3px 8px;
+            border-radius: 100px; font-weight: 700; font-size: 12px;
+        }
+        .delta-up { color: var(--ok); font-weight: 700; }
+        .delta-down { color: var(--bad); font-weight: 700; }
+        .delta-flat { color: var(--ink-soft); font-weight: 700; }
 
         :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 
@@ -1072,13 +1161,64 @@
                                 <option value="fabric">Fabric Engine In-Class</option>
                                 <option value="switch">Switch Engine In-Class</option>
                             </select>
-
-                            <button class="btn" style="width: auto; padding: 8px 20px;" onclick="refreshData()">Refresh</button>
+                            <select id="rangeSelect" onchange="refreshData()" title="How far back to include">
+                                <option value="7">Past 7 days</option>
+                                <option value="30" selected>Past 30 days</option>
+                                <option value="90">Past 90 days</option>
+                                <option value="0">All time</option>
+                            </select>
+                            <input type="search" id="studentSearch" placeholder="Filter by name or email"
+                                   oninput="renderAnalytics()" style="min-width: 190px;">
+                            <button class="btn btn-secondary" style="width:auto;padding:8px 16px;" onclick="refreshData()">Refresh</button>
+                            <button class="btn btn-secondary" style="width:auto;padding:8px 16px;" onclick="downloadCsv()">Export CSV</button>
                         </div>
                     </div>
 
-                    <div id="responseContainer" class="responses-grid"></div>
-                    <div id="noData" class="no-data">Select a quiz to see submissions</div>
+                    <div id="analyticsStatus" class="no-data">Select a quiz to load analytics</div>
+
+                    <div id="analyticsBody" style="display:none;">
+                        <!-- Cohort summary -->
+                        <div class="kpi-grid" id="kpiGrid"></div>
+
+                        <div class="an-split">
+                            <div class="an-card">
+                                <h3>Score Distribution <span id="distNote"></span></h3>
+                                <div id="scoreDist"></div>
+                            </div>
+                            <div class="an-card">
+                                <h3>Topic Mastery <span>weakest first</span></h3>
+                                <div id="topicMastery"></div>
+                            </div>
+                        </div>
+
+                        <div class="an-card" id="deltaCard" style="display:none;">
+                            <h3>Pre → Post Movement <span id="deltaNote"></span></h3>
+                            <div id="deltaBody"></div>
+                        </div>
+
+                        <div class="an-card">
+                            <h3>Hardest Questions <span>most missed first</span></h3>
+                            <div id="hardestQuestions"></div>
+                        </div>
+
+                        <div class="an-card">
+                            <h3>Submissions <span id="tableNote"></span></h3>
+                            <div class="an-tablewrap">
+                                <table class="an-table" id="submissionsTable">
+                                    <thead>
+                                        <tr>
+                                            <th data-sort="name">Student</th>
+                                            <th data-sort="date">Date</th>
+                                            <th data-sort="score" class="num">Score</th>
+                                            <th data-sort="correct" class="num">Correct</th>
+                                            <th data-sort="duration" class="num">Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="submissionsBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1755,55 +1895,363 @@
             }
         }
 
+        // ===================== ANALYTICS =====================
+        // Data comes from export-submissions rather than get-submissions: the
+        // deployed get-submissions caps historical results at 7 days and 500
+        // rows, while export accepts days_back and returns the whole set. It
+        // hands back CSV, so it is parsed here.
+
+        const PASS_MARK = 80;
+        const QUIZ_FILES = {
+            pretraining: 'quiz_data_pre_class.js',
+            post_class: 'quiz_data_post_class.js',
+            fabric: 'quiz_data_fabric_engine.js',
+            switch: 'quiz_data_switch_engine.js'
+        };
+        const QUIZ_LABELS = {
+            pretraining: 'Pre-Class Assessment',
+            post_class: 'Post-Class Review',
+            fabric: 'Fabric Engine In-Class',
+            switch: 'Switch Engine In-Class'
+        };
+        const COUNTERPART = { pretraining: 'post_class', post_class: 'pretraining' };
+
+        let analytics = { rows: [], counterpart: [], quizText: {}, sort: { key: 'date', dir: -1 } };
+
+        // RFC-style CSV: quoted fields, doubled quotes, embedded commas/newlines
+        function parseCsv(text) {
+            const rows = [];
+            let row = [], field = '', inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i];
+                if (inQuotes) {
+                    if (c === '"') {
+                        if (text[i + 1] === '"') { field += '"'; i++; }
+                        else inQuotes = false;
+                    } else field += c;
+                } else if (c === '"') inQuotes = true;
+                else if (c === ',') { row.push(field); field = ''; }
+                else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+                else if (c !== '\r') field += c;
+            }
+            if (field.length || row.length) { row.push(field); rows.push(row); }
+            return rows.filter(r => r.length > 1 || (r[0] && r[0].trim()));
+        }
+
+        function safeJson(str, fallback) {
+            if (!str) return fallback;
+            try { return JSON.parse(str); } catch (e) { return fallback; }
+        }
+
+        async function fetchSubmissions(quizType, daysBack) {
+            const body = { token: sessionToken, quiz_type: quizType };
+            if (daysBack > 0) body.days_back = daysBack;
+
+            const res = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/export-submissions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+
+            const text = await res.text();
+            if (/^No data to export/i.test(text.trim())) return [];
+
+            const rows = parseCsv(text);
+            if (rows.length < 2) return [];
+            const head = rows[0].map(h => h.trim());
+            const col = name => head.indexOf(name);
+            const iDate = col('Date'), iName = col('Name'), iMail = col('Email');
+            const iScore = col('Score'), iPct = col('Percentage'), iTotal = col('Total Questions');
+            const iCorrect = col('Correct Answers'), iDur = col('Duration (min)');
+            const iSection = col('Section'), iTopics = col('Topic Scores'), iResp = col('Responses');
+
+            return rows.slice(1).map(r => {
+                const total = parseInt(r[iTotal], 10) || 0;
+                const correct = parseInt(r[iCorrect], 10) || 0;
+                const pct = parseInt(r[iPct], 10);
+                const score = parseInt(r[iScore], 10);
+                return {
+                    date: r[iDate] ? new Date(r[iDate]) : null,
+                    name: (r[iName] || '').trim() || 'Anonymous',
+                    email: (r[iMail] || '').trim(),
+                    total, correct,
+                    pct: Number.isFinite(pct) ? pct
+                        : Number.isFinite(score) ? score
+                        : (total ? Math.round(correct / total * 100) : 0),
+                    duration: parseInt(r[iDur], 10),
+                    section: (r[iSection] || '').trim(),
+                    topics: safeJson(r[iTopics], {}),
+                    responses: safeJson(r[iResp], [])
+                };
+            }).filter(r => r.total > 0 || r.correct > 0);
+        }
+
+        // Question text for the "hardest questions" list. Loaded without
+        // disturbing the in-class session's own quizData binding.
+        async function loadQuizText(quizType) {
+            const file = QUIZ_FILES[quizType];
+            if (!file) return {};
+            try {
+                const res = await fetch(file + '?t=' + Date.now());
+                if (!res.ok) return {};
+                const code = await res.text();
+                const prev = window.quizData;
+                delete window.quizData;
+                new Function(code)();
+                const data = Array.isArray(window.quizData) ? window.quizData : [];
+                window.quizData = prev;      // restore in-class state
+                const map = {};
+                data.forEach(q => { map[q.id] = { question: q.question, topic: q.topic }; });
+                return map;
+            } catch (e) { return {}; }
+        }
+
+        async function changeQuizRange() { await refreshData(); }
+
         async function refreshData() {
             if (!currentQuiz || !sessionToken) return;
 
+            const status = document.getElementById('analyticsStatus');
+            const bodyEl = document.getElementById('analyticsBody');
+            const days = parseInt(document.getElementById('rangeSelect').value, 10) || 0;
+
+            status.textContent = 'Loading ' + (QUIZ_LABELS[currentQuiz] || currentQuiz) + '…';
+            status.style.display = 'block';
+
             try {
-                const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/get-submissions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: sessionToken, quiz_type: currentQuiz })
-                });
+                analytics.rows = await fetchSubmissions(currentQuiz, days);
 
-                const result = await response.json();
+                // Pull the matching pre/post set so the movement panel can render
+                const other = COUNTERPART[currentQuiz];
+                analytics.counterpart = [];
+                if (other) {
+                    try { analytics.counterpart = await fetchSubmissions(other, days); }
+                    catch (e) { /* comparison is optional */ }
+                }
 
-                if (!response.ok) {
-                    console.error('Failed to fetch submissions');
+                analytics.quizText = await loadQuizText(currentQuiz);
+
+                if (analytics.rows.length === 0) {
+                    status.textContent = 'No ' + (QUIZ_LABELS[currentQuiz] || currentQuiz) +
+                        ' submissions in this period. Try a wider date range.';
+                    bodyEl.style.display = 'none';
                     return;
                 }
 
-                displaySubmissions(result.submissions || []);
+                status.style.display = 'none';
+                bodyEl.style.display = 'block';
+                renderAnalytics();
             } catch (error) {
-                console.error('Fetch error:', error);
+                console.error('Analytics load failed:', error);
+                status.textContent = 'Could not load submissions: ' + error.message;
+                status.style.display = 'block';
+                bodyEl.style.display = 'none';
             }
         }
 
-        function displaySubmissions(submissions) {
-            const container = document.getElementById('responseContainer');
-            const noData = document.getElementById('noData');
+        function filteredRows() {
+            const q = (document.getElementById('studentSearch').value || '').trim().toLowerCase();
+            if (!q) return analytics.rows;
+            return analytics.rows.filter(r =>
+                r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q));
+        }
 
-            if (submissions.length === 0) {
-                container.innerHTML = '';
-                noData.style.display = 'block';
-                return;
+        function median(nums) {
+            if (!nums.length) return 0;
+            const s = [...nums].sort((a, b) => a - b);
+            const m = Math.floor(s.length / 2);
+            return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
+        }
+
+        // Cohort topic averages: total correct over total asked, per topic.
+        // Handles both {topic:{correct,total}} and {topic: percent} shapes.
+        function topicAverages(rows) {
+            const acc = {};
+            rows.forEach(r => {
+                Object.entries(r.topics || {}).forEach(([topic, v]) => {
+                    if (!acc[topic]) acc[topic] = { correct: 0, total: 0, pctSum: 0, n: 0 };
+                    if (v && typeof v === 'object') {
+                        acc[topic].correct += Number(v.correct) || 0;
+                        acc[topic].total += Number(v.total) || 0;
+                    } else if (Number.isFinite(Number(v))) {
+                        acc[topic].pctSum += Number(v); acc[topic].n++;
+                    }
+                });
+            });
+            return Object.entries(acc).map(([topic, a]) => ({
+                topic,
+                pct: a.total ? Math.round(a.correct / a.total * 100)
+                    : a.n ? Math.round(a.pctSum / a.n) : 0,
+                correct: a.correct, total: a.total
+            })).sort((x, y) => x.pct - y.pct || x.topic.localeCompare(y.topic));
+        }
+
+        function bandColour(pct) {
+            const s = getComputedStyle(document.documentElement);
+            if (pct >= PASS_MARK) return s.getPropertyValue('--ok').trim() || '#3ED88A';
+            if (pct >= 60) return s.getPropertyValue('--warn').trim() || '#FFC466';
+            return s.getPropertyValue('--bad').trim() || '#FF6B7A';
+        }
+
+        function renderAnalytics() {
+            const rows = filteredRows();
+            const all = analytics.rows;
+
+            // ---- KPIs ----
+            const pcts = rows.map(r => r.pct);
+            const uniq = new Set(rows.map(r => r.email || r.name.toLowerCase())).size;
+            const passing = rows.filter(r => r.pct >= PASS_MARK).length;
+            const durs = rows.map(r => r.duration).filter(Number.isFinite);
+            const avg = pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : 0;
+
+            document.getElementById('kpiGrid').innerHTML = [
+                ['Submissions', rows.length, rows.length !== all.length ? 'of ' + all.length + ' loaded' : '&nbsp;'],
+                ['Students', uniq, uniq !== rows.length ? 'some repeated' : '&nbsp;'],
+                ['Average', avg + '%', 'median ' + median(pcts) + '%'],
+                ['At or above ' + PASS_MARK + '%', passing, rows.length ? Math.round(passing / rows.length * 100) + '% of cohort' : '&nbsp;'],
+                ['Avg time', durs.length ? Math.round(durs.reduce((a, b) => a + b, 0) / durs.length) + ' min' : '—',
+                 durs.length ? durs.length + ' timed' : 'not recorded']
+            ].map(([label, value, sub]) => `
+                <dl class="kpi">
+                    <dt>${label}</dt><dd>${value}</dd>
+                    <div class="kpi-sub">${sub}</div>
+                </dl>`).join('');
+
+            // ---- Score distribution ----
+            const buckets = [[0,19],[20,39],[40,59],[60,79],[80,100]];
+            const counts = buckets.map(([lo,hi]) => rows.filter(r => r.pct >= lo && r.pct <= hi).length);
+            const maxC = Math.max(1, ...counts);
+            document.getElementById('distNote').textContent = rows.length + ' submissions';
+            document.getElementById('scoreDist').innerHTML = buckets.map(([lo,hi], i) => `
+                <div class="bar-row">
+                    <span class="bl">${lo}–${hi}%</span>
+                    <span class="bt"><i style="width:${counts[i]/maxC*100}%;background:${bandColour(lo)}"></i></span>
+                    <span class="bv">${counts[i]}${rows.length ? ' · ' + Math.round(counts[i]/rows.length*100) + '%' : ''}</span>
+                </div>`).join('');
+
+            // ---- Topic mastery ----
+            const topics = topicAverages(rows);
+            document.getElementById('topicMastery').innerHTML = topics.length
+                ? topics.map(t => `
+                    <div class="bar-row">
+                        <span class="bl" title="${escapeHtml(t.topic)}">${escapeHtml(t.topic)}</span>
+                        <span class="bt"><i style="width:${Math.max(t.pct,2)}%;background:${bandColour(t.pct)}"></i></span>
+                        <span class="bv" style="color:${bandColour(t.pct)}">${t.pct}%</span>
+                    </div>`).join('')
+                : '<p class="no-data" style="padding:0">No topic data recorded on these submissions.</p>';
+
+            // ---- Pre → Post movement ----
+            const deltaCard = document.getElementById('deltaCard');
+            const other = COUNTERPART[currentQuiz];
+            if (other && analytics.counterpart.length) {
+                const isPre = currentQuiz === 'pretraining';
+                const preRows = isPre ? rows : analytics.counterpart;
+                const postRows = isPre ? analytics.counterpart : rows;
+                const pre = topicAverages(preRows), post = topicAverages(postRows);
+                const postMap = Object.fromEntries(post.map(t => [t.topic, t.pct]));
+                const shared = pre.filter(t => postMap[t.topic] !== undefined);
+
+                const preAvg = preRows.length ? Math.round(preRows.reduce((a,r)=>a+r.pct,0)/preRows.length) : 0;
+                const postAvg = postRows.length ? Math.round(postRows.reduce((a,r)=>a+r.pct,0)/postRows.length) : 0;
+
+                document.getElementById('deltaNote').textContent =
+                    preRows.length + ' pre · ' + postRows.length + ' post';
+                document.getElementById('deltaBody').innerHTML = `
+                    <div class="bar-row wide" style="border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:8px;">
+                        <span class="bq"><strong style="color:var(--ink)">Overall average</strong></span>
+                        <span class="bv">${preAvg}% → ${postAvg}%
+                            <span class="${postAvg>preAvg?'delta-up':postAvg<preAvg?'delta-down':'delta-flat'}">
+                                ${postAvg>preAvg?'+':''}${postAvg-preAvg}</span></span>
+                    </div>` + (shared.length ? shared.map(t => {
+                        const d = postMap[t.topic] - t.pct;
+                        return `<div class="bar-row wide">
+                            <span class="bq">${escapeHtml(t.topic)}</span>
+                            <span class="bv">${t.pct}% → ${postMap[t.topic]}%
+                                <span class="${d>0?'delta-up':d<0?'delta-down':'delta-flat'}">${d>0?'+':''}${d}</span></span>
+                        </div>`; }).join('')
+                      : '<p class="no-data" style="padding:0">No topics in common between the two sets.</p>');
+                deltaCard.style.display = 'block';
+            } else {
+                deltaCard.style.display = 'none';
             }
 
-            noData.style.display = 'none';
+            // ---- Hardest questions ----
+            const perQ = {};
+            rows.forEach(r => (r.responses || []).forEach(a => {
+                if (!a || a.question_id === undefined) return;
+                const k = String(a.question_id);
+                if (!perQ[k]) perQ[k] = { asked: 0, wrong: 0 };
+                perQ[k].asked++;
+                if (!a.isCorrect) perQ[k].wrong++;
+            }));
+            const hardest = Object.entries(perQ)
+                .map(([id, s]) => ({ id, ...s, pctWrong: Math.round(s.wrong / s.asked * 100) }))
+                .filter(q => q.asked > 0)
+                .sort((a, b) => b.pctWrong - a.pctWrong || b.asked - a.asked)
+                .slice(0, 10);
 
-            container.innerHTML = submissions.map(submission => {
-                const responses = submission.responses || [];
-                const correct = responses.filter(r => r && r.isCorrect).length;
-                const total = responses.length;
-                const score = Math.round((correct / total) * 100) || 0;
-                const statusClass = correct >= total * 0.8 ? 'correct' : 'incorrect';
+            document.getElementById('hardestQuestions').innerHTML = hardest.length
+                ? hardest.map(q => {
+                    const meta = analytics.quizText[q.id] || analytics.quizText[Number(q.id)];
+                    return `<div class="bar-row">
+                        <span class="bq">Q${escapeHtml(q.id)}${meta ? ' · ' + escapeHtml(meta.topic) : ''}
+                            ${meta ? '<em>' + escapeHtml(meta.question) + '</em>' : ''}</span>
+                        <span class="bt"><i style="width:${Math.max(q.pctWrong,2)}%;background:${bandColour(100-q.pctWrong)}"></i></span>
+                        <span class="bv">${q.pctWrong}% wrong<br><span style="font-weight:400;color:var(--ink-soft);font-size:11px">${q.wrong}/${q.asked}</span></span>
+                    </div>`; }).join('')
+                : '<p class="no-data" style="padding:0">No per-question data on these submissions.</p>';
 
-                return `
-                    <div class="response-card ${statusClass}">
-                        <div class="student-name">${submission.name || 'Anonymous'}</div>
-                        <div class="student-answer">Score: ${score}% (${correct}/${total})</div>
-                    </div>
-                `;
-            }).join('');
+            // ---- Table ----
+            renderTable(rows);
+        }
+
+        function renderTable(rows) {
+            const { key, dir } = analytics.sort;
+            const val = r => key === 'name' ? r.name.toLowerCase()
+                : key === 'date' ? (r.date ? r.date.getTime() : 0)
+                : key === 'score' ? r.pct
+                : key === 'correct' ? r.correct
+                : (Number.isFinite(r.duration) ? r.duration : -1);
+            const sorted = [...rows].sort((a, b) => {
+                const x = val(a), y = val(b);
+                return (x < y ? -1 : x > y ? 1 : 0) * dir;
+            });
+
+            document.getElementById('tableNote').textContent =
+                sorted.length + (sorted.length === 1 ? ' submission' : ' submissions');
+
+            document.querySelectorAll('#submissionsTable th').forEach(th => {
+                if (th.dataset.sort === key) th.setAttribute('aria-sort', dir === 1 ? 'ascending' : 'descending');
+                else th.removeAttribute('aria-sort');
+            });
+
+            document.getElementById('submissionsBody').innerHTML = sorted.map(r => `
+                <tr>
+                    <td><span class="st-name">${escapeHtml(r.name)}</span>
+                        ${r.email && !r.email.startsWith('anon-') ? '<span class="st-mail">' + escapeHtml(r.email) + '</span>' : ''}</td>
+                    <td>${r.date ? r.date.toLocaleDateString() + ' ' + r.date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+                    <td class="num"><span class="score-pill" style="background:${bandColour(r.pct)}22;color:${bandColour(r.pct)}">${r.pct}%</span></td>
+                    <td class="num">${r.correct}/${r.total}</td>
+                    <td class="num">${Number.isFinite(r.duration) ? r.duration + ' min' : '—'}</td>
+                </tr>`).join('');
+        }
+
+        function downloadCsv() {
+            if (!currentQuiz) { alert('Pick a quiz first.'); return; }
+            const days = parseInt(document.getElementById('rangeSelect').value, 10) || 0;
+            const rows = filteredRows();
+            const head = ['Name','Email','Date','Score %','Correct','Total','Duration (min)'];
+            const body = rows.map(r => [r.name, r.email,
+                r.date ? r.date.toISOString() : '', r.pct, r.correct, r.total,
+                Number.isFinite(r.duration) ? r.duration : ''
+            ].map(v => '"' + String(v).replace(/"/g, '""') + '"').join(','));
+            const blob = new Blob([[head.join(','), ...body].join('\n')], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = currentQuiz + '_' + (days || 'all') + 'd_' + new Date().toISOString().slice(0,10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(a.href);
         }
 
         const POLL_SETTINGS_KEY = 'dashboardPollSettings';
@@ -1842,12 +2290,9 @@
             const settings = getPollSettings();
             if (!settings.enabled) return;  // manual mode: Refresh buttons only
 
-            autoRefreshInterval = setInterval(() => {
-                if (currentTab === 'historical' && currentQuiz && sessionToken) {
-                    refreshData();
-                }
-            }, settings.interval);
-
+            // The submissions tab is historical by nature and now pulls a whole
+            // date range, so it is not polled on a timer - use its Refresh
+            // button. Only the live session view auto-refreshes.
             livePollingInterval = setInterval(() => {
                 if (currentTab === 'inclass') {
                     refreshInClassData();
@@ -1857,6 +2302,16 @@
 
         window.addEventListener('load', () => {
             restorePollSettings();
+
+            // Sortable submissions table: click a header to sort, click again to flip
+            document.querySelectorAll('#submissionsTable th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const key = th.dataset.sort;
+                    if (analytics.sort.key === key) analytics.sort.dir *= -1;
+                    else analytics.sort = { key, dir: key === 'name' ? 1 : -1 };
+                    renderTable(filteredRows());
+                });
+            });
 
             const savedToken = sessionStorage.getItem('instructorToken');
             if (savedToken) {

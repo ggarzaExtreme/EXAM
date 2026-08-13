@@ -1,4 +1,4 @@
-﻿// Fabric Engine In-Class Quiz Data
+// Fabric Engine In-Class Quiz Data
 // Questions organized by presentation section
 
 const quizData = [
@@ -16,10 +16,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine is a management and automation platform for network infrastructure.",
     resources: {
-      videoTopic: "Fabric Engine Overview",
-      youtubeLinks: [
-        { title: "Fabric Engine Introduction", url: "https://www.youtube.com/results?search_query=extreme+fabric+engine+overview" }
-      ]
+      videoTopic: "Fabric Engine Overview"
     }
   },
   {
@@ -35,10 +32,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine uses a distributed architecture with controllers, agents on devices, and policy engines.",
     resources: {
-      videoTopic: "Fabric Architecture",
-      youtubeLinks: [
-        { title: "Fabric Architecture Explained", url: "https://www.youtube.com/results?search_query=fabric+network+architecture" }
-      ]
+      videoTopic: "Fabric Architecture"
     }
   },
   {
@@ -54,10 +48,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine enables automated, consistent policy deployment across the network infrastructure.",
     resources: {
-      videoTopic: "Fabric Benefits",
-      youtubeLinks: [
-        { title: "Network Automation Benefits", url: "https://www.youtube.com/results?search_query=network+automation+benefits" }
-      ]
+      videoTopic: "Fabric Benefits"
     }
   },
   {
@@ -73,10 +64,7 @@ const quizData = [
     ],
     explanation: "Intent-based networking allows you to specify business goals, and the system figures out the configurations.",
     resources: {
-      videoTopic: "Intent-Based Networking",
-      youtubeLinks: [
-        { title: "Intent-Based Networking", url: "https://www.youtube.com/results?search_query=intent+based+networking" }
-      ]
+      videoTopic: "Intent-Based Networking"
     }
   },
   {
@@ -92,10 +80,7 @@ const quizData = [
     ],
     explanation: "Device discovery and onboarding is the foundation of Fabric Engine deployment.",
     resources: {
-      videoTopic: "Fabric Deployment",
-      youtubeLinks: [
-        { title: "Deployment Best Practices", url: "https://www.youtube.com/results?search_query=fabric+engine+deployment" }
-      ]
+      videoTopic: "Fabric Deployment"
     }
   },
 
@@ -113,10 +98,7 @@ const quizData = [
     ],
     explanation: "Layer 1 configuration manages the physical characteristics of network connections.",
     resources: {
-      videoTopic: "Layer 1 Settings",
-      youtubeLinks: [
-        { title: "Physical Layer Configuration", url: "https://www.youtube.com/results?search_query=osi+layer+1+physical+layer" }
-      ]
+      videoTopic: "Layer 1 Settings"
     }
   },
   {
@@ -132,10 +114,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine uses reusable templates to apply consistent port configurations across the network.",
     resources: {
-      videoTopic: "Port Templates",
-      youtubeLinks: [
-        { title: "Configuration Templates", url: "https://www.youtube.com/results?search_query=network+port+configuration+templates" }
-      ]
+      videoTopic: "Port Templates"
     }
   },
   {
@@ -151,10 +130,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine supports diverse physical media for different deployment scenarios.",
     resources: {
-      videoTopic: "Physical Media",
-      youtubeLinks: [
-        { title: "Network Media Types", url: "https://www.youtube.com/results?search_query=ethernet+fiber+optic+media" }
-      ]
+      videoTopic: "Physical Media"
     }
   },
   {
@@ -170,10 +146,7 @@ const quizData = [
     ],
     explanation: "Link aggregation combines multiple physical connections into a single logical link for increased throughput.",
     resources: {
-      videoTopic: "Link Aggregation",
-      youtubeLinks: [
-        { title: "Port Aggregation (LACP/EtherChannel)", url: "https://www.youtube.com/results?search_query=link+aggregation+lacp" }
-      ]
+      videoTopic: "Link Aggregation"
     }
   },
   {
@@ -189,10 +162,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine policies allow you to specify port speed preferences and negotiation strategies.",
     resources: {
-      videoTopic: "Port Speed",
-      youtubeLinks: [
-        { title: "Speed Negotiation Best Practices", url: "https://www.youtube.com/results?search_query=ethernet+speed+negotiation" }
-      ]
+      videoTopic: "Port Speed"
     }
   },
 
@@ -210,10 +180,7 @@ const quizData = [
     ],
     explanation: "Layer 2 configuration in Fabric Engine manages switching, VLANs, and MAC-level operations.",
     resources: {
-      videoTopic: "Layer 2 Configuration",
-      youtubeLinks: [
-        { title: "Data Link Layer (Layer 2)", url: "https://www.youtube.com/results?search_query=osi+layer+2+data+link" }
-      ]
+      videoTopic: "Layer 2 Configuration"
     }
   },
   {
@@ -229,10 +196,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine automates VLAN provisioning and management through centralized policies.",
     resources: {
-      videoTopic: "VLAN Management",
-      youtubeLinks: [
-        { title: "VLAN Management Best Practices", url: "https://www.youtube.com/results?search_query=vlan+management+automation" }
-      ]
+      videoTopic: "VLAN Management"
     }
   },
   {
@@ -248,10 +212,7 @@ const quizData = [
     ],
     explanation: "Spanning Tree Protocol prevents network loops while maintaining redundant paths for reliability.",
     resources: {
-      videoTopic: "Spanning Tree",
-      youtubeLinks: [
-        { title: "Spanning Tree Protocol", url: "https://www.youtube.com/results?search_query=spanning+tree+protocol+stp" }
-      ]
+      videoTopic: "Spanning Tree"
     }
   },
   {
@@ -267,10 +228,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine manages MAC address learning with automatic discovery and policy-based controls.",
     resources: {
-      videoTopic: "MAC Learning",
-      youtubeLinks: [
-        { title: "MAC Address Learning", url: "https://www.youtube.com/results?search_query=mac+address+learning+table" }
-      ]
+      videoTopic: "MAC Learning"
     }
   },
   {
@@ -286,10 +244,7 @@ const quizData = [
     ],
     explanation: "Switch groups allow you to apply consistent policies across multiple switches simultaneously.",
     resources: {
-      videoTopic: "Switch Management",
-      youtubeLinks: [
-        { title: "Device Grouping for Management", url: "https://www.youtube.com/results?search_query=network+device+groups+management" }
-      ]
+      videoTopic: "Switch Management"
     }
   },
 
@@ -307,10 +262,7 @@ const quizData = [
     ],
     explanation: "Layer 3 configuration in Fabric Engine manages IP network infrastructure and routing policies.",
     resources: {
-      videoTopic: "Layer 3 Configuration",
-      youtubeLinks: [
-        { title: "Network Layer (Layer 3)", url: "https://www.youtube.com/results?search_query=osi+layer+3+network+layer" }
-      ]
+      videoTopic: "Layer 3 Configuration"
     }
   },
   {
@@ -326,10 +278,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine includes IPAM capabilities for centralized IP address management and DHCP services.",
     resources: {
-      videoTopic: "IP Address Management",
-      youtubeLinks: [
-        { title: "IPAM Best Practices", url: "https://www.youtube.com/results?search_query=ip+address+management+ipam" }
-      ]
+      videoTopic: "IP Address Management"
     }
   },
   {
@@ -345,10 +294,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine routing policies define how traffic is routed through the network infrastructure.",
     resources: {
-      videoTopic: "Routing Policies",
-      youtubeLinks: [
-        { title: "Routing Policy Management", url: "https://www.youtube.com/results?search_query=routing+policies+bgp+ospf" }
-      ]
+      videoTopic: "Routing Policies"
     }
   },
   {
@@ -364,10 +310,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine manages default gateway configuration and redundancy for network availability.",
     resources: {
-      videoTopic: "Gateway Management",
-      youtubeLinks: [
-        { title: "Default Gateway Configuration", url: "https://www.youtube.com/results?search_query=default+gateway+configuration" }
-      ]
+      videoTopic: "Gateway Management"
     }
   },
   {
@@ -383,10 +326,7 @@ const quizData = [
     ],
     explanation: "Fabric Engine provides tools for efficient subnet creation, allocation, and optimization.",
     resources: {
-      videoTopic: "Subnet Management",
-      youtubeLinks: [
-        { title: "Subnetting and IP Planning", url: "https://www.youtube.com/results?search_query=subnet+planning+ipv4+ipv6" }
-      ]
+      videoTopic: "Subnet Management"
     }
   }
 ];

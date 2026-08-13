@@ -473,30 +473,30 @@
            the page so panels read as panels; --modal is deliberately opaque so
            dialogs stay readable over the Network Graphic. */
         :root, :root[data-theme="extreme"] {
-            --bg:#07050D; --surface:rgba(28,21,45,.82); --surface-2:rgba(40,30,64,.9);
-            --line:rgba(159,140,255,.24);
-            --ink:#FFFFFF; --ink-soft:#B4ACC9;
-            --accent:#7519F9; --accent-2:#A98BFF; --btn-ink:#FFFFFF;
-            --ok:#4FE39A; --ok-bg:rgba(79,227,154,.16);
-            --bad:#FF8792; --bad-bg:rgba(255,135,146,.15);
-            --warn:#FFD08A; --warn-bg:rgba(255,208,138,.15);
-            --wait-bg:rgba(255,255,255,.10); --sel-bg:rgba(117,25,249,.26);
-            --modal:#181231;
-            --radius:3px;
-            --gb-bg:rgba(16,11,30,.86); --gb-ink:#FFFFFF; --gb-soft:#B4ACC9;
-            --gb-line:rgba(159,140,255,.26);
+            --bg:#000000; --surface:rgba(255,255,255,.05); --surface-2:rgba(255,255,255,.08);
+            --line:rgba(255,255,255,.12);
+            --ink:#FFFFFF; --ink-soft:#9A93B0;
+            --accent:#7519F9; --accent-2:#7D76F2; --btn-ink:#FFFFFF;
+            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.12);
+            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.10);
+            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
+            --wait-bg:rgba(255,255,255,.06); --sel-bg:rgba(117,25,249,.18);
+            --modal:#0E0A18;
+            --radius:2px;
+            --gb-bg:rgba(11,7,19,.72); --gb-ink:#FFFFFF; --gb-soft:#9A93B0;
+            --gb-line:rgba(255,255,255,.12);
         }
         :root[data-theme="ops"] {
-            --bg:#0A0713; --surface:#171226; --surface-2:#221A38; --line:#352A4E;
-            --ink:#FFFFFF; --ink-soft:#ABA3C1;
-            --accent:#7519F9; --accent-2:#A98BFF; --btn-ink:#FFFFFF;
-            --ok:#4FE39A; --ok-bg:rgba(79,227,154,.16);
-            --bad:#FF8792; --bad-bg:rgba(255,135,146,.15);
-            --warn:#FFD08A; --warn-bg:rgba(255,208,138,.15);
-            --wait-bg:rgba(255,255,255,.10); --sel-bg:rgba(117,25,249,.24);
-            --modal:#171226;
+            --bg:#000000; --surface:#0B0713; --surface-2:#140E20; --line:#221A33;
+            --ink:#FFFFFF; --ink-soft:#948CAB;
+            --accent:#7519F9; --accent-2:#9F8CFF; --btn-ink:#FFFFFF;
+            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.13);
+            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.11);
+            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
+            --wait-bg:rgba(255,255,255,.07); --sel-bg:rgba(117,25,249,.16);
+            --modal:#0B0713;
             --radius:4px;
-            --gb-bg:#120D20; --gb-ink:#FFFFFF; --gb-soft:#ABA3C1; --gb-line:#352A4E;
+            --gb-bg:#0B0713; --gb-ink:#FFFFFF; --gb-soft:#948CAB; --gb-line:#221A33;
         }
         :root[data-theme="light"] {
             --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F5F2FB; --line:#E0DBEE;
@@ -590,9 +590,12 @@
             background: var(--surface-2); border: 1px solid var(--line);
             border-radius: var(--radius);
         }
+        .actionrow > * { margin: 0; }
         .actionrow .btn { width: auto; margin: 0; }
         .actionrow .grow { flex: 1 1 160px; }
-        .actionrow .right { margin-left: auto; }
+        .actionrow .right { margin: 0 0 0 auto; }
+        /* A transparent border keeps solid and outlined buttons the same height */
+        .btn { border: 1px solid transparent; }
 
         /* ===== Status strip - always rendered, fixed height ===== */
         .statusstrip {
@@ -602,7 +605,11 @@
             background: var(--surface); font-size: 12px; color: var(--ink-soft);
         }
         .statusstrip b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
-        .statusstrip .right { margin-left: auto; }
+        /* Inherited margins on children make align-items:center centre the outer
+           box, which leaves the text visually off-centre. Zero them and give
+           every child the same line box. */
+        .statusstrip > * { margin: 0; line-height: 1.25; }
+        .statusstrip .right { margin: 0 0 0 auto; }
         .chip {
             font-size: 10px; font-weight: 700; letter-spacing: .07em;
             text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
@@ -729,6 +736,109 @@
         h2 { color: var(--ink) !important; }
 
         :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+
+        /* ===== Results page ===== */
+        .res-hero {
+            display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 30px;
+            align-items: center; padding: 26px 24px; margin-bottom: 18px;
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius);
+        }
+        .res-ring { position: relative; width: 132px; height: 132px; flex: none; }
+        .res-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .ring-track { fill: none; stroke: var(--line); stroke-width: 9; }
+        .ring-fill {
+            fill: none; stroke: url(#none); stroke: var(--accent-2); stroke-width: 9;
+            stroke-linecap: round; stroke-dasharray: 327; stroke-dashoffset: 327;
+            transition: stroke-dashoffset .7s ease;
+        }
+        .res-ring-num {
+            position: absolute; inset: 0; display: grid; place-items: center;
+            font-size: 34px; font-weight: 700; letter-spacing: -.02em;
+            color: var(--ink); font-variant-numeric: tabular-nums;
+        }
+        .res-over {
+            font-size: 10.5px; font-weight: 700; letter-spacing: .16em;
+            text-transform: uppercase; color: var(--accent-2); margin: 0 0 10px;
+        }
+        .res-headline h2 {
+            font-size: clamp(21px, 3.4vw, 30px); font-weight: 700; line-height: 1.1;
+            letter-spacing: -.015em; margin: 0 0 8px; text-wrap: balance;
+        }
+        .res-sub { font-size: 14px; color: var(--ink-soft); margin: 0; }
+        .res-tiles { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+        .res-tile {
+            flex: 1 1 92px; padding: 11px 13px; background: var(--surface-2);
+            border: 1px solid var(--line); border-radius: var(--radius);
+        }
+        .res-tile dt {
+            font-size: 9.5px; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase; color: var(--ink-soft); margin: 0 0 4px;
+        }
+        .res-tile dd {
+            margin: 0; font-size: 19px; font-weight: 700; color: var(--ink);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .res-section {
+            padding: 22px 24px; margin-bottom: 18px;
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius);
+        }
+        .res-section h3 {
+            font-size: 11px; font-weight: 700; letter-spacing: .12em;
+            text-transform: uppercase; color: var(--ink-soft);
+            margin: 0 0 18px; display: flex; align-items: baseline; gap: 10px;
+        }
+        .res-section h3 span {
+            font-size: 11px; font-weight: 400; letter-spacing: .02em;
+            text-transform: none; margin-left: auto; color: var(--ink-soft);
+        }
+        .res-note { font-size: 12.5px; color: var(--ink-soft); margin: -8px 0 16px; }
+
+        .topic-row { margin-bottom: 17px; }
+        .topic-row:last-child { margin-bottom: 0; }
+        .topic-row .tr-top {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 7px;
+        }
+        .topic-row .tr-name { font-size: 14px; font-weight: 700; color: var(--ink); }
+        .topic-row .tr-frac {
+            margin-left: auto; font-size: 12px; color: var(--ink-soft);
+            font-variant-numeric: tabular-nums;
+        }
+        .topic-row .tr-pct {
+            font-size: 13px; font-weight: 700; min-width: 42px; text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .topic-row .tr-bar {
+            height: 7px; border-radius: 100px; background: var(--line); overflow: hidden;
+        }
+        .topic-row .tr-bar i { display: block; height: 100%; border-radius: 100px; }
+
+        .review-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .review-item:last-child { border-bottom: none; }
+        .review-item .ri-body { flex: 1; min-width: 0; }
+        .review-item .ri-topic { font-size: 14px; font-weight: 700; color: var(--ink); }
+        .review-item .ri-detail {
+            font-size: 12px; color: var(--ink-soft); margin-top: 3px;
+        }
+        .review-link {
+            font-size: 11.5px; font-weight: 700; letter-spacing: .04em;
+            padding: 7px 13px; border-radius: var(--radius); white-space: nowrap;
+            border: 1px solid var(--line); color: var(--accent-2);
+            text-decoration: none; background: transparent;
+        }
+        .review-link:hover { border-color: var(--accent-2); background: var(--sel-bg); }
+        .review-link[data-placeholder]::after {
+            content: " ·  pending"; color: var(--ink-soft); font-weight: 400;
+        }
+
+        @media (max-width: 640px) {
+            .res-hero { grid-template-columns: 1fr; gap: 20px; justify-items: start; }
+        }
 
         /* ===== Home hero ===== */
         .hero { padding: 44px 0 6px; }
@@ -984,19 +1094,49 @@
 
             <!-- Full Quiz Mode: Results Screen -->
             <div class="screen" id="fullQuizResultsScreen">
-                <h2 style="text-align: center; margin-bottom: 30px;">Assessment Results</h2>
-
-                <div style="text-align: center; margin: 40px 0;">
-                    <div style="display: inline-flex; width: 160px; height: 160px; border-radius: 50%; background: linear-gradient(135deg, #20004C 0%, #5B059C 100%); color: white; font-size: 60px; font-weight: 700; align-items: center; justify-content: center; margin-bottom: 20px;" id="scoreCircle">0%</div>
-                    <div id="scoreText" style="font-size: 18px; color: #333; margin-bottom: 10px; font-weight: 600;"></div>
-                    <div id="readinessMessage" style="font-size: 16px; font-weight: 600; padding: 15px; border-radius: 6px; margin: 15px 0;"></div>
+                <div class="actionrow">
+                    <button class="btn" onclick="submitResults()">Submit Results</button>
+                    <button class="btn btn-secondary" onclick="backToModeSelection()">← Start Over</button>
+                    <span class="chip right" id="resultsSubmitState">Not submitted yet</span>
                 </div>
 
-                <div id="topicResults" style="margin: 40px 0;"></div>
+                <div class="res-hero">
+                    <div class="res-ring">
+                        <svg viewBox="0 0 120 120" aria-hidden="true">
+                            <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+                            <circle class="ring-fill" id="resultsRing" cx="60" cy="60" r="52"></circle>
+                        </svg>
+                        <span class="res-ring-num" id="scoreCircle">0%</span>
+                    </div>
+                    <div class="res-headline">
+                        <p class="res-over" id="resultsOverline">Assessment complete</p>
+                        <h2 id="readinessMessage">—</h2>
+                        <p class="res-sub" id="scoreText"></p>
+                        <div class="res-tiles">
+                            <div class="res-tile">
+                                <dt>Correct</dt><dd id="resCorrect">0</dd>
+                            </div>
+                            <div class="res-tile">
+                                <dt>Answered</dt><dd id="resAnswered">0</dd>
+                            </div>
+                            <div class="res-tile">
+                                <dt>Time</dt><dd id="resTime">—</dd>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <div style="text-align: center; margin-top: 40px;">
-                    <button class="btn" onclick="submitResults()">✓ Submit Results</button>
-                    <button class="btn btn-secondary" onclick="backToModeSelection()" style="margin-left: 10px;">← Start Over</button>
+                <div class="res-section">
+                    <h3>Topic Breakdown <span>weakest first</span></h3>
+                    <div id="topicResults"></div>
+                </div>
+
+                <div class="res-section" id="reviewSection">
+                    <h3>What To Review <span id="reviewCount"></span></h3>
+                    <p class="res-note">
+                        Review links are placeholders — point them at your own material when ready.
+                    </p>
+                    <div id="reviewList"></div>
                 </div>
             </div>
 
@@ -1298,6 +1438,37 @@
             }
         }
 
+        function escapeHtml(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // One colour scale for every score in the app: pass / partial / weak
+        function bandColour(pct) {
+            const styles = getComputedStyle(document.documentElement);
+            if (pct >= 80) return styles.getPropertyValue('--ok').trim() || '#3ED88A';
+            if (pct >= 60) return styles.getPropertyValue('--warn').trim() || '#FFC466';
+            return styles.getPropertyValue('--bad').trim() || '#FF6B7A';
+        }
+
+        // The quiz data carries a videoTopic label per question, which makes a
+        // better review hint than the bare topic name.
+        function reviewHint(topic) {
+            const q = (window.quizData || []).find(
+                q => q.topic === topic && q.resources && q.resources.videoTopic);
+            return escapeHtml(q ? q.resources.videoTopic : 'Review this topic');
+        }
+
+        function reviewLinkPending(event) {
+            event.preventDefault();
+            const a = event.currentTarget;
+            const original = a.textContent;
+            a.textContent = 'Link not set yet';
+            setTimeout(() => { a.textContent = original; }, 1600);
+            return false;
+        }
+
         function finishQuiz() {
             // Warn about unanswered questions
             const unanswered = responses.filter(r => r === null).length;
@@ -1323,61 +1494,94 @@
             });
 
             const percentage = Math.round((totalCorrect / responses.length) * 100);
+            const answeredCount = responses.filter(r => r !== null).length;
+            const minutes = Math.max(1, Math.round((new Date() - quizStartTime) / 60000));
 
+            // ----- Score ring -----
             document.getElementById('scoreCircle').textContent = percentage + '%';
-            document.getElementById('scoreText').textContent = `You scored ${totalCorrect} out of ${responses.length} questions correctly`;
-
-            // Readiness message
-            const readinessDiv = document.getElementById('readinessMessage');
-            if (classType === 'pretraining') {
-                if (percentage >= 80) {
-                    readinessDiv.textContent = '✓ You are well-prepared for this class!';
-                    readinessDiv.style.backgroundColor = '#D1E7DD';
-                    readinessDiv.style.color = '#155724';
-                } else if (percentage >= 60) {
-                    readinessDiv.textContent = '⚠ Review the material before class';
-                    readinessDiv.style.backgroundColor = '#FFF3CD';
-                    readinessDiv.style.color = '#856404';
-                } else {
-                    readinessDiv.textContent = '✗ You should review the fundamentals';
-                    readinessDiv.style.backgroundColor = '#F8D7DA';
-                    readinessDiv.style.color = '#721C24';
-                }
-            } else {
-                if (percentage >= 80) {
-                    readinessDiv.textContent = '✓ Excellent understanding demonstrated!';
-                    readinessDiv.style.backgroundColor = '#D1E7DD';
-                    readinessDiv.style.color = '#155724';
-                } else if (percentage >= 60) {
-                    readinessDiv.textContent = '⚠ Good progress, review challenging topics';
-                    readinessDiv.style.backgroundColor = '#FFF3CD';
-                    readinessDiv.style.color = '#856404';
-                } else {
-                    readinessDiv.textContent = '✗ Additional practice recommended';
-                    readinessDiv.style.backgroundColor = '#F8D7DA';
-                    readinessDiv.style.color = '#721C24';
-                }
-            }
-
-            // Display topic breakdown
-            let topicHtml = '<h3>Topic Breakdown:</h3><div style="margin: 20px 0;">';
-            Object.entries(topicScores).forEach(([topic, scores]) => {
-                const topicPercent = Math.round((scores.correct / scores.total) * 100);
-                topicHtml += `
-                    <div style="margin: 15px 0;">
-                        <div style="font-weight: 600; margin-bottom: 5px;">${topic}</div>
-                        <div style="width: 100%; background: #e0e0e0; height: 20px; border-radius: 4px; overflow: hidden;">
-                            <div style="width: ${topicPercent}%; background: ${topicPercent >= 80 ? '#2DCA73' : topicPercent >= 60 ? '#FFA500' : '#E63946'}; height: 100%;"></div>
-                        </div>
-                        <div style="font-size: 14px; color: #666; margin-top: 5px;">${scores.correct}/${scores.total} correct</div>
-                    </div>
-                `;
+            const CIRC = 2 * Math.PI * 52;  // r=52 in the SVG
+            const ring = document.getElementById('resultsRing');
+            ring.style.strokeDasharray = CIRC.toFixed(1);
+            ring.style.strokeDashoffset = CIRC.toFixed(1);
+            ring.style.stroke = bandColour(percentage);
+            // next frame so the transition runs from empty
+            requestAnimationFrame(() => {
+                ring.style.strokeDashoffset = (CIRC * (1 - percentage / 100)).toFixed(1);
             });
-            topicHtml += '</div>';
-            document.getElementById('topicResults').innerHTML = topicHtml;
+
+            document.getElementById('resultsOverline').textContent =
+                (classType === 'pretraining' ? 'Pre-class assessment' : 'Post-class review') + ' · complete';
+            document.getElementById('scoreText').textContent =
+                `${totalCorrect} of ${responses.length} correct` +
+                (answeredCount < responses.length
+                    ? ` · ${responses.length - answeredCount} left blank (counted incorrect)` : '');
+            document.getElementById('resCorrect').textContent = totalCorrect + '/' + responses.length;
+            document.getElementById('resAnswered').textContent = answeredCount + '/' + responses.length;
+            document.getElementById('resTime').textContent = minutes + ' min';
+
+            // ----- Verdict -----
+            const verdict = document.getElementById('readinessMessage');
+            if (classType === 'pretraining') {
+                verdict.textContent = percentage >= 80 ? 'You are ready for this class.'
+                    : percentage >= 60 ? 'Worth a review before class.'
+                    : 'Start with the fundamentals below.';
+            } else {
+                verdict.textContent = percentage >= 80 ? 'Strong understanding — it stuck.'
+                    : percentage >= 60 ? 'Good progress. A few topics to firm up.'
+                    : 'Worth another pass at the material.';
+            }
+            verdict.style.color = bandColour(percentage);
+
+            // ----- Topic breakdown, weakest first -----
+            const topics = Object.entries(topicScores)
+                .map(([topic, s]) => ({
+                    topic,
+                    correct: s.correct,
+                    total: s.total,
+                    pct: Math.round((s.correct / s.total) * 100)
+                }))
+                .sort((a, b) => a.pct - b.pct || a.topic.localeCompare(b.topic));
+
+            document.getElementById('topicResults').innerHTML = topics.map(t => `
+                <div class="topic-row">
+                    <div class="tr-top">
+                        <span class="tr-name">${escapeHtml(t.topic)}</span>
+                        <span class="tr-frac">${t.correct}/${t.total}</span>
+                        <span class="tr-pct" style="color:${bandColour(t.pct)}">${t.pct}%</span>
+                    </div>
+                    <div class="tr-bar"><i style="width:${Math.max(t.pct, 2)}%;background:${bandColour(t.pct)}"></i></div>
+                </div>
+            `).join('');
+
+            // ----- What to review: topics under 80%, with placeholder links -----
+            const weak = topics.filter(t => t.pct < 80);
+            const reviewList = document.getElementById('reviewList');
+            const reviewCount = document.getElementById('reviewCount');
+
+            if (weak.length === 0) {
+                reviewCount.textContent = 'nothing outstanding';
+                reviewList.innerHTML =
+                    '<p class="res-note" style="margin:0">You cleared 80% or better on every topic. Nothing flagged for review.</p>';
+                document.querySelector('#reviewSection .res-note').style.display = 'none';
+            } else {
+                reviewCount.textContent = weak.length + (weak.length === 1 ? ' topic' : ' topics');
+                document.querySelector('#reviewSection .res-note').style.display = '';
+                reviewList.innerHTML = weak.map(t => `
+                    <div class="review-item">
+                        <span class="ri-body">
+                            <span class="ri-topic">${escapeHtml(t.topic)}</span>
+                            <span class="ri-detail">${t.correct}/${t.total} correct · ${t.pct}% — ${reviewHint(t.topic)}</span>
+                        </span>
+                        <a class="review-link" href="#" data-placeholder="1"
+                           onclick="return reviewLinkPending(event);">Review</a>
+                    </div>
+                `).join('');
+            }
 
             document.getElementById('fullQuizScreen').classList.remove('active');
             document.getElementById('fullQuizResultsScreen').classList.add('active');
+            document.getElementById('resultsSubmitState').textContent = 'Not submitted yet';
+            window.scrollTo(0, 0);
         }
 
         let submittingResults = false;
@@ -1412,14 +1616,21 @@
                     body: JSON.stringify(payload)
                 });
 
+                const state = document.getElementById('resultsSubmitState');
                 if (response.ok) {
-                    alert('Assessment submitted successfully!');
-                    backToModeSelection();
+                    state.textContent = '✓ Submitted';
+                    state.style.background = 'var(--ok-bg)';
+                    state.style.color = 'var(--ok)';
                 } else {
-                    alert('Failed to submit assessment. Please try again — your answers are still on screen.');
+                    state.textContent = 'Submit failed — try again';
+                    state.style.background = 'var(--bad-bg)';
+                    state.style.color = 'var(--bad)';
                 }
             } catch (error) {
-                alert('Error submitting assessment: ' + error.message);
+                const state = document.getElementById('resultsSubmitState');
+                state.textContent = 'Could not reach the server';
+                state.style.background = 'var(--bad-bg)';
+                state.style.color = 'var(--bad)';
             } finally {
                 submittingResults = false;
             }

@@ -1,4 +1,4 @@
-﻿// Post-Class Review/Feedback Quiz Data
+// Post-Class Review/Feedback Quiz Data
 // 10 placeholder questions
 
 const quizData = [
@@ -15,10 +15,7 @@ const quizData = [
     ],
     explanation: "This question helps us understand if the course content aligns with student expectations.",
     resources: {
-      videoTopic: "Course Quality",
-      youtubeLinks: [
-        { title: "Course Overview", url: "https://www.youtube.com/results?search_query=extreme+networks" }
-      ]
+      videoTopic: "Course Quality"
     }
   },
   {
@@ -34,10 +31,7 @@ const quizData = [
     ],
     explanation: "Instructor feedback helps us improve teaching quality for future sessions.",
     resources: {
-      videoTopic: "Teaching Methods",
-      youtubeLinks: [
-        { title: "Effective Teaching", url: "https://www.youtube.com/results?search_query=teaching+best+practices" }
-      ]
+      videoTopic: "Teaching Methods"
     }
   },
   {
@@ -53,10 +47,7 @@ const quizData = [
     ],
     explanation: "Understanding which topics resonate most helps us prioritize curriculum updates.",
     resources: {
-      videoTopic: "Networking Concepts",
-      youtubeLinks: [
-        { title: "Networking Fundamentals", url: "https://www.youtube.com/results?search_query=networking+fundamentals" }
-      ]
+      videoTopic: "Networking Concepts"
     }
   },
   {
@@ -72,10 +63,7 @@ const quizData = [
     ],
     explanation: "Feedback on course pace helps us optimize learning outcomes.",
     resources: {
-      videoTopic: "Course Design",
-      youtubeLinks: [
-        { title: "Adult Learning Principles", url: "https://www.youtube.com/results?search_query=adult+learning+theory" }
-      ]
+      videoTopic: "Course Design"
     }
   },
   {
@@ -91,10 +79,7 @@ const quizData = [
     ],
     explanation: "Lab feedback helps us improve practical learning opportunities.",
     resources: {
-      videoTopic: "Lab Exercises",
-      youtubeLinks: [
-        { title: "Hands-on Learning", url: "https://www.youtube.com/results?search_query=hands+on+learning" }
-      ]
+      videoTopic: "Lab Exercises"
     }
   },
   {
@@ -110,10 +95,7 @@ const quizData = [
     ],
     explanation: "Material organization directly impacts student comprehension and retention.",
     resources: {
-      videoTopic: "Content Organization",
-      youtubeLinks: [
-        { title: "Instructional Design", url: "https://www.youtube.com/results?search_query=instructional+design+principles" }
-      ]
+      videoTopic: "Content Organization"
     }
   },
   {
@@ -129,10 +111,7 @@ const quizData = [
     ],
     explanation: "Good support resources enhance the learning experience and confidence.",
     resources: {
-      videoTopic: "Learning Support",
-      youtubeLinks: [
-        { title: "Effective Support Systems", url: "https://www.youtube.com/results?search_query=learning+support" }
-      ]
+      videoTopic: "Learning Support"
     }
   },
   {
@@ -148,10 +127,7 @@ const quizData = [
     ],
     explanation: "Courses with strong real-world application improve job readiness.",
     resources: {
-      videoTopic: "Practical Applications",
-      youtubeLinks: [
-        { title: "Real-World Examples", url: "https://www.youtube.com/results?search_query=real+world+networking+examples" }
-      ]
+      videoTopic: "Practical Applications"
     }
   },
   {
@@ -167,10 +143,7 @@ const quizData = [
     ],
     explanation: "Instructor expertise directly impacts course quality and credibility.",
     resources: {
-      videoTopic: "Expert Knowledge",
-      youtubeLinks: [
-        { title: "Subject Matter Expertise", url: "https://www.youtube.com/results?search_query=expert+knowledge" }
-      ]
+      videoTopic: "Expert Knowledge"
     }
   },
   {
@@ -186,10 +159,7 @@ const quizData = [
     ],
     explanation: "Recommendation likelihood indicates overall course satisfaction.",
     resources: {
-      videoTopic: "Course Quality",
-      youtubeLinks: [
-        { title: "Quality Assurance", url: "https://www.youtube.com/results?search_query=education+quality+assurance" }
-      ]
+      videoTopic: "Course Quality"
     }
   }
 ];

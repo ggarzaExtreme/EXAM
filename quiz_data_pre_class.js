@@ -15,11 +15,7 @@ const quizData = [
     ],
     explanation: "Layer 2 switches maintain a MAC address table that maps MAC addresses to physical ports. When a frame arrives, the switch looks up the destination MAC address to determine which port to forward the frame to. This is fundamental to switch operation.",
     resources: {
-      videoTopic: "Layer 2 Switching and MAC Address Tables",
-      youtubeLinks: [
-        { title: "CompTIA Network+ (N10-008) – Layer 2 Switching Basics", url: "https://www.youtube.com/results?search_query=layer+2+switch+mac+address+table+basics" },
-        { title: "Professor Messer – Switch Fundamentals", url: "https://www.youtube.com/results?search_query=professor+messer+switch+fundamentals" }
-      ]
+      videoTopic: "Layer 2 Switching and MAC Address Tables"
     }
   },
   {
@@ -34,11 +30,7 @@ const quizData = [
     ],
     explanation: "Flooding is the switch's way of handling unknown unicast destinations. By flooding to all ports in the VLAN (except the source), the frame reaches the destination host, which typically responds. The switch then learns the destination's MAC address and port association from that response.",
     resources: {
-      videoTopic: "Switch Flooding and MAC Learning",
-      youtubeLinks: [
-        { title: "Network Fundamentals – Unknown Unicast and Flooding", url: "https://www.youtube.com/results?search_query=network+switch+flooding+unknown+unicast" },
-        { title: "Cisco CCNA – MAC Address Learning", url: "https://www.youtube.com/results?search_query=cisco+ccna+mac+address+learning+switch" }
-      ]
+      videoTopic: "Switch Flooding and MAC Learning"
     }
   },
   {
@@ -53,11 +45,7 @@ const quizData = [
     ],
     explanation: "When a switch receives a frame, it examines the source MAC address and the incoming port. It records this pair in its MAC address table: 'MAC X came in on port Y.' This is how switches learn the network topology and build their forwarding tables.",
     resources: {
-      videoTopic: "MAC Address Learning in Switches",
-      youtubeLinks: [
-        { title: "Network+ Study Guide – MAC Learning", url: "https://www.youtube.com/results?search_query=switch+mac+address+learning+source+destination" },
-        { title: "Cisco CCENT – Switch Operation", url: "https://www.youtube.com/results?search_query=cisco+ccent+switch+mac+learning" }
-      ]
+      videoTopic: "MAC Address Learning in Switches"
     }
   },
   {
@@ -72,11 +60,7 @@ const quizData = [
     ],
     explanation: "A Layer 2 loop occurs when there are multiple paths between switches without a mechanism to prevent loops. Frames recirculate, causing the same MAC addresses to appear on different ports constantly. Spanning Tree Protocol (STP) prevents loops by blocking redundant paths.",
     resources: {
-      videoTopic: "Layer 2 Loops and Spanning Tree Protocol",
-      youtubeLinks: [
-        { title: "CompTIA Network+ – Spanning Tree and Layer 2 Loops", url: "https://www.youtube.com/results?search_query=spanning+tree+protocol+layer+2+loop" },
-        { title: "Cisco CCNA – STP Fundamentals", url: "https://www.youtube.com/results?search_query=cisco+ccna+spanning+tree+protocol" }
-      ]
+      videoTopic: "Layer 2 Loops and Spanning Tree Protocol"
     }
   },
   {
@@ -91,11 +75,7 @@ const quizData = [
     ],
     explanation: "A broadcast domain is the set of devices that receive each other's broadcast frames. By default, a switch is one large broadcast domain. VLANs divide the switch into multiple, isolated broadcast domains. Broadcasts from one VLAN don't reach other VLANs, which also reduces unnecessary traffic.",
     resources: {
-      videoTopic: "VLANs and Broadcast Domains",
-      youtubeLinks: [
-        { title: "Professor Messer – VLAN Basics", url: "https://www.youtube.com/results?search_query=professor+messer+vlan+basics+broadcast+domain" },
-        { title: "Network Fundamentals – Virtual LANs Explained", url: "https://www.youtube.com/results?search_query=vlan+broadcast+domain+separation" }
-      ]
+      videoTopic: "VLANs and Broadcast Domains"
     }
   },
 
@@ -112,11 +92,7 @@ const quizData = [
     ],
     explanation: "VLANs restrict the scope of broadcast frames. An ARP broadcast in VLAN 20 is tagged with VLAN ID 20 and is delivered only to ports assigned to VLAN 20. This containment reduces unnecessary broadcast traffic and improves network efficiency.",
     resources: {
-      videoTopic: "VLANs and Broadcast Isolation",
-      youtubeLinks: [
-        { title: "VLAN Segmentation and Broadcast Domains", url: "https://www.youtube.com/results?search_query=vlan+broadcast+isolation+arp+request" },
-        { title: "Cisco CCNA – VLAN Operations", url: "https://www.youtube.com/results?search_query=cisco+vlan+operations+broadcast" }
-      ]
+      videoTopic: "VLANs and Broadcast Isolation"
     }
   },
   {
@@ -131,11 +107,7 @@ const quizData = [
     ],
     explanation: "A trunk link uses 802.1Q VLAN tagging to send frames from multiple VLANs over a single physical connection. Each frame is tagged with its VLAN ID (a 12-bit field in the Ethernet header). The receiving switch reads the tag and forwards the frame to the correct VLAN ports.",
     resources: {
-      videoTopic: "802.1Q Trunking and VLAN Tagging",
-      youtubeLinks: [
-        { title: "CompTIA Network+ – VLAN Tagging and Trunks", url: "https://www.youtube.com/results?search_query=802.1q+vlan+tagging+trunk" },
-        { title: "Professor Messer – Trunking Overview", url: "https://www.youtube.com/results?search_query=professor+messer+802.1q+trunking" }
-      ]
+      videoTopic: "802.1Q Trunking and VLAN Tagging"
     }
   },
   {
@@ -150,11 +122,7 @@ const quizData = [
     ],
     explanation: "An access port is the standard way end devices connect to a switch. Each access port is assigned to one VLAN. Frames received on an access port are assumed to belong to that VLAN (no tag needed), and frames sent to the port are stripped of any VLAN tag before transmission to the device.",
     resources: {
-      videoTopic: "Access Ports vs. Trunk Ports",
-      youtubeLinks: [
-        { title: "Network Fundamentals – Access and Trunk Ports", url: "https://www.youtube.com/results?search_query=access+port+trunk+port+difference" },
-        { title: "Cisco CCNA – Port Types", url: "https://www.youtube.com/results?search_query=cisco+access+port+untagged+vlan" }
-      ]
+      videoTopic: "Access Ports vs. Trunk Ports"
     }
   },
   {
@@ -169,11 +137,7 @@ const quizData = [
     ],
     explanation: "Each trunk port has an 'allowed VLAN list' that specifies which VLANs can traverse that link. Frames tagged with a VLAN not on the allowed list are dropped. This prevents unintended VLAN propagation and provides a layer of traffic control between switches.",
     resources: {
-      videoTopic: "VLAN Allowed Lists and Trunk Configuration",
-      youtubeLinks: [
-        { title: "Cisco CCNA – Allowed VLAN Lists", url: "https://www.youtube.com/results?search_query=cisco+trunk+allowed+vlan+list" },
-        { title: "Switch Trunk Configuration Basics", url: "https://www.youtube.com/results?search_query=switch+trunk+allowed+vlans" }
-      ]
+      videoTopic: "VLAN Allowed Lists and Trunk Configuration"
     }
   },
   {
@@ -188,11 +152,7 @@ const quizData = [
     ],
     explanation: "VLANs create isolated broadcast domains. Hosts in different VLANs, even on the same physical switch, cannot send broadcast frames to each other. Layer 3 routing is required to enable communication between VLANs. A router examines the destination IP address and forwards the packet between the VLANs.",
     resources: {
-      videoTopic: "Inter-VLAN Routing and Communication",
-      youtubeLinks: [
-        { title: "Professor Messer – Inter-VLAN Routing", url: "https://www.youtube.com/results?search_query=professor+messer+inter+vlan+routing" },
-        { title: "VLAN Communication Without a Router", url: "https://www.youtube.com/results?search_query=vlan+communication+router+required" }
-      ]
+      videoTopic: "Inter-VLAN Routing and Communication"
     }
   },
 
@@ -209,11 +169,7 @@ const quizData = [
     ],
     explanation: "CIDR notation (/XX) indicates how many bits form the network portion. /24 means 24 network bits and 8 host bits. In binary, this is 24 ones followed by 8 zeros: 11111111.11111111.11111111.00000000, which equals 255.255.255.0 in decimal.",
     resources: {
-      videoTopic: "Subnet Masks and CIDR Notation",
-      youtubeLinks: [
-        { title: "Professor Messer – Subnetting Basics", url: "https://www.youtube.com/results?search_query=professor+messer+subnet+mask+cidr+notation" },
-        { title: "CompTIA Network+ – Subnetting Fundamentals", url: "https://www.youtube.com/results?search_query=subnet+mask+cidr+/24+255.255.255.0" }
-      ]
+      videoTopic: "Subnet Masks and CIDR Notation"
     }
   },
   {
@@ -228,11 +184,7 @@ const quizData = [
     ],
     explanation: "A /30 subnet has 4 IP addresses: one network address, one broadcast address, and two usable host addresses. This is ideal for point-to-point links like router-to-router connections, where only two devices need to communicate.",
     resources: {
-      videoTopic: "Subnetting with Small Networks (/30, /31)",
-      youtubeLinks: [
-        { title: "CompTIA Network+ – Subnetting Practice", url: "https://www.youtube.com/results?search_query=subnet+mask+/30+255.255.255.252" },
-        { title: "Subnetting Tutorial – Point-to-Point Links", url: "https://www.youtube.com/results?search_query=/30+subnet+router+links+point+to+point" }
-      ]
+      videoTopic: "Subnetting with Small Networks (/30, /31)"
     }
   },
   {
@@ -247,11 +199,7 @@ const quizData = [
     ],
     explanation: "The network address is found by setting all host bits to 0. With /24, the first 24 bits (10.1.20) form the network, and the last 8 bits are host bits. Setting the last octet to 0 gives 10.1.20.0.",
     resources: {
-      videoTopic: "Finding Network Addresses and Broadcast Addresses",
-      youtubeLinks: [
-        { title: "Professor Messer – Network and Broadcast Addresses", url: "https://www.youtube.com/results?search_query=professor+messer+network+address+broadcast+address" },
-        { title: "Subnetting Simplified", url: "https://www.youtube.com/results?search_query=find+network+address+subnet+mask" }
-      ]
+      videoTopic: "Finding Network Addresses and Broadcast Addresses"
     }
   },
   {
@@ -266,11 +214,7 @@ const quizData = [
     ],
     explanation: "A host's default gateway must be in the same subnet as the host. The host uses the default gateway to communicate with distant networks. If the gateway is in a different subnet, the host cannot reach it via Layer 2, causing routing failures.",
     resources: {
-      videoTopic: "Default Gateway Configuration and Subnet Matching",
-      youtubeLinks: [
-        { title: "Network Fundamentals – Default Gateway", url: "https://www.youtube.com/results?search_query=default+gateway+same+subnet+configuration" },
-        { title: "Cisco CCENT – Gateway Routing", url: "https://www.youtube.com/results?search_query=host+default+gateway+subnet+mismatch" }
-      ]
+      videoTopic: "Default Gateway Configuration and Subnet Matching"
     }
   },
   {
@@ -285,11 +229,7 @@ const quizData = [
     ],
     explanation: "The broadcast address is found by setting all host bits to 1. For 172.16.5.0/24, the host portion is the last 8 bits. Setting them all to 1 (255) gives the broadcast address: 172.16.5.255.",
     resources: {
-      videoTopic: "Broadcast Addresses and Subnetting",
-      youtubeLinks: [
-        { title: "Professor Messer – Broadcast Addresses", url: "https://www.youtube.com/results?search_query=professor+messer+broadcast+address+subnet" },
-        { title: "Subnetting Guide – Network and Broadcast", url: "https://www.youtube.com/results?search_query=broadcast+address+subnet+mask+/24" }
-      ]
+      videoTopic: "Broadcast Addresses and Subnetting"
     }
   },
   {
@@ -304,11 +244,7 @@ const quizData = [
     ],
     explanation: "A /29 subnet has 3 host bits, providing 8 total addresses. The range is 0–7, with .0 as network, .1–.6 as usable hosts, and .7 as broadcast. Valid host addresses are .1, .2, .3, .4, .5, and .6.",
     resources: {
-      videoTopic: "Small Subnets and Usable Host Addresses",
-      youtubeLinks: [
-        { title: "Subnetting Guide – /29 Subnets", url: "https://www.youtube.com/results?search_query=subnet+/29+usable+host+addresses" },
-        { title: "CompTIA Network+ – Subnetting Practice", url: "https://www.youtube.com/results?search_query=valid+host+address+subnet+mask" }
-      ]
+      videoTopic: "Small Subnets and Usable Host Addresses"
     }
   },
 
@@ -325,11 +261,7 @@ const quizData = [
     ],
     explanation: "ARP is a Layer 2/3 protocol that broadcasts a request asking 'Who has IP address X?' The device with that IP responds with its MAC address. This allows the sender to build a mapping and deliver Ethernet frames to the correct MAC address on the local network segment.",
     resources: {
-      videoTopic: "Address Resolution Protocol (ARP)",
-      youtubeLinks: [
-        { title: "Professor Messer – ARP Explained", url: "https://www.youtube.com/results?search_query=professor+messer+arp+address+resolution+protocol" },
-        { title: "CompTIA Network+ – ARP Fundamentals", url: "https://www.youtube.com/results?search_query=arp+protocol+ip+to+mac+address" }
-      ]
+      videoTopic: "Address Resolution Protocol (ARP)"
     }
   },
   {
@@ -344,11 +276,7 @@ const quizData = [
     ],
     explanation: "When a host needs to communicate with another host in the same subnet, it uses ARP to find the destination host's MAC address. It then sends frames directly to that MAC. No gateway is needed because both devices are on the same local network.",
     resources: {
-      videoTopic: "Same-Subnet vs. Different-Subnet Communication",
-      youtubeLinks: [
-        { title: "Network Fundamentals – Direct Host Communication", url: "https://www.youtube.com/results?search_query=same+subnet+communication+mac+address" },
-        { title: "ARP and Default Gateway Decisions", url: "https://www.youtube.com/results?search_query=host+communication+same+subnet+arp" }
-      ]
+      videoTopic: "Same-Subnet vs. Different-Subnet Communication"
     }
   },
   {
@@ -363,11 +291,7 @@ const quizData = [
     ],
     explanation: "When a host needs to reach a different subnet, it recognizes this via the subnet mask comparison. It then sends the frame to the default gateway's MAC address (which it finds via ARP). The gateway receives the frame, examines the destination IP, and forwards it toward the remote server.",
     resources: {
-      videoTopic: "Inter-Subnet Routing and Default Gateway",
-      youtubeLinks: [
-        { title: "Professor Messer – Routing and the Default Gateway", url: "https://www.youtube.com/results?search_query=professor+messer+default+gateway+routing" },
-        { title: "Network Communication – Different Subnets", url: "https://www.youtube.com/results?search_query=different+subnet+communication+default+gateway+mac" }
-      ]
+      videoTopic: "Inter-Subnet Routing and Default Gateway"
     }
   },
   {
@@ -382,11 +306,7 @@ const quizData = [
     ],
     explanation: "The default gateway is a device on your local network. If you cannot ping it, the problem is local: check physical connections, VLAN configuration, IP address/subnet match, and gateway IP settings. Remote routing issues would not prevent reaching a local gateway.",
     resources: {
-      videoTopic: "Troubleshooting Network Connectivity",
-      youtubeLinks: [
-        { title: "Network Troubleshooting – OSI Model Approach", url: "https://www.youtube.com/results?search_query=network+troubleshooting+default+gateway+ping" },
-        { title: "Professor Messer – Troubleshooting Methodology", url: "https://www.youtube.com/results?search_query=professor+messer+troubleshooting+osi+model" }
-      ]
+      videoTopic: "Troubleshooting Network Connectivity"
     }
   },
 
@@ -403,11 +323,7 @@ const quizData = [
     ],
     explanation: "A routing table is a data structure on a router that maps destination IP prefixes to outgoing interfaces or next-hop routers. When a router receives a packet, it looks up the destination IP in the routing table to decide where to forward it next.",
     resources: {
-      videoTopic: "Routing Tables and Route Lookup",
-      youtubeLinks: [
-        { title: "Professor Messer – Routing Fundamentals", url: "https://www.youtube.com/results?search_query=professor+messer+routing+table+fundamentals" },
-        { title: "CompTIA Network+ – Routing Basics", url: "https://www.youtube.com/results?search_query=routing+table+next+hop+interface" }
-      ]
+      videoTopic: "Routing Tables and Route Lookup"
     }
   },
   {
@@ -422,11 +338,7 @@ const quizData = [
     ],
     explanation: "The default route (0.0.0.0/0) has the least specific prefix and matches all possible IP addresses. Routers use longest prefix matching: the most specific matching route is used. If no other route matches, the default route is selected.",
     resources: {
-      videoTopic: "Default Route and Route Matching",
-      youtubeLinks: [
-        { title: "Routing – Longest Prefix Match", url: "https://www.youtube.com/results?search_query=longest+prefix+match+default+route" },
-        { title: "Cisco CCNA – Default Route Configuration", url: "https://www.youtube.com/results?search_query=cisco+default+route+0.0.0.0/0" }
-      ]
+      videoTopic: "Default Route and Route Matching"
     }
   },
   {
@@ -441,11 +353,7 @@ const quizData = [
     ],
     explanation: "Routers use longest prefix matching to select routes. A /32 prefix is longer (more specific) than a /24 prefix. When multiple routes match a destination, the router selects the one with the longest matching prefix (most specific).",
     resources: {
-      videoTopic: "Longest Prefix Matching and Route Selection",
-      youtubeLinks: [
-        { title: "Routing Algorithms – Longest Prefix Match", url: "https://www.youtube.com/results?search_query=longest+prefix+match+routing" },
-        { title: "Cisco CCNA – Route Selection", url: "https://www.youtube.com/results?search_query=cisco+longest+prefix+match+/32+/24" }
-      ]
+      videoTopic: "Longest Prefix Matching and Route Selection"
     }
   },
   {
@@ -460,11 +368,7 @@ const quizData = [
     ],
     explanation: "Ping is a basic troubleshooting tool that sends ICMP Echo Request packets to a destination and waits for Echo Reply. If a reply is received, the destination is reachable at Layer 3. Ping also measures round-trip time (latency).",
     resources: {
-      videoTopic: "Ping and Basic Troubleshooting Tools",
-      youtubeLinks: [
-        { title: "Network Troubleshooting – Ping and Traceroute", url: "https://www.youtube.com/results?search_query=ping+command+troubleshooting+icmp" },
-        { title: "Professor Messer – Ping Tool", url: "https://www.youtube.com/results?search_query=professor+messer+ping+reachability" }
-      ]
+      videoTopic: "Ping and Basic Troubleshooting Tools"
     }
   },
   {
@@ -479,11 +383,7 @@ const quizData = [
     ],
     explanation: "When a router has an interface configured with an IP address (e.g., 192.168.1.1/24), it automatically learns that the 192.168.1.0/24 network is directly attached to that interface. This creates a connected route, which allows the router to forward packets destined for that subnet directly out that interface.",
     resources: {
-      videoTopic: "Connected Routes and Interface Configuration",
-      youtubeLinks: [
-        { title: "Routing – Connected Routes", url: "https://www.youtube.com/results?search_query=connected+route+router+interface" },
-        { title: "Cisco CCNA – Route Types", url: "https://www.youtube.com/results?search_query=cisco+connected+route+network+interface" }
-      ]
+      videoTopic: "Connected Routes and Interface Configuration"
     }
   },
   {
@@ -498,11 +398,7 @@ const quizData = [
     ],
     explanation: "A VRF creates isolated routing contexts. Each VRF has its own routing table, routing protocols, and forwarding paths. This is useful for multi-tenant networks (e.g., a service provider offering MPLS VPNs to different customers) or internal network segmentation.",
     resources: {
-      videoTopic: "Virtual Routing and Forwarding (VRF)",
-      youtubeLinks: [
-        { title: "VRF Explained – Routing Isolation", url: "https://www.youtube.com/results?search_query=vrf+virtual+routing+forwarding+explained" },
-        { title: "Cisco CCNA – VRF Configuration", url: "https://www.youtube.com/results?search_query=cisco+vrf+lite+routing+table" }
-      ]
+      videoTopic: "Virtual Routing and Forwarding (VRF)"
     }
   },
   {
@@ -517,11 +413,7 @@ const quizData = [
     ],
     explanation: "VRFs are separate routing domains. By default, a packet from one VRF cannot reach another VRF's network unless routes are explicitly shared via route leaking or redistribution. This isolation is the primary benefit of VRFs.",
     resources: {
-      videoTopic: "VRF Isolation and Route Leaking",
-      youtubeLinks: [
-        { title: "VRF Route Leaking and Interconnection", url: "https://www.youtube.com/results?search_query=vrf+route+leaking+interconnection" },
-        { title: "Cisco – VRF Lite Best Practices", url: "https://www.youtube.com/results?search_query=vrf+lite+isolation+routing" }
-      ]
+      videoTopic: "VRF Isolation and Route Leaking"
     }
   },
   {
@@ -536,11 +428,7 @@ const quizData = [
     ],
     explanation: "VRFs maintain separate routing tables. The same subnet (e.g., 10.1.0.0/16) can exist in VRF-A and VRF-B without conflict. Packets are forwarded based on both the destination IP and the VRF they're in. This is common in multi-tenant architectures.",
     resources: {
-      videoTopic: "VRF IP Address Overlapping",
-      youtubeLinks: [
-        { title: "VRF IP Overlapping in Multi-Tenant Networks", url: "https://www.youtube.com/results?search_query=vrf+same+ip+subnet+different+vrf" },
-        { title: "Service Provider VRF Design", url: "https://www.youtube.com/results?search_query=service+provider+vrf+customer+overlapping+subnets" }
-      ]
+      videoTopic: "VRF IP Address Overlapping"
     }
   },
 
@@ -557,11 +445,7 @@ const quizData = [
     ],
     explanation: "The '?' character is a CLI help tool. Context-sensitive '?' shows available commands, command options, parameters, and syntax. For example, typing 'show ?' shows available show subcommands; 'show ip route ?' shows options for the route command.",
     resources: {
-      videoTopic: "CLI Navigation and Help Features",
-      youtubeLinks: [
-        { title: "Network CLI Basics – Using Help", url: "https://www.youtube.com/results?search_query=network+cli+question+mark+help+feature" },
-        { title: "Cisco IOS – Help Feature and CLI Navigation", url: "https://www.youtube.com/results?search_query=cisco+ios+? command+help+feature" }
-      ]
+      videoTopic: "CLI Navigation and Help Features"
     }
   },
   {
@@ -576,11 +460,7 @@ const quizData = [
     ],
     explanation: "The OSI model recommends troubleshooting from the bottom up. A neighbor relationship failure is often caused by a physical link issue (bad cable, disabled port, SFP mismatch). Always verify Layer 1 (physical) and Layer 2 (interface status) before investigating higher-layer protocols.",
     resources: {
-      videoTopic: "Systematic Troubleshooting Using the OSI Model",
-      youtubeLinks: [
-        { title: "Professor Messer – Troubleshooting Methodology", url: "https://www.youtube.com/results?search_query=professor+messer+troubleshooting+osi+model+bottom+up" },
-        { title: "Network Troubleshooting – Physical Layer First", url: "https://www.youtube.com/results?search_query=network+troubleshooting+physical+layer+link+status" }
-      ]
+      videoTopic: "Systematic Troubleshooting Using the OSI Model"
     }
   },
   {
@@ -595,11 +475,7 @@ const quizData = [
     ],
     explanation: "Systematic troubleshooting using the OSI model (bottom-up) is most efficient: (1) Physical layer – cables, ports, (2) Link layer – VLANs, MAC, (3) Network layer – IP, routing, (4) Transport+ – TCP/UDP, applications. This prevents wasted time chasing high-level issues when the foundation is broken.",
     resources: {
-      videoTopic: "Systematic Troubleshooting and the OSI Model",
-      youtubeLinks: [
-        { title: "CompTIA Network+ – Troubleshooting Steps", url: "https://www.youtube.com/results?search_query=network+troubleshooting+osi+model+methodology" },
-        { title: "Cisco CCNA – Systematic Troubleshooting", url: "https://www.youtube.com/results?search_query=cisco+troubleshooting+osi+model+bottom+up" }
-      ]
+      videoTopic: "Systematic Troubleshooting and the OSI Model"
     }
   },
   {
@@ -614,11 +490,7 @@ const quizData = [
     ],
     explanation: "Network devices have two types of configuration: running-config (in RAM, active now) and startup-config (in persistent storage, loaded on boot). Saving copies the running-config to startup-config. Without saving, configuration changes are lost when the device reboots.",
     resources: {
-      videoTopic: "Configuration Persistence and Reloading",
-      youtubeLinks: [
-        { title: "Cisco IOS – Copy Running-Config to Startup-Config", url: "https://www.youtube.com/results?search_query=cisco+copy+running-config+startup-config" },
-        { title: "Network Device Configuration Basics", url: "https://www.youtube.com/results?search_query=network+device+configuration+persistence+save" }
-      ]
+      videoTopic: "Configuration Persistence and Reloading"
     }
   }
 ];

@@ -1,4 +1,4 @@
-﻿// Switch Engine In-Class Quiz Data
+// Switch Engine In-Class Quiz Data
 // Questions organized by presentation section
 
 const quizData = [
@@ -16,10 +16,7 @@ const quizData = [
     ],
     explanation: "Switch Engine is a software platform that provides management and automation capabilities for network switches.",
     resources: {
-      videoTopic: "Switch Engine Introduction",
-      youtubeLinks: [
-        { title: "Switch Engine Overview", url: "https://www.youtube.com/results?search_query=switch+engine+management" }
-      ]
+      videoTopic: "Switch Engine Introduction"
     }
   },
   {
@@ -35,10 +32,7 @@ const quizData = [
     ],
     explanation: "Switch Engine manages both Layer 2 and Layer 3 switches for comprehensive network control.",
     resources: {
-      videoTopic: "Switch Types",
-      youtubeLinks: [
-        { title: "Layer 2 vs Layer 3 Switches", url: "https://www.youtube.com/results?search_query=layer+2+layer+3+switch+difference" }
-      ]
+      videoTopic: "Switch Types"
     }
   },
   {
@@ -54,10 +48,7 @@ const quizData = [
     ],
     explanation: "Switch Engine provides centralized management for consistent configuration and policy enforcement.",
     resources: {
-      videoTopic: "Switch Engine Features",
-      youtubeLinks: [
-        { title: "Network Management Features", url: "https://www.youtube.com/results?search_query=network+management+software+features" }
-      ]
+      videoTopic: "Switch Engine Features"
     }
   },
   {
@@ -73,10 +64,7 @@ const quizData = [
     ],
     explanation: "Switch Engine supports flexible deployment models to match different organizational needs.",
     resources: {
-      videoTopic: "Deployment Options",
-      youtubeLinks: [
-        { title: "Cloud vs On-Premises", url: "https://www.youtube.com/results?search_query=cloud+on+premises+deployment" }
-      ]
+      videoTopic: "Deployment Options"
     }
   },
   {
@@ -92,10 +80,7 @@ const quizData = [
     ],
     explanation: "Switch Engine reduces operational complexity through centralized, automated management.",
     resources: {
-      videoTopic: "Management Benefits",
-      youtubeLinks: [
-        { title: "Operational Efficiency", url: "https://www.youtube.com/results?search_query=network+operational+efficiency" }
-      ]
+      videoTopic: "Management Benefits"
     }
   },
 
@@ -113,10 +98,7 @@ const quizData = [
     ],
     explanation: "Switch Engine allows comprehensive port configuration including speed, duplex, VLAN assignment, and port type.",
     resources: {
-      videoTopic: "Port Settings",
-      youtubeLinks: [
-        { title: "Port Configuration Best Practices", url: "https://www.youtube.com/results?search_query=ethernet+port+configuration" }
-      ]
+      videoTopic: "Port Settings"
     }
   },
   {
@@ -132,10 +114,7 @@ const quizData = [
     ],
     explanation: "Switch ports can be configured as access ports (for devices), trunk ports (for other switches), or uplink ports.",
     resources: {
-      videoTopic: "Port Types",
-      youtubeLinks: [
-        { title: "Access Ports vs Trunk Ports", url: "https://www.youtube.com/results?search_query=access+port+trunk+port+difference" }
-      ]
+      videoTopic: "Port Types"
     }
   },
   {
@@ -151,10 +130,7 @@ const quizData = [
     ],
     explanation: "Duplex mode determines if a port can transmit and receive data simultaneously (full-duplex) or not (half-duplex).",
     resources: {
-      videoTopic: "Duplex Modes",
-      youtubeLinks: [
-        { title: "Full Duplex vs Half Duplex", url: "https://www.youtube.com/results?search_query=full+duplex+half+duplex" }
-      ]
+      videoTopic: "Duplex Modes"
     }
   },
   {
@@ -170,10 +146,7 @@ const quizData = [
     ],
     explanation: "Port security restricts which devices (based on MAC address) can connect to a specific switch port.",
     resources: {
-      videoTopic: "Port Security",
-      youtubeLinks: [
-        { title: "Port Security Implementation", url: "https://www.youtube.com/results?search_query=switch+port+security+mac+address+filtering" }
-      ]
+      videoTopic: "Port Security"
     }
   },
   {
@@ -189,10 +162,7 @@ const quizData = [
     ],
     explanation: "Power over Ethernet (PoE) allows a switch port to provide electrical power to connected devices like IP phones and cameras.",
     resources: {
-      videoTopic: "Power over Ethernet",
-      youtubeLinks: [
-        { title: "PoE Standards and Implementation", url: "https://www.youtube.com/results?search_query=power+over+ethernet+poe+standard" }
-      ]
+      videoTopic: "Power over Ethernet"
     }
   },
 
@@ -210,10 +180,7 @@ const quizData = [
     ],
     explanation: "A VLAN (Virtual LAN) is a logical network created within a physical switch infrastructure.",
     resources: {
-      videoTopic: "VLAN Concepts",
-      youtubeLinks: [
-        { title: "VLAN Fundamentals", url: "https://www.youtube.com/results?search_query=vlan+virtual+lan+concepts" }
-      ]
+      videoTopic: "VLAN Concepts"
     }
   },
   {
@@ -229,10 +196,7 @@ const quizData = [
     ],
     explanation: "802.1Q tagging embeds VLAN identification information in Ethernet frames to distinguish between VLANs.",
     resources: {
-      videoTopic: "VLAN Tagging",
-      youtubeLinks: [
-        { title: "802.1Q VLAN Tagging", url: "https://www.youtube.com/results?search_query=802.1q+vlan+tagging+frame+format" }
-      ]
+      videoTopic: "VLAN Tagging"
     }
   },
   {
@@ -248,10 +212,7 @@ const quizData = [
     ],
     explanation: "A trunk port is a switch-to-switch connection that carries traffic for multiple VLANs simultaneously.",
     resources: {
-      videoTopic: "Trunk Ports",
-      youtubeLinks: [
-        { title: "Configuring Trunk Ports", url: "https://www.youtube.com/results?search_query=switch+trunk+port+configuration" }
-      ]
+      videoTopic: "Trunk Ports"
     }
   },
   {
@@ -267,10 +228,7 @@ const quizData = [
     ],
     explanation: "An access port is a switch port configured to belong to a single VLAN and connects to end devices.",
     resources: {
-      videoTopic: "Access Ports",
-      youtubeLinks: [
-        { title: "Access Port Configuration", url: "https://www.youtube.com/results?search_query=ethernet+switch+access+port+vlan" }
-      ]
+      videoTopic: "Access Ports"
     }
   },
   {
@@ -286,10 +244,7 @@ const quizData = [
     ],
     explanation: "Devices in different VLANs communicate through a router or Layer 3 switch that forwards between VLANs.",
     resources: {
-      videoTopic: "Inter-VLAN Routing",
-      youtubeLinks: [
-        { title: "Inter-VLAN Routing Explained", url: "https://www.youtube.com/results?search_query=inter+vlan+routing+layer+3+switch" }
-      ]
+      videoTopic: "Inter-VLAN Routing"
     }
   },
 
@@ -307,10 +262,7 @@ const quizData = [
     ],
     explanation: "A routing table is a list of routes to various network destinations, used to determine where to forward packets.",
     resources: {
-      videoTopic: "Routing Tables",
-      youtubeLinks: [
-        { title: "Understanding Routing Tables", url: "https://www.youtube.com/results?search_query=routing+table+explanation+network+destinations" }
-      ]
+      videoTopic: "Routing Tables"
     }
   },
   {
@@ -326,10 +278,7 @@ const quizData = [
     ],
     explanation: "A static route is a manually configured route that doesn't change unless an administrator changes it.",
     resources: {
-      videoTopic: "Static Routing",
-      youtubeLinks: [
-        { title: "Static Route Configuration", url: "https://www.youtube.com/results?search_query=static+routing+configuration" }
-      ]
+      videoTopic: "Static Routing"
     }
   },
   {
@@ -345,10 +294,7 @@ const quizData = [
     ],
     explanation: "Dynamic routing protocols automatically discover the best routes and adapt to network changes.",
     resources: {
-      videoTopic: "Dynamic Routing",
-      youtubeLinks: [
-        { title: "Dynamic Routing Protocols (OSPF, BGP)", url: "https://www.youtube.com/results?search_query=ospf+bgp+dynamic+routing+protocols" }
-      ]
+      videoTopic: "Dynamic Routing"
     }
   },
   {
@@ -364,10 +310,7 @@ const quizData = [
     ],
     explanation: "The default gateway is the router that a device uses to send packets to destinations outside its local network.",
     resources: {
-      videoTopic: "Default Gateway",
-      youtubeLinks: [
-        { title: "Default Gateway Configuration", url: "https://www.youtube.com/results?search_query=default+gateway+networking+how+it+works" }
-      ]
+      videoTopic: "Default Gateway"
     }
   },
   {
@@ -383,10 +326,7 @@ const quizData = [
     ],
     explanation: "OSPF (Open Shortest Path First) and BGP (Border Gateway Protocol) are the most common modern routing protocols.",
     resources: {
-      videoTopic: "Routing Protocols",
-      youtubeLinks: [
-        { title: "OSPF vs BGP Comparison", url: "https://www.youtube.com/results?search_query=ospf+bgp+routing+protocol+comparison" }
-      ]
+      videoTopic: "Routing Protocols"
     }
   }
 ];

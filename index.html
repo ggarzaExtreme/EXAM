@@ -596,6 +596,27 @@
             background: var(--surface-2); border: 1px solid var(--line);
             border-radius: var(--radius);
         }
+        /* ===== Icons: stroke-only, single weight, currentColor ===== */
+        .ic {
+            width: 1.05em; height: 1.05em; flex: none;
+            fill: none; stroke: currentColor; stroke-width: 1.75;
+            stroke-linecap: round; stroke-linejoin: round;
+            vertical-align: -0.16em;
+        }
+        .ic-sm { width: .95em; height: .95em; }
+
+        /* Official lockup. Every theme's global bar is dark, so the white
+           logo is the correct one throughout - it is never recoloured. */
+        /* 27px keeps the wordmark inside the lockup legible; below ~22px the
+           "Networks" text stops reading. */
+        .gb-logo { height: 27px; width: auto; display: block; flex: none; }
+        @media (max-width: 600px) { .gb-logo { height: 21px; } }
+
+        .btn, .gb-home, .gb-link, .review-link {
+            display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        }
+        .mode-arrow .ic { width: 24px; height: 24px; stroke-width: 1.6; }
+
         .actionrow > * { margin: 0; }
         .actionrow .btn { width: auto; margin: 0; }
         .actionrow .grow { flex: 1 1 160px; }
@@ -939,14 +960,80 @@
     <script src="theme.js"></script>
 </head>
 <body>
+    <!-- Icon sprite. Single line weight, no fills, currentColor - per the
+         brand guidance that icons are minimal, single-weight and single-colour
+         so they work on light or dark backgrounds. -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+        <defs>
+            <symbol id="ic-home" viewBox="0 0 24 24">
+                <path d="M4 10.6 12 4l8 6.6V19a1.5 1.5 0 0 1-1.5 1.5H15V14H9v6.5H5.5A1.5 1.5 0 0 1 4 19z"/>
+            </symbol>
+            <symbol id="ic-left" viewBox="0 0 24 24">
+                <path d="M19 12H5m0 0 6-6m-6 6 6 6"/>
+            </symbol>
+            <symbol id="ic-right" viewBox="0 0 24 24">
+                <path d="M5 12h14m0 0-6-6m6 6-6 6"/>
+            </symbol>
+            <symbol id="ic-refresh" viewBox="0 0 24 24">
+                <path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/>
+                <path d="M20.5 4v5.5H15"/>
+            </symbol>
+            <symbol id="ic-play" viewBox="0 0 24 24">
+                <path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10-6.4a.6.6 0 0 0 0-1l-10-6.4a.6.6 0 0 0-.92.5z"/>
+            </symbol>
+            <symbol id="ic-power" viewBox="0 0 24 24">
+                <path d="M12 3.5v8"/>
+                <path d="M6.8 6.9a8.5 8.5 0 1 0 10.4 0"/>
+            </symbol>
+            <symbol id="ic-live" viewBox="0 0 24 24">
+                <path d="M3.5 4.5h17v10.5h-17z"/>
+                <path d="M12 15v4"/>
+                <path d="M8.5 19.5h7"/>
+            </symbol>
+            <symbol id="ic-chart" viewBox="0 0 24 24">
+                <path d="M3.5 20.5h17"/>
+                <path d="M7 20.5v-5.5"/>
+                <path d="M12 20.5v-11"/>
+                <path d="M17 20.5v-8"/>
+            </symbol>
+            <symbol id="ic-download" viewBox="0 0 24 24">
+                <path d="M12 3.5v11m0 0 4.2-4.2M12 14.5l-4.2-4.2"/>
+                <path d="M4 19.5h16"/>
+            </symbol>
+            <symbol id="ic-search" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="6.5"/>
+                <path d="m20 20-4.4-4.4"/>
+            </symbol>
+            <symbol id="ic-external" viewBox="0 0 24 24">
+                <path d="M14 4h6v6"/>
+                <path d="M20 4 11.5 12.5"/>
+                <path d="M18 14.5V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H10"/>
+            </symbol>
+            <symbol id="ic-plus" viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14"/>
+            </symbol>
+            <symbol id="ic-check" viewBox="0 0 24 24">
+                <path d="m5 12.5 4.5 4.5L19 7.5"/>
+            </symbol>
+            <symbol id="ic-x" viewBox="0 0 24 24">
+                <path d="M6.5 6.5l11 11m0-11-11 11"/>
+            </symbol>
+            <symbol id="ic-clock" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8.5"/>
+                <path d="M12 7v5.2l3.4 2"/>
+            </symbol>
+        </defs>
+    </svg>
     <div class="container">
         <!-- Global bar: Home far left, theme far right, on every screen -->
         <div class="globalbar">
-            <button class="gb-home" onclick="goHome()" title="Return to the start">⌂ Home</button>
-            <span class="gb-wordmark">Extreme <b>Networks</b></span>
+            <button class="gb-home" onclick="goHome()" title="Return to the start">
+                <svg class="ic" aria-hidden="true"><use href="#ic-home"></use></svg>Home
+            </button>
+            <img class="gb-logo" src="assets/logo-white.svg" alt="Extreme Networks">
             <span class="gb-ctx" id="gbContext"></span>
             <span class="gb-right">
-                <a href="instructor.html" class="gb-link">Instructor →</a>
+                <a href="instructor.html" class="gb-link">Instructor <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-right"></use></svg></a>
                 <span class="gb-theme" role="group" aria-label="Colour theme">
                     <button type="button" data-theme-btn="extreme" aria-pressed="true">Extreme</button>
                     <button type="button" data-theme-btn="ops" aria-pressed="false">Dark</button>
@@ -985,7 +1072,7 @@
                                 <span class="mode-tag">Topic breakdown</span>
                             </span>
                         </span>
-                        <span class="mode-arrow" aria-hidden="true">→</span>
+                        <span class="mode-arrow" aria-hidden="true"><svg class="ic"><use href="#ic-right"></use></svg></span>
                     </button>
 
                     <button class="mode" onclick="selectMode('inclass')">
@@ -1002,7 +1089,7 @@
                                 <span class="mode-tag">Instructor-paced</span>
                             </span>
                         </span>
-                        <span class="mode-arrow" aria-hidden="true">→</span>
+                        <span class="mode-arrow" aria-hidden="true"><svg class="ic"><use href="#ic-right"></use></svg></span>
                     </button>
                 </div>
             </div>
@@ -1037,7 +1124,7 @@
 
                 <div style="text-align: center; margin-top: 40px;">
                     <button class="btn" onclick="startFullQuiz()">Start Assessment</button>
-                    <button class="btn btn-secondary" onclick="backToModeSelection()">← Back</button>
+                    <button class="btn btn-secondary" onclick="backToModeSelection()"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Back</button>
                 </div>
             </div>
 
@@ -1067,7 +1154,7 @@
 
                 <div style="text-align: center; margin-top: 40px;">
                     <button class="btn" onclick="joinInClassSession()">Join Session</button>
-                    <button class="btn btn-secondary" onclick="backToModeSelection()">← Back</button>
+                    <button class="btn btn-secondary" onclick="backToModeSelection()"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Back</button>
                 </div>
             </div>
 
@@ -1075,8 +1162,8 @@
                  reserved feedback slot so answering never shifts the page) -->
             <div class="screen" id="fullQuizScreen">
                 <div class="actionrow">
-                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()">← Previous</button>
-                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()">Next →</button>
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Previous</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()">Next <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-right"></use></svg></button>
                     <button class="btn right" id="submitBtn" onclick="finishQuiz()">Finish Quiz</button>
                 </div>
 
@@ -1104,7 +1191,7 @@
             <div class="screen" id="fullQuizResultsScreen">
                 <div class="actionrow">
                     <button class="btn" onclick="submitResults()">Submit Results</button>
-                    <button class="btn btn-secondary" onclick="backToModeSelection()">← Start Over</button>
+                    <button class="btn btn-secondary" onclick="backToModeSelection()"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Start Over</button>
                     <span class="chip right" id="resultsSubmitState">Not submitted yet</span>
                 </div>
 
@@ -1153,8 +1240,14 @@
             <div class="screen" id="inclassQuizScreen">
                 <!-- Every button for this screen, above all variable content -->
                 <div class="actionrow" id="inclassCheckControls">
-                    <button class="btn grow" id="inclassSubmitBtn" onclick="submitInClassAnswer()">Submit Answer</button>
-                    <button class="btn btn-secondary" id="nextQuestionBtn" onclick="checkForNextQuestion()">Check for Question</button>
+                    <button class="btn grow" id="inclassSubmitBtn" onclick="submitInClassAnswer()">
+                        <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-check"></use></svg>
+                        <span class="btn-label">Submit Answer</span>
+                    </button>
+                    <button class="btn btn-secondary" id="nextQuestionBtn" onclick="checkForNextQuestion()">
+                        <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-refresh" id="nextQIcon"></use></svg>
+                        <span class="btn-label">Check for Question</span>
+                    </button>
                 </div>
 
                 <div class="statusstrip">
@@ -1195,7 +1288,7 @@
                     <div class="info-box">
                         <h3>Session Ended</h3>
                         <p>The instructor has ended this session. Thank you for participating!</p>
-                        <button class="btn" onclick="backToModeSelection()" style="margin-top: 20px;">← Start New Quiz</button>
+                        <button class="btn" onclick="backToModeSelection()" style="margin-top: 20px;"><svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg> Start New Quiz</button>
                     </div>
                 </div>
             </div>
@@ -1266,6 +1359,20 @@
             }
         }
 
+        // Buttons carry an icon plus a .btn-label span; write to the span so
+        // the icon is not destroyed by a label change.
+        function setBtnLabel(btnId, text) {
+            const el = document.getElementById(btnId);
+            if (!el) return;
+            let label = el.querySelector('.btn-label');
+            if (!label) {
+                // Never fall back to el.textContent - that would delete the icon
+                label = document.createElement('span');
+                label.className = 'btn-label';
+                el.appendChild(label);
+            }
+            label.textContent = text;
+        }
         // Home is on every screen. Mid-full-quiz it confirms first, because those
         // answers only exist in this browser; mid-in-class it just goes, since
         // every answer is already saved server-side.
@@ -1581,7 +1688,7 @@
                         </span>
                         <a class="review-link" href="${escapeHtml(reviewUrl(t.topic))}"
                            target="_blank" rel="noopener noreferrer"
-                           title="Search YouTube for ${escapeHtml(reviewTerm(t.topic))}">Review ↗</a>
+                           title="Search YouTube for ${escapeHtml(reviewTerm(t.topic))}">Review <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-external"></use></svg></a>
                     </div>
                 `).join('');
             }
@@ -1681,7 +1788,7 @@
             setFeedbackVisible('inclassSlot', 'inclassSlotHint', 'inclassFeedbackScreen', false);
             // '' restores the stylesheet's flex layout for the action row
             document.getElementById('inclassCheckControls').style.display = '';
-            document.getElementById('nextQuestionBtn').textContent = 'Check for Question';
+            setBtnLabel('nextQuestionBtn', 'Check for Question');
             document.getElementById('inclassSubmitBtn').disabled = true;
             setCheckStatus(null);
             setAnswerStatus(null);
@@ -1767,7 +1874,7 @@
                     selectedAnswer = null;
                     currentAttemptNumber = 1;
                     setCheckStatus(null);
-                    document.getElementById('nextQuestionBtn').textContent = 'Next Question →';
+                    setBtnLabel('nextQuestionBtn', 'Next Question');
                     displayQuestion(data.question_data);
                 } else if (fromButton) {
                     setCheckStatus("The instructor hasn't moved to the next question yet.");
@@ -1830,7 +1937,7 @@
             lastSubmittedOption = null;
             questionLocked = false;
             setFeedbackVisible('inclassSlot', 'inclassSlotHint', 'inclassFeedbackScreen', false);
-            document.getElementById('inclassSubmitBtn').textContent = 'Submit Answer';
+            setBtnLabel('inclassSubmitBtn', 'Submit Answer');
             document.getElementById('inclassSubmitBtn').disabled = false;
             setAnswerStatus(null);
             updateAttemptDisplay();
@@ -1881,7 +1988,7 @@
 
             const submitBtn = document.getElementById('inclassSubmitBtn');
             submitBtn.disabled = true;  // prevent double-submit while request is in flight
-            submitBtn.textContent = 'Submitting...';
+            setBtnLabel('inclassSubmitBtn', 'Submitting…');
             setAnswerStatus(null);
             setCheckStatus(null);       // clear any stale "not yet" message
 
@@ -1912,7 +2019,7 @@
                         setAnswerStatus('Could not submit: ' + (err || 'unknown error') + '. Please try again.');
                     }
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Submit Answer';
+                    setBtnLabel('inclassSubmitBtn', 'Submit Answer');
                     return;
                 }
 
@@ -1921,12 +2028,12 @@
                 displayFeedback(data.is_correct, data.explanation, data.attempt_number);
 
                 if (data.is_correct) {
-                    submitBtn.textContent = '✓ Answered correctly';
+                    setBtnLabel('inclassSubmitBtn', 'Answered correctly');
                     lockOptions();  // button stays disabled too
                 } else {
                     // Stay on "Submit Answer" — choosing another option and
                     // submitting sends the new answer directly
-                    submitBtn.textContent = 'Submit Answer';
+                    setBtnLabel('inclassSubmitBtn', 'Submit Answer');
                     submitBtn.disabled = false;
                 }
 
@@ -1935,7 +2042,7 @@
                 console.error('Submission error:', error);
                 setAnswerStatus("Couldn't reach the server. Please try again.");
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Answer';
+                setBtnLabel('inclassSubmitBtn', 'Submit Answer');
             }
         }
 

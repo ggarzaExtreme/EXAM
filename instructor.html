@@ -924,6 +924,9 @@
             transition: background .15s, border-color .15s, color .15s;
             transform: none;
         }
+        .session-controls .btn, #historicalSection .controls .btn {
+            display: inline-flex; align-items: center; gap: 7px;
+        }
         .btn-primary { background: var(--accent); color: #FFFFFF; border-color: var(--accent); }
         .btn-primary:hover:not(:disabled) { filter: brightness(1.14); }
 
@@ -951,11 +954,52 @@
         .success-message { background: var(--ok-bg); color: var(--ok); }
         .btn-secondary { background: transparent; }
 
-        /* ===== Analytics ===== */
-        #studentSearch, #rangeSelect {
-            padding: 9px 13px; border: 1px solid var(--line); border-radius: var(--radius);
+        /* ===== Icons =====
+           Stroke-only, single weight, currentColor - so one set works on every
+           theme and never needs a recoloured copy. */
+        .ic {
+            width: 1.05em; height: 1.05em; flex: none;
+            fill: none; stroke: currentColor; stroke-width: 1.75;
+            stroke-linecap: round; stroke-linejoin: round;
+            vertical-align: -0.16em;
+        }
+        .ic-sm { width: .95em; height: .95em; }
+
+        /* ===== Official logo (global bar is dark in every theme, so the
+           white lockup is correct throughout) ===== */
+        /* 27px keeps the wordmark inside the lockup legible; below ~22px the
+           "Networks" text stops reading. */
+        .gb-logo { height: 27px; width: auto; display: block; flex: none; }
+        @media (max-width: 600px) { .gb-logo { height: 21px; } }
+
+        /* Tabs are display:block by default, so a flex gap never applied and the
+           icon sat against the label. */
+        .tab-btn {
+            display: inline-flex; align-items: center; gap: 9px;
+        }
+        .tabs { align-items: stretch; }
+
+        /* ===== Analytics filter row =====
+           One height for every control so the row reads as a single band. */
+        .controls { align-items: center; }
+        #historicalSection .controls > * {
+            height: 38px; box-sizing: border-box; margin: 0;
+            font-family: inherit; font-size: 13px;
+        }
+        #studentSearch, #rangeSelect, #quizSelect {
+            padding: 0 13px; border: 1px solid var(--line); border-radius: var(--radius);
             background: var(--field); color: var(--ink); font-family: inherit; font-size: 13px;
         }
+        #historicalSection .controls .btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 0 15px; width: auto; font-size: 13px; line-height: 1;
+        }
+        .search-wrap { position: relative; display: inline-flex; align-items: center; }
+        .search-wrap .ic {
+            position: absolute; left: 11px; color: var(--ink-soft);
+            width: 15px; height: 15px; pointer-events: none;
+        }
+        .search-wrap #studentSearch { padding-left: 33px; min-width: 200px; height: 38px; }
         .kpi-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
             gap: 12px; margin-bottom: 20px;
@@ -1084,11 +1128,77 @@
     <script src="theme.js"></script>
 </head>
 <body>
+    <!-- Icon sprite. Single line weight, no fills, currentColor - per the
+         brand guidance that icons are minimal, single-weight and single-colour
+         so they work on light or dark backgrounds. -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+        <defs>
+            <symbol id="ic-home" viewBox="0 0 24 24">
+                <path d="M4 10.6 12 4l8 6.6V19a1.5 1.5 0 0 1-1.5 1.5H15V14H9v6.5H5.5A1.5 1.5 0 0 1 4 19z"/>
+            </symbol>
+            <symbol id="ic-left" viewBox="0 0 24 24">
+                <path d="M19 12H5m0 0 6-6m-6 6 6 6"/>
+            </symbol>
+            <symbol id="ic-right" viewBox="0 0 24 24">
+                <path d="M5 12h14m0 0-6-6m6 6-6 6"/>
+            </symbol>
+            <symbol id="ic-refresh" viewBox="0 0 24 24">
+                <path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/>
+                <path d="M20.5 4v5.5H15"/>
+            </symbol>
+            <symbol id="ic-play" viewBox="0 0 24 24">
+                <path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10-6.4a.6.6 0 0 0 0-1l-10-6.4a.6.6 0 0 0-.92.5z"/>
+            </symbol>
+            <symbol id="ic-power" viewBox="0 0 24 24">
+                <path d="M12 3.5v8"/>
+                <path d="M6.8 6.9a8.5 8.5 0 1 0 10.4 0"/>
+            </symbol>
+            <symbol id="ic-live" viewBox="0 0 24 24">
+                <path d="M3.5 4.5h17v10.5h-17z"/>
+                <path d="M12 15v4"/>
+                <path d="M8.5 19.5h7"/>
+            </symbol>
+            <symbol id="ic-chart" viewBox="0 0 24 24">
+                <path d="M3.5 20.5h17"/>
+                <path d="M7 20.5v-5.5"/>
+                <path d="M12 20.5v-11"/>
+                <path d="M17 20.5v-8"/>
+            </symbol>
+            <symbol id="ic-download" viewBox="0 0 24 24">
+                <path d="M12 3.5v11m0 0 4.2-4.2M12 14.5l-4.2-4.2"/>
+                <path d="M4 19.5h16"/>
+            </symbol>
+            <symbol id="ic-search" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="6.5"/>
+                <path d="m20 20-4.4-4.4"/>
+            </symbol>
+            <symbol id="ic-external" viewBox="0 0 24 24">
+                <path d="M14 4h6v6"/>
+                <path d="M20 4 11.5 12.5"/>
+                <path d="M18 14.5V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H10"/>
+            </symbol>
+            <symbol id="ic-plus" viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14"/>
+            </symbol>
+            <symbol id="ic-check" viewBox="0 0 24 24">
+                <path d="m5 12.5 4.5 4.5L19 7.5"/>
+            </symbol>
+            <symbol id="ic-x" viewBox="0 0 24 24">
+                <path d="M6.5 6.5l11 11m0-11-11 11"/>
+            </symbol>
+            <symbol id="ic-clock" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8.5"/>
+                <path d="M12 7v5.2l3.4 2"/>
+            </symbol>
+        </defs>
+    </svg>
     <div class="container">
         <!-- Global bar: Home far left, theme far right - identical to the student app -->
         <div class="globalbar">
-            <a href="index.html" class="gb-home" title="Back to the assessment home">⌂ Home</a>
-            <span class="gb-wordmark">Extreme <b>Networks</b></span>
+            <a href="index.html" class="gb-home" title="Back to the assessment home">
+                <svg class="ic" aria-hidden="true"><use href="#ic-home"></use></svg>Home
+            </a>
+            <img class="gb-logo" src="assets/logo-white.svg" alt="Extreme Networks">
             <span class="gb-ctx" id="gbContext">Instructor</span>
             <span class="gb-right">
                 <div class="header-user" id="headerUser" style="display:none;">
@@ -1133,8 +1243,12 @@
             <!-- Dashboard Screen -->
             <div class="screen" id="dashboardScreen">
                 <div class="tabs">
-                    <button class="tab-btn active" id="inclassTabBtn" onclick="switchTab('inclass')">🎓 In-Class Live Sessions</button>
-                    <button class="tab-btn" id="historicalTabBtn" onclick="switchTab('historical')">📊 Student Submissions</button>
+                    <button class="tab-btn active" id="inclassTabBtn" onclick="switchTab('inclass')">
+                        <svg class="ic" aria-hidden="true"><use href="#ic-live"></use></svg>In-Class Live Sessions
+                    </button>
+                    <button class="tab-btn" id="historicalTabBtn" onclick="switchTab('historical')">
+                        <svg class="ic" aria-hidden="true"><use href="#ic-chart"></use></svg>Student Submissions
+                    </button>
                     <div class="poll-controls">
                         <label for="autoRefreshToggle" style="font-size: 13px; color: var(--ink-soft); font-weight: 600; cursor: pointer;">
                             <input type="checkbox" id="autoRefreshToggle" checked onchange="updatePollingSettings()" style="cursor: pointer; margin-right: 4px; vertical-align: middle;">Auto-refresh
@@ -1205,10 +1319,22 @@
                                  neutral outlines are supporting actions, and the
                                  destructive action is pushed to the far right. -->
                             <div class="session-controls">
-                                <button class="btn btn-quiet" id="prevQuestionBtn" onclick="previousQuestion()">← Previous</button>
-                                <button class="btn btn-primary" id="nextQuestionBtn" onclick="nextQuestion()">▶ Start Quiz (Q1)</button>
-                                <button class="btn btn-quiet" id="refreshLiveBtn" onclick="refreshInClassData()">↻ Refresh</button>
-                                <button class="btn btn-danger" id="endSessionBtn" onclick="endSession()">End Session</button>
+                                <button class="btn btn-quiet" id="prevQuestionBtn" onclick="previousQuestion()">
+                                    <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg>
+                                    <span class="btn-label">Previous</span>
+                                </button>
+                                <button class="btn btn-primary" id="nextQuestionBtn" onclick="nextQuestion()">
+                                    <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-play" id="nextBtnIcon"></use></svg>
+                                    <span class="btn-label">Start Quiz (Q1)</span>
+                                </button>
+                                <button class="btn btn-quiet" id="refreshLiveBtn" onclick="refreshInClassData()">
+                                    <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-refresh"></use></svg>
+                                    <span class="btn-label">Refresh</span>
+                                </button>
+                                <button class="btn btn-danger" id="endSessionBtn" onclick="endSession()">
+                                    <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-power"></use></svg>
+                                    <span class="btn-label">End Session</span>
+                                </button>
                             </div>
                         </div>
 
@@ -1281,10 +1407,17 @@
                                 <option value="90">Past 90 days</option>
                                 <option value="0">All time</option>
                             </select>
-                            <input type="search" id="studentSearch" placeholder="Filter by name or email"
-                                   oninput="renderAnalytics()" style="min-width: 190px;">
-                            <button class="btn btn-secondary" style="width:auto;padding:8px 16px;" onclick="refreshData()">Refresh</button>
-                            <button class="btn btn-secondary" style="width:auto;padding:8px 16px;" onclick="downloadCsv()">Export CSV</button>
+                            <span class="search-wrap">
+                                <svg class="ic" aria-hidden="true"><use href="#ic-search"></use></svg>
+                                <input type="search" id="studentSearch" placeholder="Filter by name or email"
+                                       oninput="renderAnalytics()">
+                            </span>
+                            <button class="btn btn-quiet" onclick="refreshData()">
+                                <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-refresh"></use></svg>Refresh
+                            </button>
+                            <button class="btn btn-quiet" onclick="downloadCsv()">
+                                <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-download"></use></svg>Export CSV
+                            </button>
                         </div>
                     </div>
 
@@ -1539,7 +1672,7 @@
             clearQuestionStats();
             setLiveStatus(null);
             pendingEndConfirm = false;
-            document.getElementById('endSessionBtn').textContent = 'End Session';
+            setBtnLabel('endSessionBtn', 'End Session');
             document.getElementById('endSessionBtn').disabled = false;
 
             // Load quiz data for this quiz type
@@ -1740,7 +1873,7 @@
             document.getElementById('currentQuestionDisplay').textContent = 'Waiting...';
             document.getElementById('currentSectionDisplay').textContent = '-';
             const endBtn = document.getElementById('endSessionBtn');
-            endBtn.textContent = 'End Session';
+            setBtnLabel('endSessionBtn', 'End Session');
             endBtn.disabled = false;
             clearQuestionStats();
             updateQuestionControls();
@@ -1896,16 +2029,35 @@
         }
 
         // Updates the Next button so the first click reads as "start the quiz"
+        // Buttons carry an icon plus a .btn-label span; write to the span so the
+        // icon survives a label change.
+        function setBtnLabel(btnId, text) {
+            const el = document.getElementById(btnId);
+            if (!el) return;
+            let label = el.querySelector('.btn-label');
+            if (!label) {
+                // Never fall back to el.textContent - that would delete the icon
+                label = document.createElement('span');
+                label.className = 'btn-label';
+                el.appendChild(label);
+            }
+            label.textContent = text;
+        }
+
         function updateQuestionControls() {
             const nextBtn = document.getElementById('nextQuestionBtn');
             const total = quizData ? quizData.length : 0;
+            const icon = document.getElementById('nextBtnIcon');
 
             if (currentQuestionIndex < 0) {
-                nextBtn.textContent = '▶ Start Quiz (Q1)';
+                setBtnLabel('nextQuestionBtn', 'Start Quiz (Q1)');
+                if (icon) icon.setAttribute('href', '#ic-play');
             } else if (currentQuestionIndex >= total - 1) {
-                nextBtn.textContent = 'Last question';
+                setBtnLabel('nextQuestionBtn', 'Last question');
+                if (icon) icon.setAttribute('href', '#ic-right');
             } else {
-                nextBtn.textContent = 'Next → (Q' + (currentQuestionIndex + 2) + ')';
+                setBtnLabel('nextQuestionBtn', 'Next (Q' + (currentQuestionIndex + 2) + ')');
+                if (icon) icon.setAttribute('href', '#ic-right');
             }
 
             nextBtn.disabled = !quizData || currentQuestionIndex >= total - 1;
@@ -1987,12 +2139,12 @@
 
             if (!pendingEndConfirm) {
                 pendingEndConfirm = true;
-                btn.textContent = 'Click again to confirm';
+                setBtnLabel('endSessionBtn', 'Click again to confirm');
                 setLiveStatus('Ending the session will show students "Session Ended". Click "Click again to confirm" to proceed.', 'warn');
                 setTimeout(() => {
                     if (pendingEndConfirm) {
                         pendingEndConfirm = false;
-                        btn.textContent = 'End Session';
+                        setBtnLabel('endSessionBtn', 'End Session');
                         setLiveStatus(null);
                     }
                 }, 8000);
@@ -2001,7 +2153,7 @@
 
             pendingEndConfirm = false;
             btn.disabled = true;
-            btn.textContent = 'Ending...';
+            setBtnLabel('endSessionBtn', 'Ending…');
 
             try {
                 const response = await fetch(CONFIG.NETLIFY_FUNCTIONS_URL + '/end-class-session', {
@@ -2024,7 +2176,7 @@
                         return;
                     }
                     btn.disabled = false;
-                    btn.textContent = 'End Session';
+                    setBtnLabel('endSessionBtn', 'End Session');
                     setLiveStatus('Could not end session: ' + (result.error || 'HTTP ' + response.status), 'error');
                     return;
                 }
@@ -2039,7 +2191,7 @@
             } catch (error) {
                 console.error('Error ending session:', error);
                 btn.disabled = false;
-                btn.textContent = 'End Session';
+                setBtnLabel('endSessionBtn', 'End Session');
                 setLiveStatus('Could not reach the server: ' + error.message, 'error');
             }
         }

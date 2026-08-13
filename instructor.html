@@ -633,7 +633,7 @@
     <!-- ===== Theme layer (shared palettes with index.html) ===== -->
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="styles.css?v=4">
     <style>
         .container { max-width: 1240px; }
         .content { padding: 24px 18px 48px; background: transparent; }
@@ -740,9 +740,12 @@
         /* distance between the destructive action and everything else */
         #endSessionBtn { margin-left: auto; }
 
-        /* ===== Analytics filter row: one height so it reads as a single band ===== */
+        /* ===== Analytics filter row: one height so it reads as a single band =====
+           39px, not 38 — that is the natural height of a .btn (10px padding +
+           1px border + the 13.5px line box), so a filter-row button and a
+           session-control button are the same size side by side. */
         #historicalSection .controls > * {
-            height: 38px; box-sizing: border-box; margin: 0;
+            height: 39px; box-sizing: border-box; margin: 0;
             font-family: inherit; font-size: 13px;
         }
         #studentSearch, #rangeSelect, #quizSelect { padding: 0 13px; font-size: 13px; }
@@ -752,7 +755,7 @@
             position: absolute; left: 11px; color: var(--ink-soft);
             width: 15px; height: 15px; pointer-events: none;
         }
-        .search-wrap #studentSearch { padding-left: 33px; min-width: 200px; height: 38px; }
+        .search-wrap #studentSearch { padding-left: 33px; min-width: 200px; height: 39px; }
 
         .kpi-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));

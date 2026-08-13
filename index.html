@@ -465,7 +465,7 @@
 
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="styles.css?v=4">
     <style>
         .container { max-width: 940px; }
         .content { padding: 26px 18px 48px; background: transparent; --card-pad: 26px; }
@@ -669,20 +669,50 @@
         /* ===== Home hero =====
            Hero text is inset by the mode cards' border + padding so every text
            left edge on the page shares one line. --card-pad is the single
-           source for both. */
+           source for both.
+
+           Optical alignment: DM Sans gives every flat-sided cap (E, B, P…) a
+           left side bearing of 0.0625em, so identical box edges still look
+           ragged when the type sizes differ — at 54px the hero's E started
+           3.4px inside its box while the 10px kicker below started 0.6px in,
+           and the headline read as indented. Pulling each block left by its
+           own side bearing lands all the ink on one line at every clamp
+           value. Anything that starts with a pointed cap (A, V, W) has a much
+           smaller bearing and is left alone. */
         .hero {
-            padding: 18px 0 0;
+            padding: 14px 0 0;
             padding-left: calc(var(--card-pad) + 1px);
+        }
+        .hero h1,
+        .hero-kicker,
+        .mode-kicker,
+        .mode-title { margin-left: -.0625em; }
+
+        .hero-kicker {
+            display: block;
+            font-size: 11px; font-weight: 700; letter-spacing: .18em;
+            text-transform: uppercase; color: var(--accent-2);
+            margin-bottom: 14px;
         }
         .hero h1 {
             font-size: clamp(30px, 5.4vw, 54px); font-weight: 700; line-height: 1.06;
-            letter-spacing: -.025em; color: var(--ink); margin: 0;
+            letter-spacing: -.025em; color: var(--ink); margin: 0 0 0 -.0625em;
             text-wrap: balance;
+        }
+        /* Slow sweep across the three acronym letters — the front page earns a
+           little motion where the inner screens do not. */
+        .hero h1 .grad {
+            background-size: 260% 100%;
+            animation: heroSweep 9s ease-in-out infinite;
+        }
+        @keyframes heroSweep {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
         }
         .hero-rule {
             height: 2px; border-radius: 2px;
             /* left inset inside the shorthand so a later `margin` cannot reset it */
-            margin: 26px 0 26px calc(var(--card-pad) + 1px);
+            margin: 24px 0 26px calc(var(--card-pad) + 1px);
             background: linear-gradient(90deg, #20004C, #5B059C 28%, #7519F9 62%, #7D76F2);
         }
 
@@ -741,6 +771,8 @@
             .content { padding: 20px 12px 40px; --card-pad: 20px; }
             .actionrow .btn { flex: 1 1 auto; }
             .hero { padding: 14px 0 0; padding-left: calc(var(--card-pad) + 1px); }
+            /* tighter tracking keeps the overline on one line on a phone */
+            .hero-kicker { font-size: 10px; letter-spacing: .12em; margin-bottom: 11px; }
             .hero-rule { margin: 20px 0 20px calc(var(--card-pad) + 1px); }
             .mode { gap: 12px; }
             .formcard { padding: 22px 18px 20px; }
@@ -834,7 +866,9 @@
             <img class="gb-logo" src="assets/logo-white.svg" alt="Extreme Networks">
             <span class="gb-ctx" id="gbContext"></span>
             <span class="gb-right">
-                <a href="instructor.html" class="gb-link">Instructor <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-right"></use></svg></a>
+                <a href="instructor.html" class="gb-link" title="Open the instructor dashboard">
+                    <svg class="ic" aria-hidden="true"><use href="#ic-live"></use></svg>Instructor
+                </a>
                 <span class="gb-theme" role="group" aria-label="Colour theme">
                     <button type="button" data-theme-btn="extreme" aria-pressed="true">Extreme</button>
                     <button type="button" data-theme-btn="ops" aria-pressed="false">Dark</button>
@@ -847,6 +881,7 @@
             <!-- Mode Selection Screen -->
             <div class="screen active" id="modeSelectionScreen">
                 <div class="hero">
+                    <span class="hero-kicker">Extreme Networks · Learning &amp; Development</span>
                     <h1><span class="grad">EX</span>treme <span class="grad">A</span>ssessment <span class="grad">M</span>odule</h1>
                 </div>
 

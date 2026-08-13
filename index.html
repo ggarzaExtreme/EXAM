@@ -482,6 +482,8 @@
             --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
             --wait-bg:rgba(255,255,255,.06); --sel-bg:rgba(117,25,249,.18);
             --modal:#0E0A18;
+            --field:#15111F;
+            color-scheme: dark;
             --radius:2px;
             --gb-bg:rgba(11,7,19,.72); --gb-ink:#FFFFFF; --gb-soft:#9A93B0;
             --gb-line:rgba(255,255,255,.12);
@@ -495,6 +497,8 @@
             --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
             --wait-bg:rgba(255,255,255,.07); --sel-bg:rgba(117,25,249,.16);
             --modal:#0B0713;
+            --field:#140E20;
+            color-scheme: dark;
             --radius:4px;
             --gb-bg:#0B0713; --gb-ink:#FFFFFF; --gb-soft:#948CAB; --gb-line:#221A33;
         }
@@ -507,6 +511,8 @@
             --warn:#8A5A00; --warn-bg:#FFF6E0;
             --wait-bg:#EDEAF6; --sel-bg:#F2ECFB;
             --modal:#FFFFFF;
+            --field:#FFFFFF;
+            color-scheme: light;
             --radius:10px;
             --gb-bg:#20004C; --gb-ink:#FFFFFF; --gb-soft:#CFC3F4; --gb-line:rgba(255,255,255,.22);
         }
@@ -721,10 +727,15 @@
         .info-box h3 { color: var(--ink); }
 
         .form-group label { color: var(--ink); font-weight: 700; }
-        .form-group input {
-            background: var(--surface); border: 1px solid var(--line);
+        /* Opaque fill: translucent --surface tokens render as white-on-white
+           inside native select popups, which composite over the browser's own
+           popup surface rather than the page. */
+        .form-group input, input[type="text"], input[type="email"],
+        input[type="search"], select {
+            background: var(--field); border: 1px solid var(--line);
             color: var(--ink); border-radius: var(--radius);
         }
+        select option, select optgroup { background: var(--field); color: var(--ink); }
         .form-group input:focus { border-color: var(--accent); outline: none; }
         .form-group input::placeholder { color: var(--ink-soft); }
         .radio-option {

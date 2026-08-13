@@ -23,6 +23,10 @@
     --surface: rgba(255, 255, 255, .05);
     --surface-2: rgba(255, 255, 255, .08);
     --line: rgba(255, 255, 255, .12);
+    --btn-2: rgba(255, 255, 255, .14);
+    --btn-2-line: rgba(255, 255, 255, .42);
+    --btn-2-hover: rgba(255, 255, 255, .24);
+    --field-line: rgba(255, 255, 255, .38);
     --ink: #FFFFFF;
     --ink-soft: #9A93B0;
     --accent: #7519F9;
@@ -50,6 +54,10 @@
     --surface: #0B0713;
     --surface-2: #140E20;
     --line: #221A33;
+    --btn-2: #2A2042;
+    --btn-2-line: #6E5EA8;
+    --btn-2-hover: #3A2C5C;
+    --field-line: #63549B;
     --ink: #FFFFFF;
     --ink-soft: #948CAB;
     --accent: #7519F9;
@@ -77,6 +85,10 @@
     --surface: #FFFFFF;
     --surface-2: #F5F2FB;
     --line: #E0DBEE;
+    --btn-2: #EFEAF9;
+    --btn-2-line: #8B7CC4;
+    --btn-2-hover: #E2D9F5;
+    --field-line: #9184C6;
     --ink: #14101C;
     --ink-soft: #635B79;
     --accent: #5B059C;
@@ -180,7 +192,9 @@ body {
 /* One pill for every button in the bar — Home, Sign out, and the instructor
    entrance — so the two ends of the bar are the same size. .gb-btn is the
    generic member; before this, Sign out carried its own smaller padding and
-   font and sat visibly short of Home. */
+   font and sat visibly short of Home. Filled rather than ghosted, matching
+   .btn-secondary: every theme's bar is dark, so one white-alpha fill and a
+   brighter hairline work throughout. */
 .gb-home,
 .gb-btn,
 .gb-link {
@@ -192,8 +206,8 @@ body {
     font-weight: 700;
     padding: 7px 13px;
     border-radius: var(--radius);
-    border: 1px solid var(--gb-line);
-    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .42);
+    background: rgba(255, 255, 255, .14);
     color: var(--gb-ink);
     cursor: pointer;
     text-decoration: none;
@@ -204,7 +218,7 @@ body {
 .gb-home:hover,
 .gb-btn:hover,
 .gb-link:hover,
-.gb-link:focus-visible { background: rgba(255, 255, 255, .08); }
+.gb-link:focus-visible { background: rgba(255, 255, 255, .24); }
 
 .gb-ctx {
     font-size: 11.5px;
@@ -234,9 +248,12 @@ body {
 .gb-link:focus-visible { border-color: var(--accent-2); }
 .container:has(#modeSelectionScreen.active) .gb-link { display: inline-flex; }
 
+/* Segmented control, so only the selected option is filled — the unselected
+   ones stay quiet on purpose. The group border matches the bar pills so the
+   control itself is still easy to spot. */
 .gb-theme {
     display: inline-flex;
-    border: 1px solid var(--gb-line);
+    border: 1px solid rgba(255, 255, 255, .42);
     border-radius: 100px;
     overflow: hidden;
 }
@@ -297,24 +314,44 @@ body {
 
 .btn-primary { background: var(--accent); color: #FFFFFF; border-color: var(--accent); }
 
+/* Secondary buttons are filled, not ghosted. They used to be transparent
+   with a --line border, which is the same faint hairline used to divide calm
+   areas — at rgba(255,255,255,.12) on black that is a 1.3:1 edge, and Next /
+   Previous / Export CSV simply did not register as buttons to anyone who had
+   not been told where to look. --btn-2 gives them a surface of their own and
+   a border that clears the 3:1 WCAG 1.4.11 non-text contrast bar against the
+   page in all three themes, so they read as pressable at a glance while
+   still deferring to the accent-filled primary. */
 .btn-secondary {
-    background: transparent;
+    background: var(--btn-2);
     color: var(--ink);
-    border-color: var(--line);
+    border-color: var(--btn-2-line);
 }
 .btn-secondary:hover:not(:disabled) {
     border-color: var(--accent-2);
-    background: var(--sel-bg);
+    background: var(--btn-2-hover);
     filter: none;
 }
 
-.btn-danger { background: transparent; color: var(--bad); border-color: var(--bad); }
-.btn-danger:hover:not(:disabled) { background: var(--bad-bg); filter: none; }
+/* Destructive: tinted rather than hollow, for the same reason, but it keeps
+   the red border and red ink so it never competes with the primary action. */
+.btn-danger { background: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
+.btn-danger:hover:not(:disabled) {
+    background: var(--bad);
+    color: #FFFFFF;
+    filter: none;
+}
 
 .btn-full { width: 100%; }
 
 /* ---------------------------------------------------------------- fields --
-   Opaque --field fill: see the token note above.                            */
+   Opaque --field fill: see the token note above.
+
+   --field-line rather than --line: a field is an interactive control, so its
+   edge needs the same 3:1 non-text contrast a button's does. --line is the
+   hairline for dividing calm areas and is deliberately much fainter; using it
+   here left the quiz and date-range selects nearly invisible next to the
+   filter bar's buttons.                                                     */
 
 input[type="text"],
 input[type="email"],
@@ -322,7 +359,7 @@ input[type="password"],
 input[type="search"],
 select {
     background: var(--field);
-    border: 1px solid var(--line);
+    border: 1px solid var(--field-line);
     color: var(--ink);
     border-radius: var(--radius);
     font-family: inherit;

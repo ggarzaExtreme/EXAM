@@ -436,6 +436,8 @@ select:focus { border-color: var(--accent); outline: none; }
     border: 1px solid var(--line);
     border-radius: var(--radius);
     cursor: pointer;
+    /* inherited from the page-local rule this replaced */
+    transition: border-color .18s, background .18s;
 }
 
 .radio-option:hover {

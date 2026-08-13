@@ -308,6 +308,114 @@
             margin-bottom: 20px;
         }
 
+        /* ===== Grouped answer chart: first answer vs all submissions ===== */
+        .chart-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 18px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .chart-legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chart-legend .swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .chart-legend .swatch.initial { background: #c4b5fd; }
+        .chart-legend .swatch.cumulative { background: linear-gradient(180deg, #667eea 0%, #5B059C 100%); }
+
+        .answer-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 190px;
+            padding: 10px 4px 0;
+            border-bottom: 2px solid #E8E3FF;
+        }
+
+        .chart-group {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-bar {
+            position: relative;
+            width: 26px;
+            max-width: 34%;
+            border-radius: 4px 4px 0 0;
+            /* a hairline keeps zero-count bars visible on the axis */
+            min-height: 2px;
+            transition: height 0.25s ease;
+        }
+
+        .chart-bar.initial { background: #c4b5fd; }
+        .chart-bar.cumulative { background: linear-gradient(180deg, #667eea 0%, #5B059C 100%); }
+
+        .chart-bar .bar-count {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 700;
+            color: #444;
+        }
+
+        .chart-xaxis {
+            display: flex;
+            gap: 8px;
+            padding: 8px 4px 0;
+        }
+
+        .chart-xlabel {
+            flex: 1;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #555;
+            min-width: 0;
+        }
+
+        .chart-xlabel.correct {
+            color: #166534;
+        }
+
+        .chart-xlabel .answer-text {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            color: #888;
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .answer-option {
             margin-bottom: 20px;
         }
@@ -396,16 +504,45 @@
         }
 
         .student-answer {
-            min-width: 28px;
+            min-width: 34px;
             text-align: center;
             font-weight: 700;
             font-family: 'DM Sans', monospace;
             color: #5B059C;
         }
 
+        /* The opening answer is de-emphasised so "Now" reads as the live value */
+        .student-answer.first {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
         .student-answer.none {
             color: #bbb;
             font-weight: 400;
+        }
+
+        .student-head {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #8a8a8a;
+            font-weight: 600;
+            border-bottom: 2px solid #E8E3FF;
+            padding-bottom: 6px;
+        }
+
+        .student-head .student-name,
+        .student-head .student-answer,
+        .student-head .student-tries {
+            color: #8a8a8a;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .student-badge-head {
+            min-width: 96px;
+            text-align: center;
         }
 
         .student-tries {
@@ -523,6 +660,37 @@
                 grid-template-columns: 1fr;
             }
 
+            /* Narrow screens: shrink the fixed columns so the student name
+               (flex: 1) keeps real width instead of collapsing to 0 */
+            .student-row {
+                gap: 6px;
+                font-size: 13px;
+            }
+
+            .student-name {
+                min-width: 64px;
+            }
+
+            .student-answer {
+                min-width: 22px;
+            }
+
+            .student-tries {
+                min-width: 42px;
+                font-size: 11px;
+            }
+
+            .student-badge,
+            .student-badge-head {
+                min-width: 62px;
+                font-size: 10px;
+                padding: 4px 5px;
+            }
+
+            .chart-bar {
+                width: 18px;
+            }
+
             .header-user {
                 position: static;
                 margin-top: 10px;
@@ -634,14 +802,25 @@
                             </div>
                         </div>
 
-                        <div class="answer-distribution">
-                            <h3 style="color: #333; margin-bottom: 20px;">Answer Distribution</h3>
-                            <div id="answerChart"></div>
-                        </div>
-
                         <div class="student-responses">
                             <h3>Student Responses <span id="studentAnsweredCount" style="font-weight: 400; font-size: 14px; color: #666;"></span></h3>
+                            <div class="student-row student-head">
+                                <span class="student-name">Student</span>
+                                <span class="student-answer">First</span>
+                                <span class="student-answer">Now</span>
+                                <span class="student-tries">Tries</span>
+                                <span class="student-badge-head">Status</span>
+                            </div>
                             <div id="studentList"></div>
+                        </div>
+
+                        <div class="answer-distribution">
+                            <h3 style="color: #333; margin-bottom: 6px;">Answer Distribution</h3>
+                            <div class="chart-legend">
+                                <span><i class="swatch initial"></i>First answer (one per student)</span>
+                                <span><i class="swatch cumulative"></i>All submissions (incl. retries)</span>
+                            </div>
+                            <div id="answerChart"></div>
                         </div>
 
                         <div class="retry-stats">
@@ -977,7 +1156,7 @@
                 }
 
                 restoreLiveContext();
-                displayAnswerDistribution(result.answer_distribution);
+                displayAnswerDistribution(result.answer_distribution, result.initial_distribution);
                 displayRetryStats(result.retry_stats, result.participation);
                 displayStudentResponses(result.students);
                 document.getElementById('currentQuestionDisplay').textContent =
@@ -1037,6 +1216,8 @@
             document.getElementById('studentList').innerHTML =
                 '<p style="color: #666; font-size: 14px;">Loading students...</p>';
             document.getElementById('studentAnsweredCount').textContent = '';
+            const head = document.querySelector('.student-head');
+            if (head) head.style.display = 'none';
         }
 
         // Returns the dashboard to the "No Active Session" state.
@@ -1059,35 +1240,59 @@
             updateQuestionControls();
         }
 
-        function displayAnswerDistribution(distribution) {
-            if (!distribution) return;
-
+        // Grouped vertical bar chart: options on the x-axis, response count on
+        // the y-axis, with two bars per option — the class's opening answers
+        // and every submission including retries. Both share one y-scale so the
+        // heights are directly comparable.
+        function displayAnswerDistribution(cumulative, initial) {
             const chart = document.getElementById('answerChart');
-            chart.innerHTML = '';
 
-            Object.entries(distribution).forEach(([option, data]) => {
-                const div = document.createElement('div');
-                div.className = 'answer-option';
+            if (!cumulative) {
+                chart.innerHTML = '<p style="color: #666; font-size: 14px;">Waiting for responses...</p>';
+                return;
+            }
 
-                const isCorrect = data.correct;
-                const percentage = Math.round(data.percentage);
+            const letters = Object.keys(cumulative);
+            const maxCount = Math.max(
+                1,
+                ...letters.map(l => cumulative[l].count),
+                ...letters.map(l => (initial && initial[l] ? initial[l].count : 0))
+            );
 
-                div.innerHTML = `
-                    <div class="option-label">
-                        <span>${option}) Option ${option}</span>
-                        <span class="correctness ${isCorrect ? 'correct' : 'incorrect'}">
-                            ${isCorrect ? '✓ Correct' : '✗ Incorrect'}
-                        </span>
-                    </div>
-                    <div class="bar-container">
-                        <div class="bar-fill" style="width: ${Math.max(percentage, 5)}%">
-                            ${data.count > 0 ? `${data.count} (${percentage}%)` : ''}
+            const bars = letters.map(letter => {
+                const cum = cumulative[letter] || { count: 0, correct: false };
+                const init = (initial && initial[letter]) || null;
+                const pct = c => (c / maxCount) * 100;
+
+                const initialBar = init
+                    ? `<div class="chart-bar initial" style="height: ${pct(init.count)}%"
+                            title="First answers on ${letter}: ${init.count}">
+                         ${init.count > 0 ? `<span class="bar-count">${init.count}</span>` : ''}
+                       </div>`
+                    : '';
+
+                return `
+                    <div class="chart-group">
+                        <div class="chart-bars">
+                            ${initialBar}
+                            <div class="chart-bar cumulative" style="height: ${pct(cum.count)}%"
+                                 title="All submissions on ${letter}: ${cum.count}">
+                                ${cum.count > 0 ? `<span class="bar-count">${cum.count}</span>` : ''}
+                            </div>
                         </div>
                     </div>
                 `;
+            }).join('');
 
-                chart.appendChild(div);
-            });
+            const axis = letters.map(letter => {
+                const cum = cumulative[letter] || {};
+                return `<div class="chart-xlabel ${cum.correct ? 'correct' : ''}">
+                            ${escapeHtml(letter)}${cum.correct ? ' ✓' : ''}
+                        </div>`;
+            }).join('');
+
+            chart.innerHTML =
+                `<div class="answer-chart">${bars}</div><div class="chart-xaxis">${axis}</div>`;
         }
 
         function displayRetryStats(retryStats, participation) {
@@ -1114,18 +1319,24 @@
             const list = document.getElementById('studentList');
             const countLabel = document.getElementById('studentAnsweredCount');
 
+            const head = document.querySelector('.student-head');
+
             if (!students) {
                 // Older deployed function that doesn't return per-student data yet
+                head.style.display = 'none';
                 list.innerHTML = '<p style="color: #666; font-size: 14px;">Per-student responses need the latest Netlify functions deployed.</p>';
                 countLabel.textContent = '';
                 return;
             }
 
             if (students.length === 0) {
+                head.style.display = 'none';
                 list.innerHTML = '<p style="color: #666; font-size: 14px;">No students have answered yet. Names appear here as soon as students submit their first answer.</p>';
                 countLabel.textContent = '';
                 return;
             }
+
+            head.style.display = 'flex';
 
             const ordered = [...students].sort((a, b) =>
                 (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }) ||
@@ -1150,10 +1361,16 @@
                 // real email as the hover hint
                 const hint = (s.email && !s.email.startsWith('anon-')) ? s.email : '';
 
+                // "First" is their opening answer, "Now" their latest. With a
+                // single attempt the two are the same by definition.
+                const first = s.first_option || null;
+                const now = s.selected_option || null;
+
                 return `
                     <div class="student-row">
                         <span class="student-name" title="${escapeHtml(hint)}">${escapeHtml(s.name || 'Anonymous')}</span>
-                        <span class="student-answer ${s.selected_option ? '' : 'none'}">${escapeHtml(s.selected_option || '–')}</span>
+                        <span class="student-answer first ${first ? '' : 'none'}">${escapeHtml(first || '–')}</span>
+                        <span class="student-answer ${now ? '' : 'none'}">${escapeHtml(now || '–')}</span>
                         <span class="student-tries">${tries}</span>
                         <span class="student-badge ${s.status || 'pending'}">${label}</span>
                     </div>

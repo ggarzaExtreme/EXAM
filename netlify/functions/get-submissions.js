@@ -160,6 +160,7 @@ exports.handler = async (event) => {
             current_question_id: null,
             current_section: session.current_section,
             answer_distribution: null,
+            initial_distribution: null,
             retry_stats: { got_correct_first_attempt: 0, needed_one_retry: 0, needed_multiple_retries: 0 },
             participation: { total_responses: 0, students_pending: waiting.length, roster_size: waiting.length },
             students: waiting
@@ -214,7 +215,10 @@ exports.handler = async (event) => {
       (responses || []).forEach(r => {
         const key = r.email || r.name;
         if (!byStudent.has(key)) {
-          byStudent.set(key, { correctAttempt: null, maxAttempt: 0, attempts: 0, latestOption: null });
+          byStudent.set(key, {
+            correctAttempt: null, maxAttempt: 0, minAttempt: 0,
+            attempts: 0, latestOption: null, firstOption: null, firstCorrect: false
+          });
         }
         const s = byStudent.get(key);
         s.attempts++;
@@ -222,11 +226,35 @@ exports.handler = async (event) => {
           s.maxAttempt = r.attempt_number;
           s.latestOption = r.selected_option;
         }
+        // Their opening answer, before any retries
+        if (s.minAttempt === 0 || r.attempt_number < s.minAttempt) {
+          s.minAttempt = r.attempt_number;
+          s.firstOption = r.selected_option;
+          s.firstCorrect = r.is_correct === true;
+        }
         if (r.is_correct && (s.correctAttempt === null || r.attempt_number < s.correctAttempt)) {
           s.correctAttempt = r.attempt_number;
         }
         // A student's first appearance may be on this question
         roster.set(key, r.name || roster.get(key) || 'Anonymous');
+      });
+
+      // 6b. Initial-answer distribution: exactly one vote per student, their
+      // first attempt. This is the diagnostic signal — where the class landed
+      // before any retries — as opposed to the cumulative counts above.
+      const initialDistribution = {};
+      for (let i = 0; i < optionCount; i++) {
+        const letter = String.fromCharCode(65 + i);
+        initialDistribution[letter] = { count: 0, percentage: 0, correct: letter === correctLetter };
+      }
+      byStudent.forEach(s => {
+        if (s.firstOption && initialDistribution[s.firstOption]) {
+          initialDistribution[s.firstOption].count++;
+        }
+      });
+      const initialTotal = byStudent.size;
+      Object.values(initialDistribution).forEach(d => {
+        d.percentage = initialTotal > 0 ? (d.count / initialTotal) * 100 : 0;
       });
 
       // 7. Roster-wide list: anyone who has participated in the session, marked
@@ -241,6 +269,8 @@ exports.handler = async (event) => {
           email,
           status: s.correctAttempt !== null ? 'correct' : 'wrong',
           selected_option: s.latestOption,
+          first_option: s.firstOption,
+          first_correct: s.firstCorrect,
           attempts: s.attempts,
           correct_attempt: s.correctAttempt
         };
@@ -266,7 +296,8 @@ exports.handler = async (event) => {
           success: true,
           current_question_id: session.current_question_id,
           current_section: session.current_section,
-          answer_distribution: distribution,
+          answer_distribution: distribution,        // every submission, incl. retries
+          initial_distribution: initialDistribution, // first attempt only, one per student
           retry_stats: retryStats,
           participation: participation,
           students: students

@@ -336,7 +336,62 @@ select:focus { border-color: var(--accent); outline: none; }
     margin-bottom: 7px;
 }
 
-.form-group input { width: 100%; padding: 11px 13px; font-size: 14px; }
+/* Text-like inputs only: a bare `input` selector here once made radio
+   buttons 260px wide, crushing their labels against the card edge. */
+.form-group input:not([type="radio"]):not([type="checkbox"]) {
+    width: 100%;
+    padding: 11px 13px;
+    font-size: 14px;
+}
+
+/* ------------------------------------------------------------ radio rows -- */
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 15px;
+    background: var(--field);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.radio-option:hover {
+    border-color: var(--accent-2);
+    background: var(--sel-bg);
+}
+
+.radio-option input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    flex: none;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+.radio-option label {
+    margin: 0;
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+}
+
+.radio-option:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--sel-bg);
+}
 
 /* ----------------------------------------------------------------- panel --
    The single card pattern. Every boxed region on either page uses it, either

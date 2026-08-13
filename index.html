@@ -462,12 +462,257 @@
             }
         }
     </style>
+
+    <!-- ===== Theme layer =====
+         Three palettes the viewer chooses between; Operations (dark) is the
+         default. Declared after the base styles so these win at equal
+         specificity. Layouts sit on a black or white base per the brand
+         guidelines - no full-page purple. -->
+    <style>
+        :root, :root[data-theme="ops"] {
+            --bg:#000000; --surface:#0B0713; --surface-2:#140E20; --line:#221A33;
+            --ink:#FFFFFF; --ink-soft:#948CAB;
+            --accent:#7519F9; --accent-2:#9F8CFF; --btn-ink:#FFFFFF;
+            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.13);
+            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.11);
+            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
+            --wait-bg:rgba(255,255,255,.07); --sel-bg:rgba(117,25,249,.16);
+            --radius:4px;
+            --gb-bg:#0B0713; --gb-ink:#FFFFFF; --gb-soft:#948CAB; --gb-line:#221A33;
+        }
+        :root[data-theme="light"] {
+            --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F8F6FC; --line:#E4E0EE;
+            --ink:#14101C; --ink-soft:#6A6280;
+            --accent:#5B059C; --accent-2:#5B059C; --btn-ink:#FFFFFF;
+            --ok:#0F7A52; --ok-bg:#E3F5EC;
+            --bad:#B4232C; --bad-bg:#FBEAEB;
+            --warn:#8A5A00; --warn-bg:#FFF6E0;
+            --wait-bg:#EFECF6; --sel-bg:#F2ECFB;
+            --radius:10px;
+            --gb-bg:#20004C; --gb-ink:#FFFFFF; --gb-soft:#CFC3F4; --gb-line:rgba(255,255,255,.22);
+        }
+        :root[data-theme="net"] {
+            --bg:#000000; --surface:rgba(255,255,255,.05); --surface-2:rgba(255,255,255,.08);
+            --line:rgba(255,255,255,.12);
+            --ink:#FFFFFF; --ink-soft:#9A93B0;
+            --accent:#7519F9; --accent-2:#7D76F2; --btn-ink:#FFFFFF;
+            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.12);
+            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.10);
+            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
+            --wait-bg:rgba(255,255,255,.06); --sel-bg:rgba(117,25,249,.18);
+            --radius:2px;
+            --gb-bg:rgba(11,7,19,.72); --gb-ink:#FFFFFF; --gb-soft:#9A93B0; --gb-line:rgba(255,255,255,.12);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            padding: 0;
+        }
+
+        .network-graphic {
+            position: fixed; inset: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none; opacity: .55;
+        }
+
+        .container {
+            position: relative; z-index: 1;
+            max-width: 940px; margin: 0 auto; background: transparent;
+            border-radius: 0; box-shadow: none; overflow: visible;
+        }
+
+        /* ===== Global bar - identical on every screen ===== */
+        .globalbar {
+            position: sticky; top: 0; z-index: 20;
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            padding: 11px 18px; background: var(--gb-bg);
+            border-bottom: 1px solid var(--gb-line);
+            backdrop-filter: blur(8px);
+        }
+        .gb-home {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-family: inherit; font-size: 12px; font-weight: 700;
+            padding: 7px 13px; border-radius: var(--radius);
+            border: 1px solid var(--gb-line); background: transparent;
+            color: var(--gb-ink); cursor: pointer; transition: background .15s;
+        }
+        .gb-home:hover { background: rgba(255,255,255,.08); }
+        .gb-wordmark {
+            font-size: 11px; font-weight: 700; letter-spacing: .16em;
+            text-transform: uppercase; color: var(--gb-ink); white-space: nowrap;
+        }
+        .gb-wordmark b { color: var(--accent-2); font-weight: 700; }
+        .gb-ctx {
+            font-size: 11.5px; color: var(--gb-soft); white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .gb-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+        .gb-link {
+            font-size: 11.5px; font-weight: 700; color: var(--gb-soft);
+            text-decoration: none; white-space: nowrap;
+        }
+        .gb-link:hover { color: var(--gb-ink); }
+        .gb-theme {
+            display: inline-flex; border: 1px solid var(--gb-line);
+            border-radius: 100px; overflow: hidden;
+        }
+        .gb-theme button {
+            font-family: inherit; font-size: 10px; font-weight: 700;
+            letter-spacing: .05em; text-transform: uppercase;
+            padding: 6px 10px; border: 0; background: transparent;
+            color: var(--gb-soft); cursor: pointer;
+        }
+        .gb-theme button[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
+        .gb-theme button:hover { color: var(--gb-ink); }
+
+        .page-title {
+            padding: 26px 18px 0; text-align: center;
+        }
+        .page-title h1 {
+            font-size: clamp(19px, 3vw, 25px); font-weight: 700;
+            letter-spacing: -.01em; color: var(--ink); margin: 0;
+        }
+
+        .content { padding: 26px 18px 48px; background: transparent; }
+
+        /* ===== Action row - every button for the screen, above all
+                variable-height content so controls never shift ===== */
+        .actionrow {
+            display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+            padding: 12px 14px; margin-bottom: 14px;
+            background: var(--surface-2); border: 1px solid var(--line);
+            border-radius: var(--radius);
+        }
+        .actionrow .btn { width: auto; margin: 0; }
+        .actionrow .grow { flex: 1 1 160px; }
+        .actionrow .right { margin-left: auto; }
+
+        /* ===== Status strip - always rendered, fixed height ===== */
+        .statusstrip {
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            padding: 10px 14px; margin-bottom: 16px;
+            border: 1px solid var(--line); border-radius: var(--radius);
+            background: var(--surface); font-size: 12px; color: var(--ink-soft);
+        }
+        .statusstrip b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+        .statusstrip .right { margin-left: auto; }
+        .chip {
+            font-size: 10px; font-weight: 700; letter-spacing: .07em;
+            text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
+            background: var(--wait-bg); color: var(--ink-soft);
+        }
+        .chip.live { background: var(--ok-bg); color: var(--ok); }
+        .progbar { flex: 1; max-width: 160px; height: 4px; border-radius: 100px;
+            background: var(--line); overflow: hidden; }
+        .progbar i { display: block; height: 100%; background: var(--accent); }
+
+        /* ===== Reserved feedback slot - height exists before content does,
+                so answering never moves the page ===== */
+        .fbslot { margin-top: 16px; min-height: 96px; }
+        .fbslot.empty {
+            border: 1px dashed var(--line); border-radius: var(--radius);
+            display: grid; place-items: center; padding: 14px;
+            font-size: 12px; color: var(--ink-soft); opacity: .7;
+        }
+
+        /* ===== Surfaces retuned to tokens ===== */
+        .screen { color: var(--ink); }
+        .question-counter { color: var(--ink-soft); font-weight: 700; font-size: 11px;
+            letter-spacing: .12em; text-transform: uppercase; }
+        .topic-badge {
+            background: var(--sel-bg); color: var(--accent-2);
+            border-radius: 100px; padding: 5px 12px; font-size: 11px; font-weight: 700;
+        }
+        .question-text { color: var(--ink); font-size: 17px; line-height: 1.32; }
+        .status-bar { background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); }
+        .status-text { color: var(--ink-soft); }
+        .status-text strong { color: var(--ink); }
+
+        .option, .option-btn {
+            background: var(--surface); border: 1px solid var(--line);
+            color: var(--ink); border-radius: var(--radius);
+        }
+        .option:hover:not(.disabled), .option-btn:hover {
+            border-color: var(--accent); background: var(--sel-bg);
+        }
+        .option-btn.selected, .option.selected {
+            border-color: var(--accent); background: var(--sel-bg); font-weight: 700;
+        }
+        .option.disabled { opacity: .55; }
+
+        .feedback-screen, .fbslot .feedback-screen {
+            background: var(--surface-2); border-left: 3px solid var(--accent);
+            border-radius: 0 var(--radius) var(--radius) 0; margin-top: 0;
+        }
+        .feedback-header { font-size: 14px; }
+        .feedback-correct { color: var(--ok); }
+        .feedback-incorrect { color: var(--bad); }
+        .feedback-text { color: var(--ink-soft); }
+        .attempt-info { color: var(--ink-soft); border-top: 1px solid var(--line); }
+
+        .btn {
+            background: var(--accent); color: var(--btn-ink);
+            border-radius: var(--radius); font-weight: 700;
+        }
+        .btn:hover:not(:disabled) { filter: brightness(1.12); }
+        .btn:disabled { opacity: .45; cursor: not-allowed; }
+        .btn-secondary {
+            background: transparent; color: var(--ink); border: 1px solid var(--line);
+        }
+        .btn-secondary:hover:not(:disabled) { border-color: var(--accent); background: var(--sel-bg); }
+
+        .info-box, .waiting-indicator {
+            background: var(--surface); border: 1px solid var(--line);
+            border-left: 3px solid var(--accent); border-radius: var(--radius);
+            color: var(--ink-soft);
+        }
+        .info-box h3 { color: var(--ink); }
+
+        .form-group label { color: var(--ink); font-weight: 700; }
+        .form-group input {
+            background: var(--surface); border: 1px solid var(--line);
+            color: var(--ink); border-radius: var(--radius);
+        }
+        .form-group input:focus { border-color: var(--accent); outline: none; }
+        .form-group input::placeholder { color: var(--ink-soft); }
+        .radio-option {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius);
+        }
+        .radio-option label { color: var(--ink); }
+
+        h2 { color: var(--ink) !important; }
+
+        :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+
+        @media (max-width: 600px) {
+            .globalbar { padding: 9px 12px; gap: 8px; }
+            .gb-ctx { display: none; }
+            .content { padding: 20px 12px 40px; }
+            .actionrow .btn { flex: 1 1 auto; }
+        }
+    </style>
+    <script src="theme.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <a href="instructor.html" class="header-link">Instructor Dashboard →</a>
-            <div class="header-logo">🔷 Extreme Networks</div>
+        <!-- Global bar: Home far left, theme far right, on every screen -->
+        <div class="globalbar">
+            <button class="gb-home" onclick="goHome()" title="Return to the start">⌂ Home</button>
+            <span class="gb-wordmark">Extreme <b>Networks</b></span>
+            <span class="gb-ctx" id="gbContext"></span>
+            <span class="gb-right">
+                <a href="instructor.html" class="gb-link">Instructor →</a>
+                <span class="gb-theme" role="group" aria-label="Colour theme">
+                    <button type="button" data-theme-btn="ops" aria-pressed="true">Dark</button>
+                    <button type="button" data-theme-btn="light" aria-pressed="false">Light</button>
+                    <button type="button" data-theme-btn="net" aria-pressed="false">Network</button>
+                </span>
+            </span>
+        </div>
+
+        <div class="page-title">
             <h1>Networking Fundamentals Assessment</h1>
         </div>
 
@@ -557,30 +802,32 @@
                 </div>
             </div>
 
-            <!-- Full Quiz Mode: Quiz Screen -->
+            <!-- Full Quiz Mode: Quiz Screen (Scheme B: actions above content,
+                 reserved feedback slot so answering never shifts the page) -->
             <div class="screen" id="fullQuizScreen">
-                <div class="status-bar">
-                    <div>
-                        <span class="status-text">Student: <strong id="fullQuizStudentName">Anonymous</strong></span><br>
-                        <span class="status-text">Assessment: <strong id="fullQuizAssessmentType">Pretraining</strong></span>
-                    </div>
+                <div class="actionrow">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()">← Previous</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()">Next →</button>
+                    <button class="btn right" id="submitBtn" onclick="finishQuiz()">Finish Quiz</button>
                 </div>
 
-                <div class="question-counter" id="fullQuizCounter"></div>
-                <span class="topic-badge" id="fullQuizTopicBadge"></span>
+                <div class="statusstrip">
+                    <span class="question-counter" id="fullQuizCounter"></span>
+                    <div class="progbar"><i id="fullQuizProgress" style="width:0%"></i></div>
+                    <span class="right"><span class="status-text">Student: <strong id="fullQuizStudentName">Anonymous</strong></span></span>
+                    <span class="chip" id="fullQuizAssessmentType">Pre-Class</span>
+                </div>
 
+                <span class="topic-badge" id="fullQuizTopicBadge"></span>
                 <div class="question-text" id="fullQuizQuestionText"></div>
                 <div class="options" id="fullQuizOptionsContainer"></div>
 
-                <div style="display: flex; gap: 10px; margin-top: 30px;">
-                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">← Previous</button>
-                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display: none; margin-left: auto;">Next →</button>
-                    <button class="btn" id="submitBtn" onclick="finishQuiz()" style="margin-left: auto;">Finish Quiz</button>
-                </div>
-
-                <div class="feedback-screen" id="fullQuizFeedback">
-                    <div class="feedback-header" id="fullQuizFeedbackHeader"></div>
-                    <div class="feedback-text" id="fullQuizFeedbackText"></div>
+                <div class="fbslot empty" id="fullQuizSlot">
+                    <span id="fullQuizSlotHint">Pick an answer to see the explanation</span>
+                    <div class="feedback-screen" id="fullQuizFeedback">
+                        <div class="feedback-header" id="fullQuizFeedbackHeader"></div>
+                        <div class="feedback-text" id="fullQuizFeedbackText"></div>
+                    </div>
                 </div>
             </div>
 
@@ -602,44 +849,44 @@
                 </div>
             </div>
 
-            <!-- In-Class Mode: Question Screen -->
+            <!-- In-Class Mode: Question Screen (Scheme B) -->
             <div class="screen" id="inclassQuizScreen">
-                <div class="status-bar">
-                    <div>
-                        <span class="status-text">Student: <strong id="inclassStudentName">Anonymous</strong></span><br>
-                        <span class="status-text">Session: <strong id="inclassSessionId"></strong></span>
-                    </div>
-                    <div>
-                        <span class="status-text" id="attemptDisplay">Attempt 1</span>
-                    </div>
+                <!-- Every button for this screen, above all variable content -->
+                <div class="actionrow" id="inclassCheckControls">
+                    <button class="btn grow" id="inclassSubmitBtn" onclick="submitInClassAnswer()">Submit Answer</button>
+                    <button class="btn btn-secondary" id="nextQuestionBtn" onclick="checkForNextQuestion()">Check for Question</button>
                 </div>
 
-                <div class="question-counter" id="inclassQuestionCounter">Waiting for question...</div>
-                <span class="topic-badge" id="inclassTopicBadge"></span>
+                <div class="statusstrip">
+                    <span class="question-counter" id="inclassQuestionCounter">Waiting for question…</span>
+                    <span class="right"><span class="status-text">Student: <strong id="inclassStudentName">Anonymous</strong></span></span>
+                    <span class="status-text">Session: <strong id="inclassSessionId"></strong></span>
+                    <span class="chip" id="attemptDisplay">Attempt 1</span>
+                </div>
+
+                <div id="checkStatusMsg" style="display: none; padding: 12px 15px; background: var(--warn-bg); color: var(--warn); border-radius: var(--radius); margin-bottom: 14px; font-size: 14px;"></div>
 
                 <!-- Waiting State -->
                 <div id="waitingForQuestion" class="waiting-indicator">
                     <p>Waiting for the instructor to start the quiz.</p>
-                    <p style="font-size: 14px; color: #666; margin-top: 8px;">When your instructor says the quiz has begun, click the button below.</p>
+                    <p style="font-size: 14px; margin-top: 8px;">When your instructor says the quiz has begun, use <strong>Check for Question</strong> above.</p>
                 </div>
 
                 <!-- Question State -->
                 <div id="questionDisplay" style="display: none;">
+                    <span class="topic-badge" id="inclassTopicBadge"></span>
                     <div class="question-text" id="inclassQuestionText"></div>
                     <div class="options" id="inclassOptionsContainer"></div>
-                    <button class="btn" id="inclassSubmitBtn" onclick="submitInClassAnswer()" style="width: 100%; margin-top: 20px;">Submit Answer</button>
-                    <div id="answerStatusMsg" style="display: none; margin-top: 12px; padding: 12px 15px; background: #FFF3CD; color: #856404; border-radius: 6px; font-size: 14px;"></div>
-                    <div class="feedback-screen" id="inclassFeedbackScreen">
-                        <div class="feedback-header" id="inclassFeedbackHeader"></div>
-                        <div class="feedback-text" id="inclassFeedbackText"></div>
-                        <div class="attempt-info" id="attemptInfo"></div>
-                    </div>
-                </div>
+                    <div id="answerStatusMsg" style="display: none; margin-top: 12px; padding: 12px 15px; background: var(--warn-bg); color: var(--warn); border-radius: var(--radius); font-size: 14px;"></div>
 
-                <!-- Next Question controls (on-demand check; no background polling) -->
-                <div id="inclassCheckControls" style="margin-top: 20px;">
-                    <div id="checkStatusMsg" style="display: none; padding: 12px 15px; background: #FFF3CD; color: #856404; border-radius: 6px; margin-bottom: 12px; font-size: 14px;"></div>
-                    <button class="btn btn-secondary" id="nextQuestionBtn" onclick="checkForNextQuestion()" style="width: 100%;">Check for Question</button>
+                    <div class="fbslot empty" id="inclassSlot">
+                        <span id="inclassSlotHint">Submit an answer to see feedback</span>
+                        <div class="feedback-screen" id="inclassFeedbackScreen">
+                            <div class="feedback-header" id="inclassFeedbackHeader"></div>
+                            <div class="feedback-text" id="inclassFeedbackText"></div>
+                            <div class="attempt-info" id="attemptInfo"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Session Ended -->
@@ -718,6 +965,36 @@
             }
         }
 
+        // Home is on every screen. Mid-full-quiz it confirms first, because those
+        // answers only exist in this browser; mid-in-class it just goes, since
+        // every answer is already saved server-side.
+        function goHome() {
+            const inFullQuiz = document.getElementById('fullQuizScreen').classList.contains('active');
+            const answered = responses.filter(r => r !== null).length;
+
+            if (inFullQuiz && answered > 0) {
+                if (!confirm('Start over? Your ' + answered + ' answer' + (answered === 1 ? '' : 's') +
+                             ' on this assessment will be discarded.')) {
+                    return;
+                }
+            }
+            backToModeSelection();
+        }
+
+        // Context shown in the global bar, so the student always knows which
+        // session they are in without hunting for it.
+        function setGlobalContext(text) {
+            document.getElementById('gbContext').textContent = text || '';
+        }
+
+        // The feedback slot reserves its height up front; filling it must not
+        // move anything above it.
+        function setFeedbackVisible(slotId, hintId, feedbackId, visible) {
+            document.getElementById(slotId).classList.toggle('empty', !visible);
+            document.getElementById(hintId).style.display = visible ? 'none' : '';
+            document.getElementById(feedbackId).style.display = visible ? 'block' : 'none';
+        }
+
         function backToModeSelection() {
             quizMode = null;
             currentQuestionId = null;
@@ -728,6 +1005,7 @@
             lastSubmittedOption = null;
             currentAttemptNumber = 1;
             sessionWasActive = false;
+            setGlobalContext('');
 
             document.getElementById('modeSelectionScreen').classList.add('active');
             document.getElementById('studentInfoScreen').classList.remove('active');
@@ -770,6 +1048,7 @@
 
             document.getElementById('fullQuizStudentName').textContent = studentName;
             document.getElementById('fullQuizAssessmentType').textContent = classType === 'pretraining' ? 'Pre-Class' : 'Post-Class';
+            setGlobalContext(studentName + ' · ' + (classType === 'pretraining' ? 'Pre-Class' : 'Post-Class'));
 
             displayFullQuizQuestion();
         }
@@ -798,10 +1077,15 @@
                 container.appendChild(btn);
             });
 
-            // Hide feedback when changing questions
-            document.getElementById('fullQuizFeedback').style.display = 'none';
-            document.getElementById('prevBtn').style.display = fullQuizCurrentQuestion > 0 ? 'block' : 'none';
-            document.getElementById('nextBtn').style.display = fullQuizCurrentQuestion < quizData.length - 1 ? 'block' : 'none';
+            // Reset the reserved feedback slot for the new question
+            setFeedbackVisible('fullQuizSlot', 'fullQuizSlotHint', 'fullQuizFeedback', false);
+
+            // Buttons stay in place and disable at the ends rather than
+            // disappearing, so the action row never changes shape
+            document.getElementById('prevBtn').disabled = fullQuizCurrentQuestion === 0;
+            document.getElementById('nextBtn').disabled = fullQuizCurrentQuestion >= quizData.length - 1;
+            document.getElementById('fullQuizProgress').style.width =
+                Math.round(((fullQuizCurrentQuestion + 1) / quizData.length) * 100) + '%';
         }
 
         function selectFullQuizOption(optionLetter) {
@@ -833,7 +1117,7 @@
                 text.textContent = typeof selectedOption === 'object' ? selectedOption.feedback : question.explanation;
             }
 
-            feedback.style.display = 'block';
+            setFeedbackVisible('fullQuizSlot', 'fullQuizSlotHint', 'fullQuizFeedback', true);
 
             // Highlight selected button
             document.querySelectorAll('#fullQuizOptionsContainer .option-btn').forEach((btn, idx) => {
@@ -1012,14 +1296,19 @@
             document.getElementById('inclassStudentName').textContent = studentName;
             document.getElementById('inclassSessionId').textContent = classId;
 
+            setGlobalContext(studentName + ' · ' + classId);
+
             // Reset sub-displays (may hold state from a previous session)
             document.getElementById('waitingForQuestion').style.display = 'block';
             document.getElementById('questionDisplay').style.display = 'none';
             document.getElementById('sessionEndedDisplay').style.display = 'none';
-            document.getElementById('inclassFeedbackScreen').style.display = 'none';
-            document.getElementById('inclassCheckControls').style.display = 'block';
+            setFeedbackVisible('inclassSlot', 'inclassSlotHint', 'inclassFeedbackScreen', false);
+            // '' restores the stylesheet's flex layout for the action row
+            document.getElementById('inclassCheckControls').style.display = '';
             document.getElementById('nextQuestionBtn').textContent = 'Check for Question';
+            document.getElementById('inclassSubmitBtn').disabled = true;
             setCheckStatus(null);
+            setAnswerStatus(null);
 
             sessionWasActive = false;
             checkForQuestion(false);  // one initial check on join
@@ -1088,6 +1377,8 @@
                     currentAttemptNumber = 1;
                     document.getElementById('waitingForQuestion').style.display = 'block';
                     document.getElementById('questionDisplay').style.display = 'none';
+                    // Nothing to answer yet, so Submit stays out of reach
+                    document.getElementById('inclassSubmitBtn').disabled = true;
                     if (fromButton) {
                         setCheckStatus("The instructor hasn't started the quiz yet — try again in a moment.");
                     }
@@ -1140,7 +1431,7 @@
             // Fresh question: clear all per-question answer state
             lastSubmittedOption = null;
             questionLocked = false;
-            document.getElementById('inclassFeedbackScreen').style.display = 'none';
+            setFeedbackVisible('inclassSlot', 'inclassSlotHint', 'inclassFeedbackScreen', false);
             document.getElementById('inclassSubmitBtn').textContent = 'Submit Answer';
             document.getElementById('inclassSubmitBtn').disabled = false;
             setAnswerStatus(null);
@@ -1266,7 +1557,7 @@
                 attemptInfo.textContent = `Great! Correct on attempt ${attemptNumber}.`;
             }
 
-            feedbackScreen.style.display = 'block';
+            setFeedbackVisible('inclassSlot', 'inclassSlotHint', 'inclassFeedbackScreen', true);
         }
 
         function updateAttemptDisplay() {

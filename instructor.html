@@ -701,16 +701,181 @@
             }
         }
     </style>
+
+    <!-- ===== Theme layer (shared palettes with index.html) ===== -->
+    <style>
+        :root, :root[data-theme="ops"] {
+            --bg:#000000; --surface:#0B0713; --surface-2:#140E20; --line:#221A33;
+            --ink:#FFFFFF; --ink-soft:#948CAB;
+            --accent:#7519F9; --accent-2:#9F8CFF; --btn-ink:#FFFFFF;
+            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.13);
+            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.11);
+            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
+            --wait-bg:rgba(255,255,255,.07); --sel-bg:rgba(117,25,249,.16);
+            --bar-i:#3A2A63; --bar-c:#7519F9;
+            --radius:4px;
+            --gb-bg:#0B0713; --gb-ink:#FFFFFF; --gb-soft:#948CAB; --gb-line:#221A33;
+        }
+        :root[data-theme="light"] {
+            --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F8F6FC; --line:#E4E0EE;
+            --ink:#14101C; --ink-soft:#6A6280;
+            --accent:#5B059C; --accent-2:#5B059C; --btn-ink:#FFFFFF;
+            --ok:#0F7A52; --ok-bg:#E3F5EC;
+            --bad:#B4232C; --bad-bg:#FBEAEB;
+            --warn:#8A5A00; --warn-bg:#FFF6E0;
+            --wait-bg:#EFECF6; --sel-bg:#F2ECFB;
+            --bar-i:#CFC3F4; --bar-c:#5B059C;
+            --radius:10px;
+            --gb-bg:#20004C; --gb-ink:#FFFFFF; --gb-soft:#CFC3F4; --gb-line:rgba(255,255,255,.22);
+        }
+        :root[data-theme="net"] {
+            --bg:#000000; --surface:rgba(255,255,255,.05); --surface-2:rgba(255,255,255,.08);
+            --line:rgba(255,255,255,.12);
+            --ink:#FFFFFF; --ink-soft:#9A93B0;
+            --accent:#7519F9; --accent-2:#7D76F2; --btn-ink:#FFFFFF;
+            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.12);
+            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.10);
+            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
+            --wait-bg:rgba(255,255,255,.06); --sel-bg:rgba(117,25,249,.18);
+            --bar-i:rgba(125,118,242,.42); --bar-c:#7519F9;
+            --radius:2px;
+            --gb-bg:rgba(11,7,19,.72); --gb-ink:#FFFFFF; --gb-soft:#9A93B0; --gb-line:rgba(255,255,255,.12);
+        }
+
+        body { background: var(--bg); color: var(--ink); padding: 0; }
+        .network-graphic {
+            position: fixed; inset: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none; opacity: .55;
+        }
+        .container {
+            position: relative; z-index: 1;
+            max-width: 1240px; margin: 0 auto; background: transparent;
+            border-radius: 0; box-shadow: none; overflow: visible;
+        }
+
+        /* Global bar - same structure and position as the student app */
+        .globalbar {
+            position: sticky; top: 0; z-index: 30;
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            padding: 11px 18px; background: var(--gb-bg);
+            border-bottom: 1px solid var(--gb-line); backdrop-filter: blur(8px);
+        }
+        .gb-home {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-family: inherit; font-size: 12px; font-weight: 700;
+            padding: 7px 13px; border-radius: var(--radius);
+            border: 1px solid var(--gb-line); background: transparent;
+            color: var(--gb-ink); cursor: pointer; text-decoration: none;
+        }
+        .gb-home:hover { background: rgba(255,255,255,.08); }
+        .gb-wordmark {
+            font-size: 11px; font-weight: 700; letter-spacing: .16em;
+            text-transform: uppercase; color: var(--gb-ink); white-space: nowrap;
+        }
+        .gb-wordmark b { color: var(--accent-2); }
+        .gb-ctx { font-size: 11.5px; color: var(--gb-soft); }
+        .gb-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+        .gb-theme {
+            display: inline-flex; border: 1px solid var(--gb-line);
+            border-radius: 100px; overflow: hidden;
+        }
+        .gb-theme button {
+            font-family: inherit; font-size: 10px; font-weight: 700;
+            letter-spacing: .05em; text-transform: uppercase;
+            padding: 6px 10px; border: 0; background: transparent;
+            color: var(--gb-soft); cursor: pointer;
+        }
+        .gb-theme button[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
+        .page-title { padding: 24px 18px 0; }
+        .page-title h1 {
+            font-size: clamp(20px, 3vw, 26px); font-weight: 700;
+            letter-spacing: -.01em; color: var(--ink); margin: 0 0 4px;
+        }
+        .page-title p { font-size: 13px; color: var(--ink-soft); margin: 0; }
+        .content { padding: 24px 18px 48px; background: transparent; }
+
+        /* Surfaces retuned to tokens */
+        .tabs { border-bottom-color: var(--line); }
+        .tab-btn { color: var(--ink-soft); }
+        .tab-btn.active, .tab-btn:hover { color: var(--accent-2); border-bottom-color: var(--accent-2); }
+        .dashboard-header h2 { color: var(--ink) !important; }
+        .session-info, .answer-distribution, .retry-stats, .student-responses,
+        .info-box, .login-screen {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); color: var(--ink);
+        }
+        .session-info h3, .answer-distribution h3, .retry-stats h3,
+        .student-responses h3, .info-box h3, .login-screen h2 { color: var(--ink) !important; }
+        .detail-item, .stat-row, .student-row, .rrow { border-color: var(--line); }
+        .detail-item strong, .stat-label { color: var(--ink-soft); }
+        .stat-value, .student-name { color: var(--ink); }
+        .student-answer { color: var(--accent-2); }
+        .student-answer.first { color: var(--ink-soft); }
+        .student-answer.none { color: var(--ink-soft); opacity: .5; }
+        .student-badge.correct { background: var(--ok-bg); color: var(--ok); }
+        .student-badge.wrong { background: var(--bad-bg); color: var(--bad); }
+        .student-badge.pending { background: var(--wait-bg); color: var(--ink-soft); }
+        .student-head, .student-head .student-name, .student-head .student-answer,
+        .student-head .student-tries { color: var(--ink-soft); }
+        .student-head { border-bottom-color: var(--line); }
+        .chart-bar.initial { background: var(--bar-i); }
+        .chart-bar.cumulative { background: var(--bar-c); }
+        .chart-bar .bar-count { color: var(--ink-soft); }
+        .answer-chart { border-bottom-color: var(--line); }
+        .chart-xlabel { color: var(--ink-soft); }
+        .chart-xlabel.correct { color: var(--ok); }
+        .chart-legend { color: var(--ink-soft); }
+        .chart-legend .swatch.initial { background: var(--bar-i); }
+        .chart-legend .swatch.cumulative { background: var(--bar-c); }
+        .btn { background: var(--accent); color: var(--btn-ink); border-radius: var(--radius); }
+        .btn:hover:not(:disabled) { filter: brightness(1.12); }
+        .btn:disabled { opacity: .45; cursor: not-allowed; }
+        .btn-secondary {
+            background: transparent; color: var(--ink); border: 1px solid var(--line);
+        }
+        .btn-secondary:hover:not(:disabled) { border-color: var(--accent); background: var(--sel-bg); }
+        .form-group label { color: var(--ink); }
+        .form-group input, .controls select, #sessionQuizType, #sessionClassId, #sessionName {
+            background: var(--surface-2); border: 1px solid var(--line);
+            color: var(--ink); border-radius: var(--radius);
+        }
+        .response-card { background: var(--surface); border-color: var(--line); color: var(--ink); }
+        .no-data { color: var(--ink-soft); }
+        .poll-controls label { color: var(--ink-soft) !important; }
+        .modal-content, #createSessionModal > div {
+            background: var(--surface) !important; color: var(--ink);
+            border: 1px solid var(--line);
+        }
+        :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+
+        @media (max-width: 600px) {
+            .globalbar { padding: 9px 12px; gap: 8px; }
+            .gb-ctx { display: none; }
+            .content { padding: 20px 12px 40px; }
+        }
+    </style>
+    <script src="theme.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <a href="index.html" style="position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600; transition: background 0.2s;"
-               onmouseover="this.style.background='rgba(255,255,255,0.3)'"
-               onmouseout="this.style.background='rgba(255,255,255,0.2)'">← Home</a>
-            <div class="header-user" id="headerUser" style="display:none;">
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
+        <!-- Global bar: Home far left, theme far right - identical to the student app -->
+        <div class="globalbar">
+            <a href="index.html" class="gb-home" title="Back to the assessment home">⌂ Home</a>
+            <span class="gb-wordmark">Extreme <b>Networks</b></span>
+            <span class="gb-ctx" id="gbContext">Instructor</span>
+            <span class="gb-right">
+                <div class="header-user" id="headerUser" style="display:none;">
+                    <button class="logout-btn" onclick="logout()">Sign out</button>
+                </div>
+                <span class="gb-theme" role="group" aria-label="Colour theme">
+                    <button type="button" data-theme-btn="ops" aria-pressed="true">Dark</button>
+                    <button type="button" data-theme-btn="light" aria-pressed="false">Light</button>
+                    <button type="button" data-theme-btn="net" aria-pressed="false">Network</button>
+                </span>
+            </span>
+        </div>
+
+        <div class="page-title">
             <h1>Instructor Dashboard</h1>
             <p>Monitor student responses and manage in-class sessions</p>
         </div>
@@ -1061,11 +1226,16 @@
             }
         }
 
+        function setGlobalContext(text) {
+            document.getElementById('gbContext').textContent = text || 'Instructor';
+        }
+
         async function displayActiveSession(currentQuestionId) {
             document.getElementById('createSessionContainer').style.display = 'none';
             document.getElementById('liveSessionContainer').style.display = 'block';
             document.getElementById('activeClassId').textContent = activeClassId;
             document.getElementById('activeQuizType').textContent = activeQuizType;
+            setGlobalContext('Instructor · ' + activeClassId + ' · ' + activeQuizType);
 
             // Start from a clean panel — never show a previous session's numbers
             clearQuestionStats();
@@ -1229,6 +1399,7 @@
             currentQuestionIndex = -1;
             pendingEndConfirm = false;
 
+            setGlobalContext('Instructor');
             document.getElementById('createSessionContainer').style.display = 'block';
             document.getElementById('liveSessionContainer').style.display = 'none';
             document.getElementById('currentQuestionDisplay').textContent = 'Waiting...';

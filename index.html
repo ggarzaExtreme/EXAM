@@ -832,9 +832,6 @@
             text-decoration: none; background: transparent;
         }
         .review-link:hover { border-color: var(--accent-2); background: var(--sel-bg); }
-        .review-link[data-placeholder]::after {
-            content: " ·  pending"; color: var(--ink-soft); font-weight: 400;
-        }
 
         @media (max-width: 640px) {
             .res-hero { grid-template-columns: 1fr; gap: 20px; justify-items: start; }
@@ -1134,7 +1131,8 @@
                 <div class="res-section" id="reviewSection">
                     <h3>What To Review <span id="reviewCount"></span></h3>
                     <p class="res-note">
-                        Review links are placeholders — point them at your own material when ready.
+                        Each link opens a YouTube search for that topic. Swap in your own
+                        material any time by changing <code>reviewUrl()</code>.
                     </p>
                     <div id="reviewList"></div>
                 </div>
@@ -1452,21 +1450,19 @@
             return styles.getPropertyValue('--bad').trim() || '#FF6B7A';
         }
 
-        // The quiz data carries a videoTopic label per question, which makes a
-        // better review hint than the bare topic name.
-        function reviewHint(topic) {
+        // The quiz data carries a videoTopic label per question, which is more
+        // specific than the bare topic name and makes a better search term.
+        function reviewTerm(topic) {
             const q = (window.quizData || []).find(
                 q => q.topic === topic && q.resources && q.resources.videoTopic);
-            return escapeHtml(q ? q.resources.videoTopic : 'Review this topic');
+            return (q && q.resources.videoTopic) || topic;
         }
 
-        function reviewLinkPending(event) {
-            event.preventDefault();
-            const a = event.currentTarget;
-            const original = a.textContent;
-            a.textContent = 'Link not set yet';
-            setTimeout(() => { a.textContent = original; }, 1600);
-            return false;
+        // Review links are generated rather than curated: a YouTube search for
+        // the topic, so they keep working as the question bank changes.
+        function reviewUrl(topic) {
+            return 'https://www.youtube.com/results?search_query=' +
+                   encodeURIComponent(reviewTerm(topic));
         }
 
         function finishQuiz() {
@@ -1570,10 +1566,11 @@
                     <div class="review-item">
                         <span class="ri-body">
                             <span class="ri-topic">${escapeHtml(t.topic)}</span>
-                            <span class="ri-detail">${t.correct}/${t.total} correct · ${t.pct}% — ${reviewHint(t.topic)}</span>
+                            <span class="ri-detail">${t.correct}/${t.total} correct · ${t.pct}% — ${escapeHtml(reviewTerm(t.topic))}</span>
                         </span>
-                        <a class="review-link" href="#" data-placeholder="1"
-                           onclick="return reviewLinkPending(event);">Review</a>
+                        <a class="review-link" href="${escapeHtml(reviewUrl(t.topic))}"
+                           target="_blank" rel="noopener noreferrer"
+                           title="Search YouTube for ${escapeHtml(reviewTerm(t.topic))}">Review ↗</a>
                     </div>
                 `).join('');
             }

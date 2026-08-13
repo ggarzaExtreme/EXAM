@@ -329,7 +329,7 @@
 
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=15">
+    <link rel="stylesheet" href="styles.css?v=16">
     <style>
         .container { max-width: 940px; }
         .content { padding: 26px 18px 48px; background: transparent; --card-pad: 26px; }
@@ -496,6 +496,36 @@
             font-variant-numeric: tabular-nums;
         }
         .res-section { padding: 22px 24px; margin-bottom: 18px; }
+
+        /* ===== Question-by-question review (results screen) ===== */
+        .review-locked {
+            display: flex; align-items: center; gap: 11px;
+            padding: 16px 18px; border-radius: var(--radius);
+            background: var(--wait-bg); border: 1px dashed var(--btn-2-line);
+            color: var(--ink-soft); font-size: 13.5px;
+        }
+        .review-locked p { margin: 0; }
+        .review-locked .ic { color: var(--accent-2); flex: none; }
+        .rev-item {
+            padding: 14px 0; border-bottom: 1px solid var(--line);
+        }
+        .rev-item:last-child { border-bottom: none; }
+        .rev-head {
+            display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;
+            font-size: 12px; color: var(--ink-soft); margin-bottom: 6px;
+        }
+        .rev-verdict { font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 10.5px; }
+        .rev-verdict.ok { color: var(--ok); }
+        .rev-verdict.bad { color: var(--bad); }
+        .rev-verdict.skip { color: var(--warn); }
+        .rev-q { font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+        .rev-answers { display: grid; gap: 4px; margin: 8px 0 0; font-size: 13px; }
+        .rev-answers span { color: var(--ink-soft); }
+        .rev-answers b { color: var(--ink); font-weight: 700; }
+        .rev-why {
+            margin-top: 8px; padding-left: 11px; border-left: 2px solid var(--accent-2);
+            font-size: 13px; color: var(--ink-soft); line-height: 1.5;
+        }
         .res-note { font-size: 12.5px; color: var(--ink-soft); margin: -8px 0 16px; }
 
         .topic-row { margin-bottom: 17px; }
@@ -581,6 +611,33 @@
             height: 2px; border-radius: 2px;
             margin: 24px 0 26px;
             background: linear-gradient(90deg, #20004C, #5B059C 28%, #7519F9 62%, #7D76F2);
+        }
+
+        /* ===== Post-class survey links =====
+           Same anatomy as a .mode card one level down: title, one line of
+           detail, and an arrow that leans on hover. Built as <a> rather than
+           <button> so they behave like the outbound links they are. */
+        .survey-list { display: grid; gap: 10px; margin-top: 4px; }
+        .survey-link {
+            position: relative; display: grid;
+            grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px;
+            padding: 16px 18px; text-decoration: none;
+            background: var(--btn-2); color: var(--ink);
+            border: 1px solid var(--btn-2-line); border-radius: var(--radius);
+            transition: border-color .18s, background .18s, transform .18s;
+        }
+        .survey-link:hover, .survey-link:focus-visible {
+            border-color: var(--accent-2); background: var(--btn-2-hover);
+            transform: translateY(-1px);
+        }
+        .survey-name { display: block; font-size: 15px; font-weight: 700; line-height: 1.25; }
+        .survey-note { display: block; font-size: 12.5px; color: var(--ink-soft); margin-top: 4px; }
+        .survey-link .ic { color: var(--accent-2); transition: transform .18s ease; }
+        .survey-link:hover .ic { transform: translateX(3px); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .survey-link, .survey-link .ic { transition: none; }
+            .survey-link:hover { transform: none; }
         }
 
         .modes { display: grid; gap: 14px; }
@@ -727,8 +784,9 @@
     <div class="container">
         <!-- Global bar: Home far left, theme far right, on every screen -->
         <div class="globalbar">
-            <button class="gb-home" onclick="goHome()" title="Return to the start">
-                <svg class="ic" aria-hidden="true"><use href="#ic-home"></use></svg>Home
+            <button class="gb-home" id="homeBtn" onclick="goHome()" title="Return to the start">
+                <svg class="ic" aria-hidden="true"><use href="#ic-home"></use></svg>
+                <span class="btn-label">Home</span>
             </button>
             <img class="gb-logo" src="assets/logo-white.svg" alt="Extreme Networks">
             <span class="gb-ctx" id="gbContext"></span>
@@ -789,6 +847,45 @@
                         </span>
                         <span class="mode-arrow" aria-hidden="true"><svg class="ic"><use href="#ic-right"></use></svg></span>
                     </button>
+
+                    <button class="mode" onclick="selectMode('postclass')">
+                        <span>
+                            <span class="mode-kicker">After your class</span>
+                            <span class="mode-title">Post-Class Review</span>
+                            <span class="mode-desc">
+                                Tell us how the course went. A short survey per course, hosted
+                                outside this tool — nothing you enter here is tied to your
+                                assessment results.
+                            </span>
+                            <span class="mode-meta">
+                                <span class="mode-tag">2 minutes</span>
+                                <span class="mode-tag">Opens a survey</span>
+                            </span>
+                        </span>
+                        <span class="mode-arrow" aria-hidden="true"><svg class="ic"><use href="#ic-right"></use></svg></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Post-Class Review: links out to the hosted feedback surveys.
+                 Rendered from POST_CLASS_SURVEYS below, so adding a course is a
+                 one-line change and needs no markup. -->
+            <div class="screen" id="postClassScreen">
+                <div class="panel formcard">
+                    <h3 class="panel-h">Post-Class Review</h3>
+                    <p class="form-lede">
+                        Pick the course you just finished. The survey opens in a new tab and is
+                        hosted on SurveyMonkey, so your answers stay separate from your
+                        assessment results.
+                    </p>
+                    <div class="survey-list" id="surveyList"></div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="backToModeSelection()">
+                            <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-left"></use></svg>
+                            <span class="btn-label">Back</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -809,15 +906,21 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Which assessment are you taking?</label>
+                        <label>How do you want to take it?</label>
                         <div class="radio-group">
                             <div class="radio-option">
-                                <input type="radio" id="class-pretraining" name="class_type" value="pretraining" checked>
-                                <label for="class-pretraining">Pre-Class Knowledge Check</label>
+                                <input type="radio" id="mode-test" name="assessment_mode" value="test" checked>
+                                <label for="mode-test">
+                                    Test mode
+                                    <span class="radio-note">Answers stay hidden until you submit. Your result goes to your instructor.</span>
+                                </label>
                             </div>
                             <div class="radio-option">
-                                <input type="radio" id="class-postclass" name="class_type" value="post_class">
-                                <label for="class-postclass">Post-Class Review</label>
+                                <input type="radio" id="mode-practice" name="assessment_mode" value="practice">
+                                <label for="mode-practice">
+                                    Practice mode
+                                    <span class="radio-note">Each answer is explained as you go. Nothing is recorded.</span>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -952,6 +1055,18 @@
                     <div id="topicResults"></div>
                 </div>
 
+                <!-- Question-by-question review. Practice mode has already shown
+                     each explanation inline, so it renders open. Test mode keeps
+                     it sealed until the run is submitted. -->
+                <div class="res-section" id="answerReviewSection">
+                    <h3>Your Answers <span id="answerReviewNote"></span></h3>
+                    <div class="review-locked" id="answerReviewLocked">
+                        <svg class="ic" aria-hidden="true"><use href="#ic-clock"></use></svg>
+                        <p>Submit your results to see which questions you missed and why.</p>
+                    </div>
+                    <div id="answerReviewList"></div>
+                </div>
+
                 <div class="res-section" id="reviewSection">
                     <h3>What To Review <span id="reviewCount"></span></h3>
                     <p class="res-note">
@@ -1030,7 +1145,10 @@
         let quizStartTime = null;
         let studentName = '';
         let studentEmail = '';
-        let classType = 'pretraining';
+        let classType = 'pretraining';   // the only full-quiz type now
+        // 'test'     - answers hidden until the run is submitted, result recorded
+        // 'practice' - answer explained immediately, nothing recorded
+        let assessmentMode = 'test';
         let sessionId = null;
         let classId = null;
         let currentQuestionId = null;
@@ -1042,10 +1160,39 @@
         const STORAGE_KEY = 'networkingAssessmentData';
         const quizDataFiles = {
             'pretraining': 'quiz_data_pre_class.js',
-            'post_class': 'quiz_data_post_class.js',
+            'post_class': 'quiz_data_post_class.js',   // retained; no longer reachable
             'fabric': 'quiz_data_fabric_engine.js',
             'switch': 'quiz_data_switch_engine.js'
         };
+
+        // ---- Post-class feedback surveys -------------------------------------
+        // The post-class review is a hosted survey now, not a quiz in this tool.
+        // Add a course by adding a row; the page builds itself from this list.
+        const POST_CLASS_SURVEYS = [
+            { name: 'Fabric Engine', note: 'Course feedback survey',
+              url: 'https://www.surveymonkey.com/r/pe-fabric' },
+            { name: 'Switch Engine', note: 'Course feedback survey',
+              url: 'https://www.surveymonkey.com/r/pe-exos' }
+        ];
+
+        function renderSurveyLinks() {
+            const list = document.getElementById('surveyList');
+            if (!list) return;
+            if (!POST_CLASS_SURVEYS.length) {
+                list.innerHTML = '<p class="no-data">No surveys are published yet.</p>';
+                return;
+            }
+            // rel=noopener: these open in a new tab and are third-party
+            list.innerHTML = POST_CLASS_SURVEYS.map(s => `
+                <a class="survey-link" href="${escapeHtml(s.url)}"
+                   target="_blank" rel="noopener noreferrer">
+                    <span>
+                        <span class="survey-name">${escapeHtml(s.name)}</span>
+                        <span class="survey-note">${escapeHtml(s.note)}</span>
+                    </span>
+                    <svg class="ic" aria-hidden="true"><use href="#ic-external"></use></svg>
+                </a>`).join('');
+        }
 
         // Load quiz data file dynamically
         async function loadQuizDataFile(classTypeParam) {
@@ -1081,6 +1228,10 @@
                 document.getElementById('studentInfoScreen').classList.add('active');
             } else if (mode === 'inclass') {
                 document.getElementById('sessionJoinScreen').classList.add('active');
+            } else if (mode === 'postclass') {
+                renderSurveyLinks();
+                document.getElementById('postClassScreen').classList.add('active');
+                setGlobalContext('Post-class review');
             }
         }
 
@@ -1100,17 +1251,31 @@
         }
         // Home is on every screen. Mid-full-quiz it confirms first, because those
         // answers only exist in this browser; mid-in-class it just goes, since
-        // every answer is already saved server-side.
+        // every answer is already saved server-side. Two-step rather than
+        // window.confirm() for the same reason as Finish Quiz — a suppressed
+        // dialog would leave the student unable to get out of the quiz at all.
+        let pendingHomeConfirm = false;
+
         function goHome() {
             const inFullQuiz = document.getElementById('fullQuizScreen').classList.contains('active');
             const answered = responses.filter(r => r !== null).length;
 
-            if (inFullQuiz && answered > 0) {
-                if (!confirm('Start over? Your ' + answered + ' answer' + (answered === 1 ? '' : 's') +
-                             ' on this assessment will be discarded.')) {
-                    return;
-                }
+            if (inFullQuiz && answered > 0 && !pendingHomeConfirm) {
+                pendingHomeConfirm = true;
+                setBtnLabel('homeBtn', 'Discard?');
+                window.toast('Leaving now discards your ' + answered + ' answer' +
+                    (answered === 1 ? '' : 's') + ' — they are only stored in this browser. ' +
+                    'Press Discard? to leave.', 'warn');
+                setTimeout(() => {
+                    if (pendingHomeConfirm) {
+                        pendingHomeConfirm = false;
+                        setBtnLabel('homeBtn', 'Home');
+                    }
+                }, 8000);
+                return;
             }
+            pendingHomeConfirm = false;
+            setBtnLabel('homeBtn', 'Home');
             backToModeSelection();
         }
 
@@ -1140,12 +1305,11 @@
             sessionWasActive = false;
             setGlobalContext('');
 
+            // Clear every screen rather than naming them one by one — that list
+            // had to be edited each time a screen was added, and forgetting an
+            // entry leaves two screens stacked on top of each other.
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('modeSelectionScreen').classList.add('active');
-            document.getElementById('studentInfoScreen').classList.remove('active');
-            document.getElementById('sessionJoinScreen').classList.remove('active');
-            document.getElementById('inclassQuizScreen').classList.remove('active');
-            document.getElementById('fullQuizScreen').classList.remove('active');
-            document.getElementById('fullQuizResultsScreen').classList.remove('active');
         }
 
         let fullQuizCurrentQuestion = 0;
@@ -1153,7 +1317,7 @@
         async function startFullQuiz() {
             const nameInput = document.getElementById('studentName').value.trim();
             const emailInput = document.getElementById('studentEmail').value.trim();
-            const classInput = document.querySelector('input[name="class_type"]:checked').value;
+            const modeInput = document.querySelector('input[name="assessment_mode"]:checked').value;
 
             if (!nameInput) {
                 window.toast('Please enter your name to continue.', 'warn');
@@ -1163,7 +1327,8 @@
 
             studentName = nameInput;
             studentEmail = emailInput;
-            classType = classInput;
+            assessmentMode = modeInput;
+            classType = 'pretraining';
 
             try {
                 await loadQuizDataFile(classType);
@@ -1180,9 +1345,16 @@
             document.getElementById('studentInfoScreen').classList.remove('active');
             document.getElementById('fullQuizScreen').classList.add('active');
 
+            const modeLabel = assessmentMode === 'practice' ? 'Practice' : 'Test';
             document.getElementById('fullQuizStudentName').textContent = studentName;
-            document.getElementById('fullQuizAssessmentType').textContent = classType === 'pretraining' ? 'Pre-Class' : 'Post-Class';
-            setGlobalContext(studentName + ' · ' + (classType === 'pretraining' ? 'Pre-Class' : 'Post-Class'));
+            document.getElementById('fullQuizAssessmentType').textContent = modeLabel;
+            setGlobalContext(studentName + ' · Pre-Class · ' + modeLabel);
+
+            // Test mode never shows per-question feedback, so the reserved slot
+            // would be permanently empty. Hiding it once here costs no layout
+            // shift, because it stays hidden for the whole run.
+            document.getElementById('fullQuizSlot').style.display =
+                assessmentMode === 'practice' ? '' : 'none';
 
             displayFullQuizQuestion();
         }
@@ -1239,7 +1411,14 @@
             // (topic scores are computed once in finishQuiz — accumulating here
             // would double-count when a student changes their answer)
 
-            // Show feedback
+            // Highlight the choice regardless of mode
+            document.querySelectorAll('#fullQuizOptionsContainer .option-btn').forEach((btn, idx) => {
+                btn.classList.toggle('selected', String.fromCharCode(65 + idx) === optionLetter);
+            });
+
+            // Test mode withholds the explanation until the run is submitted.
+            if (assessmentMode !== 'practice') return;
+
             const feedback = document.getElementById('fullQuizFeedback');
             const header = document.getElementById('fullQuizFeedbackHeader');
             const text = document.getElementById('fullQuizFeedbackText');
@@ -1255,15 +1434,6 @@
             }
 
             setFeedbackVisible('fullQuizSlot', 'fullQuizSlotHint', 'fullQuizFeedback', true);
-
-            // Highlight selected button
-            document.querySelectorAll('#fullQuizOptionsContainer .option-btn').forEach((btn, idx) => {
-                if (String.fromCharCode(65 + idx) === optionLetter) {
-                    btn.classList.add('selected');
-                } else {
-                    btn.classList.remove('selected');
-                }
-            });
         }
 
         function previousQuestion() {
@@ -1309,14 +1479,29 @@
                    encodeURIComponent(reviewTerm(topic));
         }
 
+        // Two-step confirm on the button rather than window.confirm(). Once
+        // Chrome offers "prevent additional dialogs" and the student ticks it,
+        // confirm() returns false forever and Finish Quiz becomes a button that
+        // silently does nothing — which is exactly how End Session broke.
+        let pendingFinishConfirm = false;
+
         function finishQuiz() {
-            // Warn about unanswered questions
             const unanswered = responses.filter(r => r === null).length;
-            if (unanswered > 0) {
-                if (!confirm(`You have ${unanswered} unanswered question${unanswered > 1 ? 's' : ''}. Finish anyway? (Unanswered questions count as incorrect.)`)) {
-                    return;
-                }
+            if (unanswered > 0 && !pendingFinishConfirm) {
+                pendingFinishConfirm = true;
+                setBtnLabel('submitBtn', 'Finish anyway');
+                window.toast(unanswered + ' question' + (unanswered > 1 ? 's are' : ' is') +
+                    ' still blank and will count as incorrect. Press Finish anyway to continue.', 'warn');
+                setTimeout(() => {
+                    if (pendingFinishConfirm) {
+                        pendingFinishConfirm = false;
+                        setBtnLabel('submitBtn', 'Finish Quiz');
+                    }
+                }, 8000);
+                return;
             }
+            pendingFinishConfirm = false;
+            setBtnLabel('submitBtn', 'Finish Quiz');
 
             // Calculate final scores and topic breakdown from scratch
             let totalCorrect = 0;
@@ -1350,7 +1535,8 @@
             });
 
             document.getElementById('resultsOverline').textContent =
-                (classType === 'pretraining' ? 'Pre-class assessment' : 'Post-class review') + ' · complete';
+                'Pre-class knowledge check · ' +
+                (assessmentMode === 'practice' ? 'practice run' : 'complete');
             document.getElementById('scoreText').textContent =
                 `${totalCorrect} of ${responses.length} correct` +
                 (answeredCount < responses.length
@@ -1360,15 +1546,17 @@
             document.getElementById('resTime').textContent = minutes + ' min';
 
             // ----- Verdict -----
+            // Practice is open-book, so a practice score says less about
+            // readiness than a test score does — the wording reflects that.
             const verdict = document.getElementById('readinessMessage');
-            if (classType === 'pretraining') {
+            if (assessmentMode === 'practice') {
+                verdict.textContent = percentage >= 80 ? 'Comfortable with this material.'
+                    : percentage >= 60 ? 'Getting there — a few topics to firm up.'
+                    : 'Worth another pass at the fundamentals below.';
+            } else {
                 verdict.textContent = percentage >= 80 ? 'You are ready for this class.'
                     : percentage >= 60 ? 'Worth a review before class.'
                     : 'Start with the fundamentals below.';
-            } else {
-                verdict.textContent = percentage >= 80 ? 'Strong understanding — it stuck.'
-                    : percentage >= 60 ? 'Good progress. A few topics to firm up.'
-                    : 'Worth another pass at the material.';
             }
             verdict.style.color = bandColour(percentage);
 
@@ -1419,10 +1607,71 @@
                 `).join('');
             }
 
+            // ----- Answer review + the submit affordance, per mode -----
+            buildAnswerReview();
+            const practice = assessmentMode === 'practice';
+            // Practice runs are deliberately not recorded, so there is nothing
+            // to submit and no state chip to report.
+            document.getElementById('submitResultsBtn').style.display = practice ? 'none' : '';
+            document.getElementById('resultsSubmitState').style.display = practice ? 'none' : '';
+            document.getElementById('resultsSubmitState').textContent = 'Not submitted yet';
+            setAnswerReviewVisible(practice);
+
             document.getElementById('fullQuizScreen').classList.remove('active');
             document.getElementById('fullQuizResultsScreen').classList.add('active');
-            document.getElementById('resultsSubmitState').textContent = 'Not submitted yet';
             window.scrollTo(0, 0);
+        }
+
+        // Renders the per-question review once; revealing it is a separate step
+        // so test mode can hold it back until the run has been submitted.
+        function buildAnswerReview() {
+            const list = document.getElementById('answerReviewList');
+            const note = document.getElementById('answerReviewNote');
+            const missed = responses.filter(r => r && !r.isCorrect).length;
+            const blank = responses.filter(r => r === null).length;
+            note.textContent = missed || blank
+                ? [missed ? missed + ' missed' : '', blank ? blank + ' blank' : ''].filter(Boolean).join(' · ')
+                : 'all correct';
+
+            list.innerHTML = quizData.map((q, idx) => {
+                const r = responses[idx];
+                const chosenIdx = r ? r.selected.charCodeAt(0) - 65 : -1;
+                const chosen = chosenIdx >= 0 ? q.options[chosenIdx] : null;
+                const correctIdx = q.options.findIndex(o => o && typeof o === 'object' && o.isCorrect);
+                const correct = correctIdx >= 0 ? q.options[correctIdx] : null;
+                const textOf = o => (o == null) ? '' : (typeof o === 'string' ? o : o.text);
+
+                const verdict = !r ? ['skip', 'Not answered']
+                    : r.isCorrect ? ['ok', 'Correct'] : ['bad', 'Incorrect'];
+
+                // Prefer the chosen option's own feedback — it explains why THAT
+                // answer was wrong — and fall back to the question explanation.
+                const why = (chosen && typeof chosen === 'object' && chosen.feedback)
+                    || q.explanation || '';
+
+                const yourLine = r
+                    ? `<span>Your answer &nbsp;<b>${escapeHtml(r.selected)}. ${escapeHtml(textOf(chosen))}</b></span>`
+                    : `<span>Your answer &nbsp;<b>—</b></span>`;
+                const correctLine = (!r || !r.isCorrect) && correct
+                    ? `<span>Correct answer &nbsp;<b>${escapeHtml(String.fromCharCode(65 + correctIdx))}. ${escapeHtml(textOf(correct))}</b></span>`
+                    : '';
+
+                return `<div class="rev-item">
+                    <div class="rev-head">
+                        <span class="rev-verdict ${verdict[0]}">${verdict[1]}</span>
+                        <span>Question ${idx + 1} · ${escapeHtml(q.topic)}</span>
+                    </div>
+                    <div class="rev-q">${escapeHtml(q.question)}</div>
+                    <div class="rev-answers">${yourLine}${correctLine}</div>
+                    ${why ? `<div class="rev-why">${escapeHtml(why)}</div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function setAnswerReviewVisible(visible) {
+            document.getElementById('answerReviewList').style.display = visible ? '' : 'none';
+            document.getElementById('answerReviewLocked').style.display = visible ? 'none' : '';
+            document.getElementById('answerReviewNote').style.display = visible ? '' : 'none';
         }
 
         let submittingResults = false;
@@ -1441,6 +1690,11 @@
 
                 const payload = {
                     quiz_type: classType,
+                    // `section` is a free-text column that submit-responses passes
+                    // straight through and export-submissions already returns, so
+                    // the run's mode is recorded without touching the functions.
+                    // Only test runs reach this code; practice is never submitted.
+                    section: assessmentMode,
                     name: studentName,
                     email: studentEmail,
                     score: Math.round((totalCorrect / responses.length) * 100),
@@ -1466,14 +1720,23 @@
                     state.textContent = 'Submit failed — try again';
                     state.style.background = 'var(--bad-bg)';
                     state.style.color = 'var(--bad)';
+                    window.toast('Your result could not be sent, but your answers are shown below. ' +
+                        'Press Submit Results again to retry.', 'warn');
                 }
             } catch (error) {
                 const state = document.getElementById('resultsSubmitState');
                 state.textContent = 'Could not reach the server';
                 state.style.background = 'var(--bad-bg)';
                 state.style.color = 'var(--bad)';
+                window.toast('Could not reach the server, but your answers are shown below. ' +
+                    'Press Submit Results again to retry.', 'warn');
             } finally {
                 submittingResults = false;
+                // The review opens whether or not the submission landed. Holding
+                // feedback back because the network failed would punish the
+                // student for something that is not theirs to fix; they can still
+                // retry the submit from the same screen.
+                setAnswerReviewVisible(true);
             }
         }
 

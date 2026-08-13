@@ -228,7 +228,7 @@ redeploy**, not just a GitHub Pages push.
 id (SERIAL)
 created_at (TIMESTAMP)
 quiz_type (TEXT) - "pretraining", "post_class", "fabric", "switch"
-section (TEXT) - null for pretraining/post_class, populated for in-class
+section (TEXT) - 'test' for pre-class test runs, the section name for in-class
 name (TEXT)
 email (TEXT)
 score (INTEGER) - 0-100
@@ -259,10 +259,34 @@ All stored in unified `submissions` table with `quiz_type` column:
 
 | Quiz | quiz_type | Section | Questions | Use Case |
 |------|-----------|---------|-----------|----------|
-| Pre-Class | `pretraining` | None | 32 | Before training |
-| Post-Class | `post_class` | None | 10 | After training feedback |
+| Pre-Class | `pretraining` | `test` | 32 | Before training |
 | Fabric Engine | `fabric` | 5 sections | 20 | In-class + monitoring |
 | Switch Engine | `switch` | 5 sections | 20 | In-class + monitoring |
+| ~~Post-Class~~ | ~~`post_class`~~ | — | 10 | Retired — see below |
+
+### Pre-class run modes
+
+The pre-class check runs in one of two modes, chosen by the student:
+
+- **Test** — no per-question feedback; the whole review is withheld until the
+  run is submitted. Recorded, with `section = 'test'`.
+- **Practice** — each answer is explained as it is picked. **Not recorded**:
+  no submit button, no network call. A practice score is open-book and would
+  inflate the cohort average if it were pooled with test results.
+
+`section` carries the mode because `submit-responses` passes the field through
+without validating it and `export-submissions` already returns it, so the mode
+is recorded with no function change and no redeploy. `quiz_type` could not be
+used: it is whitelisted server-side.
+
+### Post-class review
+
+No longer a quiz in this tool. The Post-Class Review card on the student home
+screen links out to per-course SurveyMonkey surveys, listed in
+`POST_CLASS_SURVEYS` in index.html. `quiz_data_post_class.js` is still in the
+repo and still mapped in `quizDataFiles`, but nothing reaches it. Existing
+`post_class` rows remain readable in the instructor dashboard, which is why
+that option stays in the quiz dropdown.
 
 ## Rate Limiting
 

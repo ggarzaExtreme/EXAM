@@ -15,19 +15,21 @@ layout specific to that page.
 | Buttons | Three roles: `btn-primary` (solid accent — moves things forward), `btn-secondary` (outlined — supporting), `btn-danger` (outlined red — destructive). One size per row. Every button carries an icon and a `.btn-label` span, and always names a role class — a bare `.btn` gets the accent fill without the accent border. |
 | Panels | `.panel` surface + uppercase tracked `.panel-h` heading. All boxed regions use it. |
 | Action placement | Buttons sit at the top of a screen, above variable-height content, so controls never shift. |
+| Confirmations | Destructive or lossy actions confirm on the button itself (label swaps to "Discard?" / "Finish anyway" / "Click again to confirm") plus a toast, never `window.confirm()`. Once a browser offers "prevent additional dialogs" and the user accepts, `confirm()` returns false forever and the button becomes a silent no-op — which is how End Session broke once already. |
 | Transient status | Every dynamic message ("Now showing question 3", "Couldn't reach the server", form validation) goes to a corner toast via `window.toast(message, type)` in `theme.js` — bottom-right, semi-transparent, self-expiring, colour-coded by `info` / `ok` / `warn` / `error`. Toasts are fixed-position, so showing one never moves the page. There are no inline status banners and no `alert()` calls left in either page. |
 
 ## Student app — index.html
 
 | # | Display | Screen id | Purpose / notes |
 |---|---------|-----------|-----------------|
-| S1 | Home / mode selection | `modeSelectionScreen` | "EXtreme Assessment Module" hero, brand rule, two mode cards (Pre-Class Knowledge Check, In-Class Session). |
-| S2 | Before We Begin | `studentInfoScreen` | Form card: name, optional email, assessment type. Post-class option slated for replacement by an external survey link. |
+| S1 | Home / mode selection | `modeSelectionScreen` | "EXtreme Assessment Module" hero, brand rule, three mode cards (Pre-Class Knowledge Check, In-Class Session, Post-Class Review). |
+| S2 | Before We Begin | `studentInfoScreen` | Form card: name, optional email, and the run mode — **Test** (answers withheld until submitted, result recorded) or **Practice** (explained as you go, nothing recorded). |
 | S3 | Join Your Class | `sessionJoinScreen` | Form card: name, optional email, class ID. |
-| S4 | Full quiz | `fullQuizScreen` | Scheme B: action row (Previous / Next / Finish) → status strip (progress bar, student, type) → question → letter-badge options → reserved feedback slot. Nothing moves when answering. |
-| S5 | Results | `fullQuizResultsScreen` | Action row (Submit / Start Over / submit-state chip), animated score ring, verdict, stat tiles, topic breakdown weakest-first, What To Review with generated YouTube links. |
+| S4 | Full quiz | `fullQuizScreen` | Scheme B: action row (Previous / Next / Finish) → status strip (progress bar, student, mode) → question → letter-badge options → reserved feedback slot. Nothing moves when answering. In test mode the feedback slot is hidden for the whole run, so there is still no shift. |
+| S5 | Results | `fullQuizResultsScreen` | Action row (Submit / Start Over / submit-state chip), animated score ring, verdict, stat tiles, topic breakdown weakest-first, **Your Answers** question-by-question review, What To Review with generated YouTube links. Practice hides the Submit button and opens the review immediately; test seals the review until Submit Results is pressed — and opens it even if that submit fails, so a network problem never costs a student their feedback. |
 | S6 | In-class question | `inclassQuizScreen` | Action row (Submit Answer / Check for Question) → status strip (question #, seen-so-far segments, attempt chip) → question → options → reserved feedback slot. On-demand fetch, no polling. |
 | S7 | Session ended | inside `inclassQuizScreen` | Panel with a Start New Quiz action. Shown only when a session that *was* active is ended by the instructor. |
+| S9 | Post-Class Review | `postClassScreen` | Form card listing one outbound survey per course, built from `POST_CLASS_SURVEYS` in index.html. Opens SurveyMonkey in a new tab; nothing is collected in this tool. Adding a course is one row in that array. |
 | S8 | Waiting for the instructor | inside `inclassQuizScreen` | Where students land when they join before the session exists — which is normal, since the class arrives before the instructor opens it. Check for Question toasts "has not been opened yet" and the student stays put; Home in the global bar is the way out of a mistyped class ID. |
 
 ## Instructor app — instructor.html

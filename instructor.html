@@ -977,12 +977,52 @@
         .delta-down { color: var(--bad); font-weight: 700; }
         .delta-flat { color: var(--ink-soft); font-weight: 700; }
 
+        /* ===== Active session header (matches the design mockup) ===== */
+        .si-over {
+            font-size: 9.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+            color: var(--accent-2); margin: 0 0 8px;
+        }
+        .session-info .si-title {
+            font-size: clamp(18px, 2.6vw, 23px); font-weight: 700; line-height: 1.1;
+            letter-spacing: -.015em; color: var(--ink) !important; margin: 0 0 5px;
+        }
+        .session-info .si-title span { text-transform: capitalize; }
+        .si-sub { font-size: 12.5px; color: var(--ink-soft); margin: 0; }
+
+        /* Segmented metric strip: 1px gaps over the border colour read as dividers */
+        .si-meta {
+            display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+            background: var(--line); border: 1px solid var(--line);
+            border-radius: var(--radius); overflow: hidden; margin: 18px 0 18px;
+        }
+        .si-meta > div { background: var(--surface-2); padding: 11px 14px; min-width: 0; }
+        .si-meta dt {
+            font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+            color: var(--ink-soft); margin: 0 0 5px;
+        }
+        .si-meta dd {
+            margin: 0; font-size: 16px; font-weight: 700; color: var(--ink);
+            font-variant-numeric: tabular-nums; line-height: 1.15;
+        }
+        .si-meta dd.ac { color: var(--accent-2); }
+        .si-meta dd.text {
+            font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .si-meta dd .of { opacity: .45; font-weight: 700; }
+
+        /* The old label:value grid is kept in the DOM so existing JS still has
+           its targets, but the metric strip above replaces it visually.
+           `display: grid` on .session-details beats the plain [hidden]
+           attribute, so it needs an explicit rule. */
+        .session-details[hidden] { display: none; }
+
         :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 
         @media (max-width: 600px) {
             .globalbar { padding: 9px 12px; gap: 8px; }
             .gb-ctx { display: none; }
             .content { padding: 20px 12px 40px; }
+            .si-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
     </style>
     <script src="theme.js"></script>
@@ -1076,14 +1116,32 @@
 
                     <div id="liveSessionContainer" style="display: none;">
                         <div class="session-info">
-                            <h3>Active Session</h3>
-                            <div class="session-details">
-                                <div class="detail-item">
-                                    <strong>Class ID:</strong> <span id="activeClassId"></span>
+                            <p class="si-over">In-Class Live Session</p>
+                            <h3 class="si-title">
+                                <span id="activeQuizType">—</span> — <span id="activeClassId"></span>
+                            </h3>
+                            <p class="si-sub" id="sessionSubline">Waiting for the first question</p>
+
+                            <dl class="si-meta">
+                                <div>
+                                    <dt>Question</dt>
+                                    <dd class="num" id="metaQuestion">—</dd>
                                 </div>
-                                <div class="detail-item">
-                                    <strong>Quiz Type:</strong> <span id="activeQuizType"></span>
+                                <div>
+                                    <dt>Section</dt>
+                                    <dd class="text" id="metaSection">—</dd>
                                 </div>
+                                <div>
+                                    <dt>Answered</dt>
+                                    <dd class="num ac" id="metaAnswered">—</dd>
+                                </div>
+                                <div>
+                                    <dt>Correct</dt>
+                                    <dd class="num" id="metaCorrect">—</dd>
+                                </div>
+                            </dl>
+
+                            <div class="session-details" hidden>
                                 <div class="detail-item">
                                     <strong>Current Question:</strong> <span id="currentQuestionDisplay">Waiting...</span>
                                 </div>
@@ -1416,7 +1474,9 @@
             document.getElementById('createSessionContainer').style.display = 'none';
             document.getElementById('liveSessionContainer').style.display = 'block';
             document.getElementById('activeClassId').textContent = activeClassId;
-            document.getElementById('activeQuizType').textContent = activeQuizType;
+            // Friendly product name in the headline ("Fabric Engine", not "fabric")
+            document.getElementById('activeQuizType').textContent =
+                (QUIZ_LABELS[activeQuizType] || activeQuizType).replace(' In-Class', '');
             setGlobalContext('Instructor · ' + activeClassId + ' · ' + activeQuizType);
 
             // Start from a clean panel — never show a previous session's numbers
@@ -1443,6 +1503,18 @@
 
             document.getElementById('currentQuestionDisplay').textContent =
                 currentQuestionId || 'Not started — click "Start Quiz"';
+
+            // Header strip: question position if resuming, placeholders otherwise
+            document.getElementById('metaQuestion').innerHTML =
+                (currentQuestionIndex >= 0 && quizData)
+                    ? (currentQuestionIndex + 1) + ' <span class="of">/ ' + quizData.length + '</span>'
+                    : '—' + (quizData ? ' <span class="of">/ ' + quizData.length + '</span>' : '');
+            document.getElementById('metaSection').textContent =
+                (currentQuestionIndex >= 0 && quizData && quizData[currentQuestionIndex])
+                    ? (quizData[currentQuestionIndex].section || '—') : '—';
+            document.getElementById('metaAnswered').textContent = '—';
+            document.getElementById('metaCorrect').textContent = '—';
+
             updateQuestionControls();
         }
 
@@ -1514,6 +1586,28 @@
                 document.getElementById('currentQuestionDisplay').textContent =
                     result.current_question_id || 'Not started — click "Start Quiz"';
                 document.getElementById('currentSectionDisplay').textContent = result.current_section || '-';
+
+                // Header metric strip
+                const p = result.participation || {};
+                const r = result.retry_stats || {};
+                const roster = p.roster_size;
+                const answered = p.total_responses || 0;
+                const correct = Array.isArray(result.students)
+                    ? result.students.filter(s => s.status === 'correct').length
+                    : (r.got_correct_first_attempt || 0) + (r.needed_one_retry || 0) +
+                      (r.needed_multiple_retries || 0);
+
+                document.getElementById('metaAnswered').innerHTML = result.current_question_id
+                    ? answered + (roster === undefined ? '' : ' <span class="of">/ ' + roster + '</span>')
+                    : '—';
+                document.getElementById('metaCorrect').textContent =
+                    result.current_question_id ? correct : '—';
+                document.getElementById('metaSection').textContent = result.current_section || '—';
+
+                document.getElementById('sessionSubline').textContent = roster
+                    ? roster + (roster === 1 ? ' student joined' : ' students joined') +
+                      (result.current_question_id ? '' : ' · waiting for the first question')
+                    : (result.current_question_id ? 'No responses yet' : 'Waiting for the first question');
             } catch (error) {
                 console.error('Error refreshing in-class data:', error);
                 setLiveStatus('Could not reach the server: ' + error.message, 'error');
@@ -1570,6 +1664,9 @@
             document.getElementById('studentAnsweredCount').textContent = '';
             const head = document.querySelector('.student-head');
             if (head) head.style.display = 'none';
+            // Answered/Correct are per-question, so clear them when moving on
+            document.getElementById('metaAnswered').textContent = '—';
+            document.getElementById('metaCorrect').textContent = '—';
         }
 
         // Returns the dashboard to the "No Active Session" state.
@@ -1808,6 +1905,9 @@
                 currentQuestionIndex = targetIndex;
                 document.getElementById('currentQuestionDisplay').textContent = String(question.id);
                 document.getElementById('currentSectionDisplay').textContent = question.section || '-';
+                document.getElementById('metaQuestion').innerHTML =
+                    (targetIndex + 1) + ' <span class="of">/ ' + quizData.length + '</span>';
+                document.getElementById('metaSection').textContent = question.section || '—';
                 clearQuestionStats();
                 updateQuestionControls();
                 setLiveStatus('Now showing question ' + question.id +

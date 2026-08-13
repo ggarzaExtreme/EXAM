@@ -25,10 +25,10 @@ const quizData = [
     section: "Installation",
     question: "What deployment capability does Fabric Connect provide that reduces manual onboarding effort?",
     options: [
+      { text: "A cloud-only management model with no local fabric formation capability", feedback: "The fabric itself forms and provisions on its own; this isn't solely a cloud management feature.", isCorrect: false },
       { text: "Self-forming, self-provisioning fabric with zero-touch onboarding and auto-sensing", feedback: "Correct! Fabric Connect is designed to form and provision itself automatically, minimizing manual per-device setup.", isCorrect: true },
       { text: "A requirement to manually configure IS-IS on every node before it can join the fabric", feedback: "That would defeat the purpose — Fabric Connect is designed to reduce this kind of manual per-node work.", isCorrect: false },
-      { text: "Mandatory factory pre-staging of every switch before shipment", feedback: "No factory pre-staging step is required; onboarding happens automatically once deployed.", isCorrect: false },
-      { text: "A cloud-only management model with no local fabric formation capability", feedback: "The fabric itself forms and provisions on its own; this isn't solely a cloud management feature.", isCorrect: false }
+      { text: "Mandatory factory pre-staging of every switch before shipment", feedback: "No factory pre-staging step is required; onboarding happens automatically once deployed.", isCorrect: false }
     ],
     explanation: "Fabric Connect is positioned as a self-forming, self-provisioning solution with zero-touch onboarding and auto-sensing, accelerating deployment across campus, branch, SD-WAN, and data center use cases.",
     resources: {
@@ -41,10 +41,10 @@ const quizData = [
     section: "Installation",
     question: "What does the run spbm CLI script accomplish during initial Fabric Connect setup?",
     options: [
-      { text: "It configures the SPB Ethertype, creates an SPB instance and backbone VLANs, adds a nickname, creates a manual area, and enables IS-IS globally and on an interface", feedback: "Correct! run spbm automates this whole sequence of SPB and IS-IS setup steps in one script.", isCorrect: true },
-      { text: "It only changes the switch's hostname", feedback: "Hostname changes are unrelated to what run spbm configures — it sets up the SPB and IS-IS infrastructure.", isCorrect: false },
       { text: "It permanently disables IS-IS on the switch", feedback: "run spbm enables IS-IS as part of its setup — it doesn't disable it.", isCorrect: false },
-      { text: "It removes all existing VLANs from the switch", feedback: "run spbm creates the backbone VLANs needed for SPBM; it doesn't strip out existing VLANs.", isCorrect: false }
+      { text: "It removes all existing VLANs from the switch", feedback: "run spbm creates the backbone VLANs needed for SPBM; it doesn't strip out existing VLANs.", isCorrect: false },
+      { text: "It configures the SPB Ethertype, creates an SPB instance and backbone VLANs, adds a nickname, creates a manual area, and enables IS-IS globally and on an interface", feedback: "Correct! run spbm automates this whole sequence of SPB and IS-IS setup steps in one script.", isCorrect: true },
+      { text: "It only changes the switch's hostname", feedback: "Hostname changes are unrelated to what run spbm configures — it sets up the SPB and IS-IS infrastructure.", isCorrect: false }
     ],
     explanation: "The run spbm command quickly configures the SPB Ethertype, creates an SPB instance, creates primary and secondary SPBM backbone VLANs and associates them with the instance, adds an SPB nickname, creates a manual area, enables IS-IS on an interface and globally, and configures the IS-IS system name and system ID.",
     resources: {
@@ -57,10 +57,10 @@ const quizData = [
     section: "Installation",
     question: "In Enterprise Device Manager (EDM), what is the correct navigation path to configure SPBM on an interface?",
     options: [
-      { text: "Configuration > Fabric > IS-IS > Interfaces tab > select interface > SPBM > Interfaces SPBM tab > Insert > enter SPBM ID > Insert", feedback: "Correct! This matches the documented EDM procedure for enabling SPBM on an interface.", isCorrect: true },
       { text: "Configuration > VLAN > Basic > Insert", feedback: "That path is for basic VLAN creation, not SPBM interface configuration.", isCorrect: false },
       { text: "Configuration > Security > Access Policies > Insert", feedback: "That's the security/access policy area, unrelated to SPBM interface setup.", isCorrect: false },
-      { text: "Configuration > QoS > Policy > Insert", feedback: "QoS policy configuration is a separate section from SPBM/IS-IS interface setup.", isCorrect: false }
+      { text: "Configuration > QoS > Policy > Insert", feedback: "QoS policy configuration is a separate section from SPBM/IS-IS interface setup.", isCorrect: false },
+      { text: "Configuration > Fabric > IS-IS > Interfaces tab > select interface > SPBM > Interfaces SPBM tab > Insert > enter SPBM ID > Insert", feedback: "Correct! This matches the documented EDM procedure for enabling SPBM on an interface.", isCorrect: true }
     ],
     explanation: "To configure SPBM on an interface in EDM, navigate to Configuration > Fabric > IS-IS > Interfaces tab, select the interface, go to SPBM > Interfaces SPBM tab, click Insert, enter the SPBM ID, and click Insert again.",
     resources: {
@@ -89,10 +89,10 @@ const quizData = [
     section: "Installation",
     question: "What is the correct starting command sequence to enter global configuration mode on a Fabric Engine CLI?",
     options: [
+      { text: "show isis, then configure terminal", feedback: "show isis is a diagnostic command and isn't part of entering configuration mode.", isCorrect: false },
       { text: "enable, then configure terminal", feedback: "Correct! You first enter privileged mode with enable, then enter global configuration mode with configure terminal.", isCorrect: true },
       { text: "configure terminal, then enable", feedback: "The order is reversed — you must reach privileged mode with enable before configure terminal is available.", isCorrect: false },
-      { text: "run spbm, then enable", feedback: "run spbm is a setup script that runs after you're already in the appropriate configuration context, not the entry point to config mode.", isCorrect: false },
-      { text: "show isis, then configure terminal", feedback: "show isis is a diagnostic command and isn't part of entering configuration mode.", isCorrect: false }
+      { text: "run spbm, then enable", feedback: "run spbm is a setup script that runs after you're already in the appropriate configuration context, not the entry point to config mode.", isCorrect: false }
     ],
     explanation: "As with the broader CLI configuration model, you begin with enable to reach privileged exec mode, then use configure terminal to enter global configuration mode before configuring SPBM and IS-IS settings.",
     resources: {
@@ -107,10 +107,10 @@ const quizData = [
     section: "Configuration",
     question: "Why must the primary and secondary backbone VLANs (B-VLANs) match across all nodes in an SPBM fabric?",
     options: [
-      { text: "Because IS-IS adjacencies and the SPBM topology depend on consistent B-VLAN membership across the fabric", feedback: "Correct! Mismatched B-VLANs between nodes are a documented cause of adjacency and topology problems.", isCorrect: true },
-      { text: "They don't need to match; each node can use different B-VLANs independently", feedback: "Mismatched B-VLANs across nodes are explicitly called out as a cause of adjacency failures.", isCorrect: false },
       { text: "Matching B-VLANs is only a cosmetic naming convention with no functional effect", feedback: "It has real functional impact — inconsistent B-VLANs disrupt IS-IS adjacency formation and the SPBM topology.", isCorrect: false },
-      { text: "B-VLANs only need to match between directly cabled neighbor switches, not the whole fabric", feedback: "Consistency is required across the entire SPBM domain, not just between direct neighbors.", isCorrect: false }
+      { text: "B-VLANs only need to match between directly cabled neighbor switches, not the whole fabric", feedback: "Consistency is required across the entire SPBM domain, not just between direct neighbors.", isCorrect: false },
+      { text: "Because IS-IS adjacencies and the SPBM topology depend on consistent B-VLAN membership across the fabric", feedback: "Correct! Mismatched B-VLANs between nodes are a documented cause of adjacency and topology problems.", isCorrect: true },
+      { text: "They don't need to match; each node can use different B-VLANs independently", feedback: "Mismatched B-VLANs across nodes are explicitly called out as a cause of adjacency failures.", isCorrect: false }
     ],
     explanation: "Primary and secondary backbone VLANs must be configured identically across all SPBM nodes; NNI ports automatically become members of the backbone VLANs, and mismatches are a documented cause of adjacency and topology issues.",
     resources: {
@@ -123,10 +123,10 @@ const quizData = [
     section: "Configuration",
     question: "What happens to NNI (network-to-network interface) ports with respect to backbone VLANs in an SPBM fabric?",
     options: [
-      { text: "They automatically become members of the backbone VLANs", feedback: "Correct! NNI ports are automatically added to the configured backbone VLANs as part of SPBM operation.", isCorrect: true },
       { text: "They must be manually added to backbone VLANs one at a time, with no automation available", feedback: "This is actually automatic — NNI ports join the backbone VLANs without manual per-port VLAN assignment.", isCorrect: false },
       { text: "They are excluded from all VLANs by design", feedback: "NNI ports aren't excluded from VLANs — they're automatically added to the backbone VLANs.", isCorrect: false },
-      { text: "They only join backbone VLANs after a full switch reboot", feedback: "No reboot is required — NNI ports join backbone VLANs automatically as part of normal SPBM operation.", isCorrect: false }
+      { text: "They only join backbone VLANs after a full switch reboot", feedback: "No reboot is required — NNI ports join backbone VLANs automatically as part of normal SPBM operation.", isCorrect: false },
+      { text: "They automatically become members of the backbone VLANs", feedback: "Correct! NNI ports are automatically added to the configured backbone VLANs as part of SPBM operation.", isCorrect: true }
     ],
     explanation: "As part of SPBM configuration, NNI ports automatically become members of the configured backbone VLANs, which is why consistent B-VLAN configuration across nodes matters for adjacency formation.",
     resources: {
@@ -155,10 +155,10 @@ const quizData = [
     section: "Configuration",
     question: "What is the relationship between IPv4 and IPv6 Shortcuts in Fabric Connect?",
     options: [
+      { text: "Only one of the two can ever be enabled on a given fabric", feedback: "Both can be used together — IPv6 Shortcuts simply require IPv4 Shortcuts as a foundation, not exclusivity.", isCorrect: false },
       { text: "IPv6 Shortcuts depend on IPv4 Shortcuts being configured", feedback: "Correct! IPv6 Shortcuts require IPv4 Shortcuts as a prerequisite in Fabric Connect.", isCorrect: true },
       { text: "IPv4 Shortcuts depend on IPv6 Shortcuts being configured first", feedback: "The dependency runs the other direction — IPv6 Shortcuts depend on IPv4 Shortcuts, not vice versa.", isCorrect: false },
-      { text: "They are fully independent features with no configuration dependency", feedback: "There is a documented dependency: IPv6 Shortcuts rely on IPv4 Shortcuts being enabled.", isCorrect: false },
-      { text: "Only one of the two can ever be enabled on a given fabric", feedback: "Both can be used together — IPv6 Shortcuts simply require IPv4 Shortcuts as a foundation, not exclusivity.", isCorrect: false }
+      { text: "They are fully independent features with no configuration dependency", feedback: "There is a documented dependency: IPv6 Shortcuts rely on IPv4 Shortcuts being enabled.", isCorrect: false }
     ],
     explanation: "Fabric Connect supports both IPv4 and IPv6 Shortcuts, but IPv6 Shortcut routing depends on IPv4 Shortcuts being configured; support for both varies by platform and software release.",
     resources: {
@@ -171,10 +171,10 @@ const quizData = [
     section: "Configuration",
     question: "Where is IP Shortcuts configuration documented within the Fabric Engine User Guide's feature structure?",
     options: [
-      { text: "Under the Fabric Layer 3 Services section", feedback: "Correct! IP Shortcuts configuration is covered as part of Fabric Layer 3 Services.", isCorrect: true },
-      { text: "Under basic port configuration alongside speed and duplex", feedback: "Speed and duplex are Layer 1 physical settings — IP Shortcuts is a Layer 3 fabric feature.", isCorrect: false },
       { text: "Under wireless access point provisioning", feedback: "IP Shortcuts is a wired fabric routing feature, unrelated to wireless AP provisioning.", isCorrect: false },
-      { text: "Under system logging and SNMP configuration", feedback: "Logging and SNMP are management/monitoring topics, not where IP Shortcuts is documented.", isCorrect: false }
+      { text: "Under system logging and SNMP configuration", feedback: "Logging and SNMP are management/monitoring topics, not where IP Shortcuts is documented.", isCorrect: false },
+      { text: "Under the Fabric Layer 3 Services section", feedback: "Correct! IP Shortcuts configuration is covered as part of Fabric Layer 3 Services.", isCorrect: true },
+      { text: "Under basic port configuration alongside speed and duplex", feedback: "Speed and duplex are Layer 1 physical settings — IP Shortcuts is a Layer 3 fabric feature.", isCorrect: false }
     ],
     explanation: "The Fabric Engine User Guide documents IP Shortcuts configuration within the Fabric Layer 3 Services section, reflecting its role in providing IP routing shortcuts across the SPBM fabric.",
     resources: {
@@ -187,10 +187,10 @@ const quizData = [
     section: "Configuration",
     question: "Which set of attributes does show isis spbm display about a configured SPBM instance?",
     options: [
-      { text: "SPBM instance, B-VID, primary VLAN, nickname, LSDB trap status, and IP/IPv6 shortcut status", feedback: "Correct! show isis spbm summarizes these key SPBM instance attributes in one place.", isCorrect: true },
       { text: "Only the switch's uptime and CPU utilization", feedback: "Uptime and CPU utilization are system health metrics, not what show isis spbm reports.", isCorrect: false },
       { text: "PoE power budget and power class per port", feedback: "PoE power details are unrelated to SPBM instance information.", isCorrect: false },
-      { text: "The switch's local user account list", feedback: "User accounts are an administrative detail, not part of SPBM instance status.", isCorrect: false }
+      { text: "The switch's local user account list", feedback: "User accounts are an administrative detail, not part of SPBM instance status.", isCorrect: false },
+      { text: "SPBM instance, B-VID, primary VLAN, nickname, LSDB trap status, and IP/IPv6 shortcut status", feedback: "Correct! show isis spbm summarizes these key SPBM instance attributes in one place.", isCorrect: true }
     ],
     explanation: "show isis spbm displays IS-IS SPBM-related information for a configured instance, including the SPBM instance number, B-VID, primary VLAN, nickname, LSDB trap status, and IP/IPv6 shortcut status.",
     resources: {
@@ -221,10 +221,10 @@ const quizData = [
     section: "Troubleshooting",
     question: "What system MTU value should match across fabric switches to avoid IS-IS adjacency problems, and why does a mismatch matter?",
     options: [
+      { text: "MTU only matters for management traffic, not IS-IS control traffic", feedback: "MTU mismatches are documented as directly impacting IS-IS control-plane adjacency, not just management traffic.", isCorrect: false },
       { text: "1950 — a mismatched system MTU across fabric switches is a documented cause of adjacency failure", feedback: "Correct! The system MTU should be 1950 across fabric nodes; a mismatch is called out as a specific root cause for adjacency issues.", isCorrect: true },
       { text: "1500 — MTU has no effect on IS-IS adjacency formation", feedback: "MTU does affect adjacency formation, and the documented value for fabric switches is 1950, not the standard Ethernet 1500.", isCorrect: false },
-      { text: "9000 — jumbo frames are mandatory for any IS-IS adjacency", feedback: "9000 is not the documented value; the specific system MTU called out for SPBM fabric switches is 1950.", isCorrect: false },
-      { text: "MTU only matters for management traffic, not IS-IS control traffic", feedback: "MTU mismatches are documented as directly impacting IS-IS control-plane adjacency, not just management traffic.", isCorrect: false }
+      { text: "9000 — jumbo frames are mandatory for any IS-IS adjacency", feedback: "9000 is not the documented value; the specific system MTU called out for SPBM fabric switches is 1950.", isCorrect: false }
     ],
     explanation: "A common cause of IS-IS adjacency failure when SPBM and IS-IS are already enabled correctly is a system MTU mismatch across fabric switches; the system MTU should be set to 1950.",
     resources: {
@@ -237,10 +237,10 @@ const quizData = [
     section: "Troubleshooting",
     question: "Besides MTU mismatch, what other configuration issue is documented as a cause of IS-IS adjacencies failing to form?",
     options: [
-      { text: "IS-IS authentication that is misconfigured or prohibiting the adjacency", feedback: "Correct! Authentication mismatches between neighbors are a documented cause of failed adjacencies.", isCorrect: true },
-      { text: "Having more than 10 VLANs configured on the switch", feedback: "VLAN count on the switch isn't a documented cause of IS-IS adjacency failure.", isCorrect: false },
       { text: "Using a non-default hostname on the switch", feedback: "Hostname choice doesn't affect IS-IS adjacency formation.", isCorrect: false },
-      { text: "Running the switch with PoE enabled", feedback: "PoE state on a switch has no documented relationship to IS-IS adjacency formation.", isCorrect: false }
+      { text: "Running the switch with PoE enabled", feedback: "PoE state on a switch has no documented relationship to IS-IS adjacency formation.", isCorrect: false },
+      { text: "IS-IS authentication that is misconfigured or prohibiting the adjacency", feedback: "Correct! Authentication mismatches between neighbors are a documented cause of failed adjacencies.", isCorrect: true },
+      { text: "Having more than 10 VLANs configured on the switch", feedback: "VLAN count on the switch isn't a documented cause of IS-IS adjacency failure.", isCorrect: false }
     ],
     explanation: "In addition to system MTU mismatches, IS-IS authentication that is misconfigured or actively prohibiting the adjacency is documented as another cause of adjacency failures between SPBM nodes.",
     resources: {
@@ -253,10 +253,10 @@ const quizData = [
     section: "Troubleshooting",
     question: "Which command would you use to inspect the IS-IS link state database when troubleshooting SPBM topology issues?",
     options: [
-      { text: "show isis lsdb", feedback: "Correct! show isis lsdb displays the link state database used to build the SPBM topology.", isCorrect: true },
       { text: "show isis spbm nick-name", feedback: "That command focuses on nickname assignment, not the full link state database.", isCorrect: false },
       { text: "show sys mtu", feedback: "show sys mtu reports the system MTU setting, not link state database contents.", isCorrect: false },
-      { text: "show vlan", feedback: "show vlan is a Layer 2 VLAN command and doesn't show the IS-IS link state database.", isCorrect: false }
+      { text: "show vlan", feedback: "show vlan is a Layer 2 VLAN command and doesn't show the IS-IS link state database.", isCorrect: false },
+      { text: "show isis lsdb", feedback: "Correct! show isis lsdb displays the link state database used to build the SPBM topology.", isCorrect: true }
     ],
     explanation: "show isis lsdb displays the IS-IS link state database, which is useful for verifying topology information distributed across the SPBM fabric; show isis lsdb tlv 184 detail can drill further into specific SPBM TLV data.",
     resources: {
@@ -285,10 +285,10 @@ const quizData = [
     section: "Troubleshooting",
     question: "Which command provides debug-level detail specifically for SPBM IS-IS adjacency troubleshooting?",
     options: [
+      { text: "show tech-support", feedback: "show tech-support is a broad diagnostic bundle on Switch Engine devices; it isn't the targeted SPBM adjacency debug command.", isCorrect: false },
       { text: "show debug spbm isis adj", feedback: "Correct! This command surfaces debug information focused specifically on SPBM IS-IS adjacency formation.", isCorrect: true },
       { text: "show isis spbm unicast-fib vlan 4052", feedback: "That command inspects the unicast FIB for a specific VLAN, not adjacency debug detail.", isCorrect: false },
-      { text: "show power controller", feedback: "That's a PoE hardware command, unrelated to IS-IS adjacency debugging.", isCorrect: false },
-      { text: "show tech-support", feedback: "show tech-support is a broad diagnostic bundle on Switch Engine devices; it isn't the targeted SPBM adjacency debug command.", isCorrect: false }
+      { text: "show power controller", feedback: "That's a PoE hardware command, unrelated to IS-IS adjacency debugging.", isCorrect: false }
     ],
     explanation: "show debug spbm isis adj displays debug information specific to SPBM IS-IS adjacency configuration, helping isolate why an adjacency between two nodes is not forming.",
     resources: {
@@ -301,10 +301,10 @@ const quizData = [
     section: "Troubleshooting",
     question: "What would show isis spbm unicast-fib vlan <vlan-id> help you verify?",
     options: [
-      { text: "The unicast forwarding information for a specific VLAN as computed by the SPBM topology", feedback: "Correct! This command lets you confirm how traffic for a given VLAN is being forwarded across the fabric.", isCorrect: true },
-      { text: "The number of PoE watts allocated to ports in that VLAN", feedback: "PoE allocation is unrelated to unicast FIB information for an SPBM VLAN.", isCorrect: false },
       { text: "The list of administrative users allowed to manage that VLAN", feedback: "User administration is a separate topic from SPBM unicast forwarding data.", isCorrect: false },
-      { text: "The physical cable type connected to VLAN member ports", feedback: "Cable type is a Layer 1 physical detail, not something reported by a unicast FIB command.", isCorrect: false }
+      { text: "The physical cable type connected to VLAN member ports", feedback: "Cable type is a Layer 1 physical detail, not something reported by a unicast FIB command.", isCorrect: false },
+      { text: "The unicast forwarding information for a specific VLAN as computed by the SPBM topology", feedback: "Correct! This command lets you confirm how traffic for a given VLAN is being forwarded across the fabric.", isCorrect: true },
+      { text: "The number of PoE watts allocated to ports in that VLAN", feedback: "PoE allocation is unrelated to unicast FIB information for an SPBM VLAN.", isCorrect: false }
     ],
     explanation: "show isis spbm unicast-fib vlan <vlan-id> displays the unicast forwarding information base entries for a specific VLAN, useful for confirming that SPBM has correctly computed forwarding paths across the fabric.",
     resources: {
@@ -317,10 +317,10 @@ const quizData = [
     section: "Troubleshooting",
     question: "When narrowing down an adjacency problem to a specific link, which command shows IS-IS interface-level configuration and counters?",
     options: [
-      { text: "show isis interface and show isis int-l1-cntl-pkts", feedback: "Correct! These commands show interface-level IS-IS configuration and Level 1 control packet counters, useful for isolating a link-specific issue.", isCorrect: true },
       { text: "show vlan and show fdb", feedback: "Those are Layer 2 VLAN and MAC learning commands, not IS-IS interface-level diagnostics.", isCorrect: false },
       { text: "show power and show power budget", feedback: "Those report PoE power delivery, unrelated to IS-IS interface diagnostics.", isCorrect: false },
-      { text: "show mlag peer", feedback: "show mlag peer is used on Switch Engine MLAG deployments, not for IS-IS interface-level troubleshooting on Fabric Engine.", isCorrect: false }
+      { text: "show mlag peer", feedback: "show mlag peer is used on Switch Engine MLAG deployments, not for IS-IS interface-level troubleshooting on Fabric Engine.", isCorrect: false },
+      { text: "show isis interface and show isis int-l1-cntl-pkts", feedback: "Correct! These commands show interface-level IS-IS configuration and Level 1 control packet counters, useful for isolating a link-specific issue.", isCorrect: true }
     ],
     explanation: "show isis interface and show isis int-l1-cntl-pkts provide interface-specific IS-IS configuration and Level 1 control packet counters, which help isolate whether an adjacency problem is specific to one link versus a broader fabric-wide issue.",
     resources: {

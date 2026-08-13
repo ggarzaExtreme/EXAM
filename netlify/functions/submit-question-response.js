@@ -163,12 +163,24 @@ exports.handler = async (event) => {
     }
 
     // 7. Build response
+    // Prefer the feedback written for the specific option this student chose -
+    // "TCP port numbers operate at Layer 4" is more use than the generic
+    // question explanation. The full-quiz mode already does this; this brings
+    // in-class feedback up to the same standard.
+    const chosenIndex = selected_option.charCodeAt(0) - 65;
+    const chosenOption = question.options[chosenIndex];
+    const optionFeedback = (chosenOption && typeof chosenOption === 'object')
+      ? chosenOption.feedback
+      : null;
+
     const response = {
       success: true,
       is_correct: is_correct,
       attempt_number: attempt_number,
       can_retry: !is_correct,
-      explanation: question.explanation || 'No explanation available',
+      // per-option feedback, falling back to the question-level explanation
+      explanation: optionFeedback || question.explanation || 'No explanation available',
+      question_explanation: question.explanation || null,
       hint: !is_correct && question.hint ? question.hint : null
     };
 

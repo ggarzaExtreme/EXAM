@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Networking Fundamentals Assessment - Extreme Networks</title>
+    <title>EXAM · Extreme Assessment Module | Extreme Networks</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -869,6 +869,11 @@
             .res-hero { grid-template-columns: 1fr; gap: 20px; justify-items: start; }
         }
 
+        .screen-lede {
+            text-align: center; font-size: 14px; color: var(--ink-soft);
+            margin: 0 auto 26px; max-width: 46ch;
+        }
+
         /* ===== Home hero ===== */
         .hero { padding: 44px 0 6px; }
         .hero-over {
@@ -887,6 +892,12 @@
         .hero p {
             font-size: clamp(15px, 2vw, 18px); color: var(--ink-soft);
             max-width: 52ch; line-height: 1.5; margin: 0;
+        }
+        /* The acronym carries the brand; this line says what it stands for. */
+        .hero-expand {
+            font-size: clamp(17px, 2.4vw, 22px) !important; font-weight: 700;
+            color: var(--ink) !important; letter-spacing: -.01em;
+            margin: -8px 0 18px !important;
         }
         .hero-rule {
             height: 2px; margin: 34px 0 30px; border-radius: 2px;
@@ -1047,7 +1058,8 @@
             <div class="screen active" id="modeSelectionScreen">
                 <div class="hero">
                     <p class="hero-over">Extreme Networks · Learning &amp; Development</p>
-                    <h1>Networking<br><span class="grad">Fundamentals.</span></h1>
+                    <h1>EXAM<span class="grad">.</span></h1>
+                    <p class="hero-expand">Extreme Assessment Module</p>
                     <p>
                         Find out what you know before class, prove what stuck afterwards,
                         or answer along with the room in a live session.
@@ -1096,7 +1108,8 @@
 
             <!-- Full Quiz Mode: Student Info Screen -->
             <div class="screen" id="studentInfoScreen">
-                <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Before We Begin</h2>
+                <h2 style="text-align: center; margin-bottom: 6px;">Before we begin</h2>
+                <p class="screen-lede">Your name is shown to your instructor with your results.</p>
 
                 <div class="form-group">
                     <label for="studentName">Full Name</label>
@@ -1130,7 +1143,8 @@
 
             <!-- In-Class Mode: Session Join Screen -->
             <div class="screen" id="sessionJoinScreen">
-                <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Join In-Class Session</h2>
+                <h2 style="text-align: center; margin-bottom: 6px;">Join your class</h2>
+                <p class="screen-lede">Your instructor will read out the class ID.</p>
 
                 <div class="info-box">
                     <h3>How to join:</h3>

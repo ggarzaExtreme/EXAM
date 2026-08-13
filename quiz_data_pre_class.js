@@ -1,4 +1,4 @@
-// Networking Fundamentals Knowledge Assessment
+// EXAM - Pre-Class Knowledge Assessment (networking fundamentals)
 // Questions 1-32 with answers, explanations, and topic-based learning resources
 
 const quizData = [

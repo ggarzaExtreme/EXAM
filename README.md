@@ -1,6 +1,13 @@
-# Extreme Networks Knowledge Assessment Platform
+# EXAM — Extreme Assessment Module
 
-Quiz system with two modes — self-paced full assessments (pre/post class) and instructor-driven live in-class quizzes — plus an instructor dashboard and secure data collection.
+**EX**treme **A**ssessment **M**odule — the Learning &amp; Development assessment
+tool for Extreme Networks training. Two modes: self-paced assessments taken
+before or after a class, and instructor-driven live quizzes run in the room.
+Plus an instructor dashboard with cohort analytics.
+
+Question banks currently shipped: networking fundamentals (pre/post class),
+Fabric Engine and Switch Engine (in-class). EXAM is the delivery module; the
+banks are course content and are named for their subject.
 
 ## Architecture Overview
 

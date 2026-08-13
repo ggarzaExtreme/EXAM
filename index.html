@@ -874,11 +874,14 @@
             margin: 0 auto 26px; max-width: 46ch;
         }
 
-        /* ===== Home hero ===== */
-        .hero { padding: 44px 0 6px; }
-        .hero-over {
-            font-size: 11px; font-weight: 700; letter-spacing: .18em;
-            text-transform: uppercase; color: var(--accent-2); margin-bottom: 20px;
+        /* ===== Home hero =====
+           The hero text is inset by the mode cards' border + padding so every
+           text left edge on the page lines up, while the cards still frame
+           slightly wider. --card-pad is the single source for both. */
+        .content { --card-pad: 26px; }
+        .hero {
+            padding: 44px 0 6px;
+            padding-left: calc(var(--card-pad) + 1px);
         }
         .hero h1 {
             font-size: clamp(38px, 8vw, 76px); font-weight: 700; line-height: .98;
@@ -893,14 +896,20 @@
             font-size: clamp(15px, 2vw, 18px); color: var(--ink-soft);
             max-width: 52ch; line-height: 1.5; margin: 0;
         }
-        /* The acronym carries the brand; this line says what it stands for. */
+        /* The acronym carries the brand; this line says what it stands for, with
+           the letters that form EXAM picked out in accent. */
         .hero-expand {
-            font-size: clamp(17px, 2.4vw, 22px) !important; font-weight: 700;
-            color: var(--ink) !important; letter-spacing: -.01em;
-            margin: -8px 0 18px !important;
+            font-size: clamp(17px, 2.4vw, 22px) !important; font-weight: 500;
+            color: var(--ink-soft) !important; letter-spacing: -.005em;
+            margin: -6px 0 18px !important;
         }
+        .hero-expand b { font-weight: 700; color: var(--accent-2); }
+
         .hero-rule {
-            height: 2px; margin: 34px 0 30px; border-radius: 2px;
+            height: 2px; border-radius: 2px;
+            /* left inset written into the shorthand so it cannot be reset by a
+               later `margin` declaration */
+            margin: 34px 0 30px calc(var(--card-pad) + 1px);
             background: linear-gradient(90deg, #20004C, #5B059C 28%, #7519F9 62%, #7D76F2);
         }
 
@@ -909,7 +918,7 @@
             position: relative; display: grid;
             grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 20px;
             width: 100%; text-align: left; cursor: pointer;
-            padding: 26px 26px 26px 30px; font-family: inherit;
+            padding: var(--card-pad); font-family: inherit;
             background: var(--surface); color: var(--ink);
             border: 1px solid var(--line); border-radius: var(--radius);
             overflow: hidden; transition: border-color .18s, transform .18s, background .18s;
@@ -963,9 +972,10 @@
             .gb-ctx { display: none; }
             .content { padding: 20px 12px 40px; }
             .actionrow .btn { flex: 1 1 auto; }
-            .hero { padding: 26px 0 2px; }
-            .hero-rule { margin: 24px 0 22px; }
-            .mode { padding: 20px 18px 20px 22px; gap: 12px; }
+            .content { --card-pad: 20px; }
+            .hero { padding: 26px 0 2px; padding-left: calc(var(--card-pad) + 1px); }
+            .hero-rule { margin: 24px 0 22px calc(var(--card-pad) + 1px); }
+            .mode { gap: 12px; }
         }
     </style>
     <script src="theme.js"></script>
@@ -1057,9 +1067,10 @@
             <!-- Mode Selection Screen -->
             <div class="screen active" id="modeSelectionScreen">
                 <div class="hero">
-                    <p class="hero-over">Extreme Networks · Learning &amp; Development</p>
                     <h1>EXAM<span class="grad">.</span></h1>
-                    <p class="hero-expand">Extreme Assessment Module</p>
+                    <p class="hero-expand">
+                        <b>EX</b>treme <b>A</b>ssessment <b>M</b>odule
+                    </p>
                     <p>
                         Find out what you know before class, prove what stuck afterwards,
                         or answer along with the room in a live session.

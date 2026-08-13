@@ -1,4 +1,4 @@
-# Complete Deployment Guide
+# EXAM — Deployment Guide
 
 Deploy a working quiz system from scratch in ~30 minutes.
 

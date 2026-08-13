@@ -1,4 +1,4 @@
-# Environment Variables Reference
+# EXAM — Environment Variables
 
 All secrets go in **Netlify environment variables only**. Nothing in GitHub.
 

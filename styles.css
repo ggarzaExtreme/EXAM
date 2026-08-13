@@ -250,21 +250,32 @@ body {
 
 /* Segmented control, so only the selected option is filled — the unselected
    ones stay quiet on purpose. The group border matches the bar pills so the
-   control itself is still easy to spot. */
+   control itself is still easy to spot.
+
+   Height is pinned to the bar pills' 32px rather than left to its own
+   padding. Centring alone is not enough: at 27px the group's centre lined up
+   with Home and Sign out but its top and bottom edges sat 2.5px inside
+   theirs, and adjacent pills of different heights read as misaligned however
+   well their centres agree. The buttons stretch to fill and centre their own
+   labels. */
 .gb-theme {
     display: inline-flex;
+    align-items: stretch;
+    height: 32px;
     border: 1px solid rgba(255, 255, 255, .42);
     border-radius: 100px;
     overflow: hidden;
 }
 
 .gb-theme button {
+    display: inline-flex;
+    align-items: center;
     font-family: inherit;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .05em;
     text-transform: uppercase;
-    padding: 6px 10px;
+    padding: 0 11px;
     border: 0;
     background: transparent;
     color: var(--gb-soft);
@@ -384,11 +395,27 @@ select:focus { border-color: var(--accent); outline: none; }
 }
 
 /* Text-like inputs only: a bare `input` selector here once made radio
-   buttons 260px wide, crushing their labels against the card edge. */
-.form-group input:not([type="radio"]):not([type="checkbox"]) {
+   buttons 260px wide, crushing their labels against the card edge. Selects
+   are included so the Create Session dialog's quiz picker matches the text
+   fields stacked with it — it was previously getting colour from the base
+   select rule but no sizing at all. */
+.form-group input:not([type="radio"]):not([type="checkbox"]),
+.form-group select {
     width: 100%;
     padding: 11px 13px;
     font-size: 14px;
+}
+
+/* Explicit line-height so a select centres its text the way the inputs beside
+   it do; left to its own devices Chrome uses internal metrics and parks the
+   text a pixel or two high. Extra right padding clears the native chevron. */
+/* A select's content box has an intrinsic minimum from the font's metrics —
+   20px here against the 18px line box a 14px input resolves to — so matching
+   the inputs' 42px means trimming a pixel of padding rather than forcing a
+   height. Sizing it by padding keeps Chrome centring the text naturally;
+   forcing a height gives it slack it centres in by its own rules instead. */
+.form-group select {
+    padding: 10px 30px 10px 13px;
 }
 
 /* ------------------------------------------------------------ radio rows -- */

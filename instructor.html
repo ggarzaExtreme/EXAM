@@ -618,7 +618,7 @@
     <!-- ===== Theme layer (shared palettes with index.html) ===== -->
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=8">
+    <link rel="stylesheet" href="styles.css?v=13">
     <style>
         .container { max-width: 1240px; }
         .content { padding: 24px 18px 48px; background: transparent; }
@@ -726,7 +726,18 @@
             height: 39px; box-sizing: border-box; margin: 0;
             font-family: inherit; font-size: 13px;
         }
-        #studentSearch, #rangeSelect, #quizSelect { padding: 0 13px; font-size: 13px; }
+        /* Height comes from padding + an explicit line-height, not from the
+           39px box with zero vertical padding it used to have. Chrome lays a
+           select's own text out with internal metrics, and given slack inside
+           a forced height it parked the text ~1.7px above centre — visible
+           next to the search input, which centred correctly in an identical
+           box. 15 + 11 + 11 + 2 borders = the same 39px, with no slack left
+           to mis-centre. Wider right padding on the selects keeps long option
+           text off the native chevron. */
+        #studentSearch, #rangeSelect, #quizSelect {
+            padding: 11px 13px; font-size: 13px; line-height: 15px;
+        }
+        #rangeSelect, #quizSelect { padding-right: 30px; }
         #historicalSection .controls .btn { padding: 0 15px; font-size: 13px; line-height: 1; }
         .search-wrap { position: relative; display: inline-flex; align-items: center; }
         .search-wrap .ic {

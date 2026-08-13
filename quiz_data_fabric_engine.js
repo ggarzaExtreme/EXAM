@@ -2,331 +2,329 @@
 // Questions organized by presentation section
 
 const quizData = [
-  // ===== INTRO SECTION =====
+  // ===== INSTALLATION SECTION =====
   {
     id: 1,
-    topic: "Fabric Engine Basics",
-    section: "Intro",
-    question: "What is the primary purpose of Fabric Engine?",
+    topic: "OS Naming",
+    section: "Installation",
+    question: "Starting with which release did VOSS get renamed to Fabric Engine, and on what hardware does that apply?",
     options: [
-      { text: "To provide centralized network management", feedback: "Correct! Fabric Engine enables unified management.", isCorrect: true },
-      { text: "To replace all network switches", feedback: "Fabric Engine works with existing switches.", isCorrect: false },
-      { text: "To manage only wireless devices", feedback: "Fabric Engine manages broader infrastructure.", isCorrect: false },
-      { text: "To improve security only", feedback: "Security is one benefit, but it's broader than that.", isCorrect: false }
+      { text: "Release 8.6, and only on universal hardware — non-universal hardware continues to run VOSS", feedback: "Correct! Beginning with 8.6, universal hardware runs Fabric Engine, while non-universal hardware keeps the VOSS name.", isCorrect: true },
+      { text: "Release 8.6, applied to every VOSS-capable platform without exception", feedback: "The rename was hardware-specific — non-universal hardware continues to use the VOSS name.", isCorrect: false },
+      { text: "Release 9.3, applied only to VSP8600 hardware", feedback: "The rename took effect starting with release 8.6, and VSP8600 is tracked separately in release recommendations.", isCorrect: false },
+      { text: "There was never a rename; VOSS and Fabric Engine are two unrelated products", feedback: "Fabric Engine is the renamed continuation of VOSS on universal hardware, not a separate product line.", isCorrect: false }
     ],
-    explanation: "Fabric Engine is a management and automation platform for network infrastructure.",
+    explanation: "Beginning with version 8.6, the network operating system name changed from VOSS to Fabric Engine on universal hardware; non-universal hardware continues to run VOSS.",
     resources: {
-      videoTopic: "Fabric Engine Overview"
+      videoTopic: "Fabric Engine and VOSS Naming"
     }
   },
   {
     id: 2,
-    topic: "Fabric Architecture",
-    section: "Intro",
-    question: "Which components are part of the Fabric architecture?",
+    topic: "Zero-Touch Onboarding",
+    section: "Installation",
+    question: "What deployment capability does Fabric Connect provide that reduces manual onboarding effort?",
     options: [
-      { text: "Controller, agents, and policies", feedback: "Correct! These are the key architectural components.", isCorrect: true },
-      { text: "Only switches and routers", feedback: "Architecture includes more than just hardware.", isCorrect: false },
-      { text: "Just the management server", feedback: "Architecture is more distributed than that.", isCorrect: false },
-      { text: "Wireless devices only", feedback: "Architecture spans multiple device types.", isCorrect: false }
+      { text: "Self-forming, self-provisioning fabric with zero-touch onboarding and auto-sensing", feedback: "Correct! Fabric Connect is designed to form and provision itself automatically, minimizing manual per-device setup.", isCorrect: true },
+      { text: "A requirement to manually configure IS-IS on every node before it can join the fabric", feedback: "That would defeat the purpose — Fabric Connect is designed to reduce this kind of manual per-node work.", isCorrect: false },
+      { text: "Mandatory factory pre-staging of every switch before shipment", feedback: "No factory pre-staging step is required; onboarding happens automatically once deployed.", isCorrect: false },
+      { text: "A cloud-only management model with no local fabric formation capability", feedback: "The fabric itself forms and provisions on its own; this isn't solely a cloud management feature.", isCorrect: false }
     ],
-    explanation: "Fabric Engine uses a distributed architecture with controllers, agents on devices, and policy engines.",
+    explanation: "Fabric Connect is positioned as a self-forming, self-provisioning solution with zero-touch onboarding and auto-sensing, accelerating deployment across campus, branch, SD-WAN, and data center use cases.",
     resources: {
-      videoTopic: "Fabric Architecture"
+      videoTopic: "Fabric Connect Deployment Model"
     }
   },
   {
     id: 3,
-    topic: "Fabric Benefits",
-    section: "Intro",
-    question: "What is a key benefit of using Fabric Engine?",
+    topic: "Quick SPBM Setup",
+    section: "Installation",
+    question: "What does the run spbm CLI script accomplish during initial Fabric Connect setup?",
     options: [
-      { text: "Automated policy deployment", feedback: "Yes! Automation is a major advantage.", isCorrect: true },
-      { text: "No changes to existing networks", feedback: "Integration requires some changes.", isCorrect: false },
-      { text: "Eliminates the need for training", feedback: "Training is still important for operation.", isCorrect: false },
-      { text: "Works with any vendor equipment", feedback: "Fabric Engine works best in integrated environments.", isCorrect: false }
+      { text: "It configures the SPB Ethertype, creates an SPB instance and backbone VLANs, adds a nickname, creates a manual area, and enables IS-IS globally and on an interface", feedback: "Correct! run spbm automates this whole sequence of SPB and IS-IS setup steps in one script.", isCorrect: true },
+      { text: "It only changes the switch's hostname", feedback: "Hostname changes are unrelated to what run spbm configures — it sets up the SPB and IS-IS infrastructure.", isCorrect: false },
+      { text: "It permanently disables IS-IS on the switch", feedback: "run spbm enables IS-IS as part of its setup — it doesn't disable it.", isCorrect: false },
+      { text: "It removes all existing VLANs from the switch", feedback: "run spbm creates the backbone VLANs needed for SPBM; it doesn't strip out existing VLANs.", isCorrect: false }
     ],
-    explanation: "Fabric Engine enables automated, consistent policy deployment across the network infrastructure.",
+    explanation: "The run spbm command quickly configures the SPB Ethertype, creates an SPB instance, creates primary and secondary SPBM backbone VLANs and associates them with the instance, adds an SPB nickname, creates a manual area, enables IS-IS on an interface and globally, and configures the IS-IS system name and system ID.",
     resources: {
-      videoTopic: "Fabric Benefits"
+      videoTopic: "Quick SPBM Configuration"
     }
   },
   {
     id: 4,
-    topic: "Fabric Concepts",
-    section: "Intro",
-    question: "What does 'intent-based' networking mean?",
+    topic: "EDM SPBM Configuration",
+    section: "Installation",
+    question: "In Enterprise Device Manager (EDM), what is the correct navigation path to configure SPBM on an interface?",
     options: [
-      { text: "Specifying desired outcomes rather than configurations", feedback: "Exactly! Intent-based focuses on outcomes.", isCorrect: true },
-      { text: "Creating detailed device-by-device configurations", feedback: "That's traditional config, not intent-based.", isCorrect: false },
-      { text: "Manually managing all network policies", feedback: "Intent-based reduces manual management.", isCorrect: false },
-      { text: "Using only default settings", feedback: "Intent-based involves defining business intent.", isCorrect: false }
+      { text: "Configuration > Fabric > IS-IS > Interfaces tab > select interface > SPBM > Interfaces SPBM tab > Insert > enter SPBM ID > Insert", feedback: "Correct! This matches the documented EDM procedure for enabling SPBM on an interface.", isCorrect: true },
+      { text: "Configuration > VLAN > Basic > Insert", feedback: "That path is for basic VLAN creation, not SPBM interface configuration.", isCorrect: false },
+      { text: "Configuration > Security > Access Policies > Insert", feedback: "That's the security/access policy area, unrelated to SPBM interface setup.", isCorrect: false },
+      { text: "Configuration > QoS > Policy > Insert", feedback: "QoS policy configuration is a separate section from SPBM/IS-IS interface setup.", isCorrect: false }
     ],
-    explanation: "Intent-based networking allows you to specify business goals, and the system figures out the configurations.",
+    explanation: "To configure SPBM on an interface in EDM, navigate to Configuration > Fabric > IS-IS > Interfaces tab, select the interface, go to SPBM > Interfaces SPBM tab, click Insert, enter the SPBM ID, and click Insert again.",
     resources: {
-      videoTopic: "Intent-Based Networking"
+      videoTopic: "EDM SPBM Interface Setup"
     }
   },
   {
     id: 5,
-    topic: "Getting Started",
-    section: "Intro",
-    question: "What is the first step in Fabric Engine deployment?",
+    topic: "spbm-config-mode Caveat",
+    section: "Installation",
+    question: "What must you verify before enabling spbm-config-mode on a Fabric Engine switch?",
     options: [
-      { text: "Discover and onboard devices", feedback: "Correct! Discovery is the first step.", isCorrect: true },
-      { text: "Deploy policies immediately", feedback: "Discovery must come first.", isCorrect: false },
-      { text: "Reconfigure all switches", feedback: "Not required as the first step.", isCorrect: false },
-      { text: "Remove existing management tools", feedback: "Integration happens gradually.", isCorrect: false }
+      { text: "The configuration must not include reserved ports, or the switch may stop loading its configuration after restart", feedback: "Correct! Reserved ports left in the configuration before enabling this mode can prevent the config from loading on the next restart.", isCorrect: true },
+      { text: "All VLANs must first be deleted from the switch", feedback: "Deleting VLANs isn't the documented prerequisite — the concern is specifically about reserved ports.", isCorrect: false },
+      { text: "The switch must already have at least one IS-IS adjacency formed", feedback: "An existing adjacency isn't a prerequisite; the caveat concerns reserved ports in the configuration.", isCorrect: false },
+      { text: "PoE must be disabled on all ports", feedback: "PoE state has no documented relationship to enabling spbm-config-mode.", isCorrect: false }
     ],
-    explanation: "Device discovery and onboarding is the foundation of Fabric Engine deployment.",
+    explanation: "Before enabling spbm-config-mode, you must ensure the configuration does not include reserved ports; otherwise, after a restart, the switch may stop loading the configuration.",
     resources: {
-      videoTopic: "Fabric Deployment"
+      videoTopic: "SPBM Config Mode Prerequisites"
+    }
+  },
+  {
+    id: 6,
+    topic: "CLI Configuration Basics",
+    section: "Installation",
+    question: "What is the correct starting command sequence to enter global configuration mode on a Fabric Engine CLI?",
+    options: [
+      { text: "enable, then configure terminal", feedback: "Correct! You first enter privileged mode with enable, then enter global configuration mode with configure terminal.", isCorrect: true },
+      { text: "configure terminal, then enable", feedback: "The order is reversed — you must reach privileged mode with enable before configure terminal is available.", isCorrect: false },
+      { text: "run spbm, then enable", feedback: "run spbm is a setup script that runs after you're already in the appropriate configuration context, not the entry point to config mode.", isCorrect: false },
+      { text: "show isis, then configure terminal", feedback: "show isis is a diagnostic command and isn't part of entering configuration mode.", isCorrect: false }
+    ],
+    explanation: "As with the broader CLI configuration model, you begin with enable to reach privileged exec mode, then use configure terminal to enter global configuration mode before configuring SPBM and IS-IS settings.",
+    resources: {
+      videoTopic: "Fabric Engine CLI Basics"
     }
   },
 
-  // ===== LAYER 1 CONFIG SECTION =====
-  {
-    id: 6,
-    topic: "Layer 1 Configuration",
-    section: "Layer 1 Config",
-    question: "What does Layer 1 configuration in Fabric Engine primarily involve?",
-    options: [
-      { text: "Port speed, duplex, and physical media settings", feedback: "Correct! Layer 1 handles physical settings.", isCorrect: true },
-      { text: "IP address assignment", feedback: "That's Layer 3 configuration.", isCorrect: false },
-      { text: "VLAN tagging", feedback: "That's Layer 2 configuration.", isCorrect: false },
-      { text: "Application-level policies", feedback: "That's higher in the OSI model.", isCorrect: false }
-    ],
-    explanation: "Layer 1 configuration manages the physical characteristics of network connections.",
-    resources: {
-      videoTopic: "Layer 1 Settings"
-    }
-  },
+  // ===== CONFIGURATION SECTION =====
   {
     id: 7,
-    topic: "Port Configuration",
-    section: "Layer 1 Config",
-    question: "How does Fabric Engine simplify port configuration?",
+    topic: "Backbone VLAN Consistency",
+    section: "Configuration",
+    question: "Why must the primary and secondary backbone VLANs (B-VLANs) match across all nodes in an SPBM fabric?",
     options: [
-      { text: "Using templates and policy profiles", feedback: "Correct! Templates standardize port config.", isCorrect: true },
-      { text: "By requiring manual configuration on each port", feedback: "That's what Fabric Engine avoids.", isCorrect: false },
-      { text: "Using only default port settings", feedback: "Flexibility is important.", isCorrect: false },
-      { text: "Automatically detecting optimal settings", feedback: "Admin input is required, but simplified.", isCorrect: false }
+      { text: "Because IS-IS adjacencies and the SPBM topology depend on consistent B-VLAN membership across the fabric", feedback: "Correct! Mismatched B-VLANs between nodes are a documented cause of adjacency and topology problems.", isCorrect: true },
+      { text: "They don't need to match; each node can use different B-VLANs independently", feedback: "Mismatched B-VLANs across nodes are explicitly called out as a cause of adjacency failures.", isCorrect: false },
+      { text: "Matching B-VLANs is only a cosmetic naming convention with no functional effect", feedback: "It has real functional impact — inconsistent B-VLANs disrupt IS-IS adjacency formation and the SPBM topology.", isCorrect: false },
+      { text: "B-VLANs only need to match between directly cabled neighbor switches, not the whole fabric", feedback: "Consistency is required across the entire SPBM domain, not just between direct neighbors.", isCorrect: false }
     ],
-    explanation: "Fabric Engine uses reusable templates to apply consistent port configurations across the network.",
+    explanation: "Primary and secondary backbone VLANs must be configured identically across all SPBM nodes; NNI ports automatically become members of the backbone VLANs, and mismatches are a documented cause of adjacency and topology issues.",
     resources: {
-      videoTopic: "Port Templates"
+      videoTopic: "SPBM Backbone VLAN Design"
     }
   },
   {
     id: 8,
-    topic: "Physical Media",
-    section: "Layer 1 Config",
-    question: "Which physical media types does Fabric Engine support?",
+    topic: "NNI Port Behavior",
+    section: "Configuration",
+    question: "What happens to NNI (network-to-network interface) ports with respect to backbone VLANs in an SPBM fabric?",
     options: [
-      { text: "Copper and optical fiber", feedback: "Correct! Both are commonly supported.", isCorrect: true },
-      { text: "Only copper (Ethernet)", feedback: "Modern networks use both types.", isCorrect: false },
-      { text: "Only optical fiber", feedback: "Copper connectivity is still common.", isCorrect: false },
-      { text: "Wireless signals only", feedback: "Wireless is Layer 1 but not the only media.", isCorrect: false }
+      { text: "They automatically become members of the backbone VLANs", feedback: "Correct! NNI ports are automatically added to the configured backbone VLANs as part of SPBM operation.", isCorrect: true },
+      { text: "They must be manually added to backbone VLANs one at a time, with no automation available", feedback: "This is actually automatic — NNI ports join the backbone VLANs without manual per-port VLAN assignment.", isCorrect: false },
+      { text: "They are excluded from all VLANs by design", feedback: "NNI ports aren't excluded from VLANs — they're automatically added to the backbone VLANs.", isCorrect: false },
+      { text: "They only join backbone VLANs after a full switch reboot", feedback: "No reboot is required — NNI ports join backbone VLANs automatically as part of normal SPBM operation.", isCorrect: false }
     ],
-    explanation: "Fabric Engine supports diverse physical media for different deployment scenarios.",
+    explanation: "As part of SPBM configuration, NNI ports automatically become members of the configured backbone VLANs, which is why consistent B-VLAN configuration across nodes matters for adjacency formation.",
     resources: {
-      videoTopic: "Physical Media"
+      videoTopic: "NNI Port and Backbone VLAN Behavior"
     }
   },
   {
     id: 9,
-    topic: "Link Aggregation",
-    section: "Layer 1 Config",
-    question: "What is link aggregation in Fabric Engine?",
+    topic: "VRF Platform Limitations",
+    section: "Configuration",
+    question: "Which statement correctly describes a documented VRF limitation on Fabric Engine hardware?",
     options: [
-      { text: "Combining multiple ports into one logical link", feedback: "Correct! Aggregation increases bandwidth.", isCorrect: true },
-      { text: "Counting the number of links", feedback: "Aggregation is active linking, not counting.", isCorrect: false },
-      { text: "Blocking certain ports", feedback: "That's a security policy, not aggregation.", isCorrect: false },
-      { text: "Adding ports to the network", feedback: "Aggregation uses existing ports.", isCorrect: false }
+      { text: "The 4220 Series supports only a single active VRF with IP configuration", feedback: "Correct! This is a documented platform-specific VRF limitation for the 4220 Series.", isCorrect: true },
+      { text: "Every Fabric Engine platform supports unlimited VRFs with IP configuration", feedback: "VRF support with IP configuration varies by platform — some models have explicit limits.", isCorrect: false },
+      { text: "VRFs are not supported at all on any Fabric Engine platform", feedback: "VRFs are supported; the nuance is that IP-configured VRF support varies and is limited on certain platforms.", isCorrect: false },
+      { text: "The 5320 Series supports multiple VRFs with IP configuration on every model in the family", feedback: "Multiple VRFs with IP configuration on the 5320 Series are supported only on specific models, not the entire family.", isCorrect: false }
     ],
-    explanation: "Link aggregation combines multiple physical connections into a single logical link for increased throughput.",
+    explanation: "VRF support with IP configuration is platform- and release-dependent: the 4220 Series supports only a single active VRF with IP configuration, while the 5320 Series supports multiple VRFs with IP configuration only on specific models (such as the 5320-16P-2MXT-2X, 5320-24T-4X-XT, 5320-24T-24S-4XE-XT, 5320-48P-8XE, and 5320-48T-8XE).",
     resources: {
-      videoTopic: "Link Aggregation"
+      videoTopic: "VRF Platform Support"
     }
   },
   {
     id: 10,
-    topic: "Speed Negotiation",
-    section: "Layer 1 Config",
-    question: "How does Fabric Engine handle port speed negotiation?",
+    topic: "IP Shortcuts",
+    section: "Configuration",
+    question: "What is the relationship between IPv4 and IPv6 Shortcuts in Fabric Connect?",
     options: [
-      { text: "Policies define preferred speeds and fall-back options", feedback: "Correct! Policies manage speed negotiation.", isCorrect: true },
-      { text: "Always using the maximum speed available", feedback: "Compatibility and policy determine speed.", isCorrect: false },
-      { text: "Manual speed adjustment on each port", feedback: "Fabric Engine automates this process.", isCorrect: false },
-      { text: "No control over port speeds", feedback: "Speed is definitely configurable.", isCorrect: false }
+      { text: "IPv6 Shortcuts depend on IPv4 Shortcuts being configured", feedback: "Correct! IPv6 Shortcuts require IPv4 Shortcuts as a prerequisite in Fabric Connect.", isCorrect: true },
+      { text: "IPv4 Shortcuts depend on IPv6 Shortcuts being configured first", feedback: "The dependency runs the other direction — IPv6 Shortcuts depend on IPv4 Shortcuts, not vice versa.", isCorrect: false },
+      { text: "They are fully independent features with no configuration dependency", feedback: "There is a documented dependency: IPv6 Shortcuts rely on IPv4 Shortcuts being enabled.", isCorrect: false },
+      { text: "Only one of the two can ever be enabled on a given fabric", feedback: "Both can be used together — IPv6 Shortcuts simply require IPv4 Shortcuts as a foundation, not exclusivity.", isCorrect: false }
     ],
-    explanation: "Fabric Engine policies allow you to specify port speed preferences and negotiation strategies.",
+    explanation: "Fabric Connect supports both IPv4 and IPv6 Shortcuts, but IPv6 Shortcut routing depends on IPv4 Shortcuts being configured; support for both varies by platform and software release.",
     resources: {
-      videoTopic: "Port Speed"
+      videoTopic: "IP Shortcuts Configuration"
     }
   },
-
-  // ===== LAYER 2 CONFIG SECTION =====
   {
     id: 11,
-    topic: "Layer 2 Configuration",
-    section: "Layer 2 Config",
-    question: "What does Fabric Engine Layer 2 configuration manage?",
+    topic: "Layer 3 Services Location",
+    section: "Configuration",
+    question: "Where is IP Shortcuts configuration documented within the Fabric Engine User Guide's feature structure?",
     options: [
-      { text: "VLANs, trunks, and switching behavior", feedback: "Correct! Layer 2 manages data link.", isCorrect: true },
-      { text: "IP routing decisions", feedback: "That's Layer 3 configuration.", isCorrect: false },
-      { text: "Physical port settings", feedback: "That's Layer 1 configuration.", isCorrect: false },
-      { text: "Application traffic policies", feedback: "That's higher layers.", isCorrect: false }
+      { text: "Under the Fabric Layer 3 Services section", feedback: "Correct! IP Shortcuts configuration is covered as part of Fabric Layer 3 Services.", isCorrect: true },
+      { text: "Under basic port configuration alongside speed and duplex", feedback: "Speed and duplex are Layer 1 physical settings — IP Shortcuts is a Layer 3 fabric feature.", isCorrect: false },
+      { text: "Under wireless access point provisioning", feedback: "IP Shortcuts is a wired fabric routing feature, unrelated to wireless AP provisioning.", isCorrect: false },
+      { text: "Under system logging and SNMP configuration", feedback: "Logging and SNMP are management/monitoring topics, not where IP Shortcuts is documented.", isCorrect: false }
     ],
-    explanation: "Layer 2 configuration in Fabric Engine manages switching, VLANs, and MAC-level operations.",
+    explanation: "The Fabric Engine User Guide documents IP Shortcuts configuration within the Fabric Layer 3 Services section, reflecting its role in providing IP routing shortcuts across the SPBM fabric.",
     resources: {
-      videoTopic: "Layer 2 Configuration"
+      videoTopic: "Fabric Layer 3 Services"
     }
   },
   {
     id: 12,
-    topic: "VLAN Management",
-    section: "Layer 2 Config",
-    question: "How does Fabric Engine simplify VLAN management?",
+    topic: "SPBM Instance Attributes",
+    section: "Configuration",
+    question: "Which set of attributes does show isis spbm display about a configured SPBM instance?",
     options: [
-      { text: "Dynamic VLAN creation and assignment via policies", feedback: "Correct! Fabric automates VLAN management.", isCorrect: true },
-      { text: "Manual VLAN creation on each switch", feedback: "Fabric Engine reduces manual work.", isCorrect: false },
-      { text: "Eliminating the need for VLANs", feedback: "VLANs are still fundamental.", isCorrect: false },
-      { text: "Using only default VLANs", feedback: "Custom VLAN management is a key benefit.", isCorrect: false }
+      { text: "SPBM instance, B-VID, primary VLAN, nickname, LSDB trap status, and IP/IPv6 shortcut status", feedback: "Correct! show isis spbm summarizes these key SPBM instance attributes in one place.", isCorrect: true },
+      { text: "Only the switch's uptime and CPU utilization", feedback: "Uptime and CPU utilization are system health metrics, not what show isis spbm reports.", isCorrect: false },
+      { text: "PoE power budget and power class per port", feedback: "PoE power details are unrelated to SPBM instance information.", isCorrect: false },
+      { text: "The switch's local user account list", feedback: "User accounts are an administrative detail, not part of SPBM instance status.", isCorrect: false }
     ],
-    explanation: "Fabric Engine automates VLAN provisioning and management through centralized policies.",
+    explanation: "show isis spbm displays IS-IS SPBM-related information for a configured instance, including the SPBM instance number, B-VID, primary VLAN, nickname, LSDB trap status, and IP/IPv6 shortcut status.",
     resources: {
-      videoTopic: "VLAN Management"
+      videoTopic: "SPBM Instance Verification"
     }
   },
+
+  // ===== TROUBLESHOOTING SECTION =====
   {
     id: 13,
-    topic: "Spanning Tree",
-    section: "Layer 2 Config",
-    question: "What role does Spanning Tree play in Fabric Engine?",
+    topic: "Adjacency Not Forming",
+    section: "Troubleshooting",
+    question: "An IS-IS adjacency is not forming between two SPBM nodes. Which set of checks reflects the documented first steps?",
     options: [
-      { text: "Prevents loops while allowing redundancy", feedback: "Correct! STP is crucial for Layer 2.", isCorrect: true },
-      { text: "Blocks all redundant connections", feedback: "STP allows some redundancy.", isCorrect: false },
-      { text: "Routes packets between subnets", feedback: "That's a Layer 3 function.", isCorrect: false },
-      { text: "Manages individual device memories", feedback: "STP is about network topology.", isCorrect: false }
+      { text: "Confirm SPBM and IS-IS are enabled, verify B-VLAN configuration and port assignment, and ensure primary/secondary backbone VLANs match on all nodes", feedback: "Correct! These are the documented first checks for a failed IS-IS adjacency in an SPBM fabric.", isCorrect: true },
+      { text: "Immediately replace the switch hardware", feedback: "Hardware replacement is not a documented first step — configuration and enablement checks come first.", isCorrect: false },
+      { text: "Reformat the switch's flash storage", feedback: "This is a drastic, undocumented action for an adjacency issue and risks data loss with no diagnostic benefit.", isCorrect: false },
+      { text: "Disable IS-IS permanently on both switches", feedback: "Disabling IS-IS would prevent the adjacency from ever forming — the documented approach is to verify enablement and configuration, not disable it.", isCorrect: false }
     ],
-    explanation: "Spanning Tree Protocol prevents network loops while maintaining redundant paths for reliability.",
+    explanation: "When an IS-IS adjacency fails to form on an SPBM fabric, documented guidance is to verify that SPBM and IS-IS are enabled, check the B-VLAN configuration and port assignments, and confirm the primary and secondary backbone VLANs match across nodes.",
     resources: {
-      videoTopic: "Spanning Tree"
+      videoTopic: "IS-IS Adjacency Troubleshooting"
     }
   },
   {
     id: 14,
-    topic: "MAC Learning",
-    section: "Layer 2 Config",
-    question: "How does Fabric Engine manage MAC address learning?",
+    topic: "MTU Mismatch",
+    section: "Troubleshooting",
+    question: "What system MTU value should match across fabric switches to avoid IS-IS adjacency problems, and why does a mismatch matter?",
     options: [
-      { text: "Automatic learning with policy-based aging and limits", feedback: "Correct! Fabric automates MAC management.", isCorrect: true },
-      { text: "Manual MAC address entry on each switch", feedback: "Fabric Engine automates this.", isCorrect: false },
-      { text: "Disabling MAC learning entirely", feedback: "Learning is essential for switching.", isCorrect: false },
-      { text: "No control over MAC address handling", feedback: "Policies define MAC behavior.", isCorrect: false }
+      { text: "1950 — a mismatched system MTU across fabric switches is a documented cause of adjacency failure", feedback: "Correct! The system MTU should be 1950 across fabric nodes; a mismatch is called out as a specific root cause for adjacency issues.", isCorrect: true },
+      { text: "1500 — MTU has no effect on IS-IS adjacency formation", feedback: "MTU does affect adjacency formation, and the documented value for fabric switches is 1950, not the standard Ethernet 1500.", isCorrect: false },
+      { text: "9000 — jumbo frames are mandatory for any IS-IS adjacency", feedback: "9000 is not the documented value; the specific system MTU called out for SPBM fabric switches is 1950.", isCorrect: false },
+      { text: "MTU only matters for management traffic, not IS-IS control traffic", feedback: "MTU mismatches are documented as directly impacting IS-IS control-plane adjacency, not just management traffic.", isCorrect: false }
     ],
-    explanation: "Fabric Engine manages MAC address learning with automatic discovery and policy-based controls.",
+    explanation: "A common cause of IS-IS adjacency failure when SPBM and IS-IS are already enabled correctly is a system MTU mismatch across fabric switches; the system MTU should be set to 1950.",
     resources: {
-      videoTopic: "MAC Learning"
+      videoTopic: "System MTU and IS-IS"
     }
   },
   {
     id: 15,
-    topic: "Switch Groups",
-    section: "Layer 2 Config",
-    question: "What is a switch group in Fabric Engine?",
+    topic: "IS-IS Authentication",
+    section: "Troubleshooting",
+    question: "Besides MTU mismatch, what other configuration issue is documented as a cause of IS-IS adjacencies failing to form?",
     options: [
-      { text: "A logical collection of switches with shared policies", feedback: "Correct! Switch groups simplify management.", isCorrect: true },
-      { text: "A physical stack of switches", feedback: "Groups are logical, not physical.", isCorrect: false },
-      { text: "A backup system for failed switches", feedback: "Groups are for management, not failover.", isCorrect: false },
-      { text: "A security group for encryption", feedback: "Groups are organizational, not just security.", isCorrect: false }
+      { text: "IS-IS authentication that is misconfigured or prohibiting the adjacency", feedback: "Correct! Authentication mismatches between neighbors are a documented cause of failed adjacencies.", isCorrect: true },
+      { text: "Having more than 10 VLANs configured on the switch", feedback: "VLAN count on the switch isn't a documented cause of IS-IS adjacency failure.", isCorrect: false },
+      { text: "Using a non-default hostname on the switch", feedback: "Hostname choice doesn't affect IS-IS adjacency formation.", isCorrect: false },
+      { text: "Running the switch with PoE enabled", feedback: "PoE state on a switch has no documented relationship to IS-IS adjacency formation.", isCorrect: false }
     ],
-    explanation: "Switch groups allow you to apply consistent policies across multiple switches simultaneously.",
+    explanation: "In addition to system MTU mismatches, IS-IS authentication that is misconfigured or actively prohibiting the adjacency is documented as another cause of adjacency failures between SPBM nodes.",
     resources: {
-      videoTopic: "Switch Management"
+      videoTopic: "IS-IS Authentication Issues"
     }
   },
-
-  // ===== LAYER 3 CONFIG SECTION =====
   {
     id: 16,
-    topic: "Layer 3 Configuration",
-    section: "Layer 3 Config",
-    question: "What does Fabric Engine Layer 3 configuration include?",
+    topic: "Link State Database",
+    section: "Troubleshooting",
+    question: "Which command would you use to inspect the IS-IS link state database when troubleshooting SPBM topology issues?",
     options: [
-      { text: "IP addressing, routing, and default gateways", feedback: "Correct! Layer 3 manages IP network.", isCorrect: true },
-      { text: "VLAN creation and trunk settings", feedback: "That's Layer 2 configuration.", isCorrect: false },
-      { text: "Port physical settings", feedback: "That's Layer 1 configuration.", isCorrect: false },
-      { text: "Firewall rules only", feedback: "Routing is broader than firewalls.", isCorrect: false }
+      { text: "show isis lsdb", feedback: "Correct! show isis lsdb displays the link state database used to build the SPBM topology.", isCorrect: true },
+      { text: "show isis spbm nick-name", feedback: "That command focuses on nickname assignment, not the full link state database.", isCorrect: false },
+      { text: "show sys mtu", feedback: "show sys mtu reports the system MTU setting, not link state database contents.", isCorrect: false },
+      { text: "show vlan", feedback: "show vlan is a Layer 2 VLAN command and doesn't show the IS-IS link state database.", isCorrect: false }
     ],
-    explanation: "Layer 3 configuration in Fabric Engine manages IP network infrastructure and routing policies.",
+    explanation: "show isis lsdb displays the IS-IS link state database, which is useful for verifying topology information distributed across the SPBM fabric; show isis lsdb tlv 184 detail can drill further into specific SPBM TLV data.",
     resources: {
-      videoTopic: "Layer 3 Configuration"
+      videoTopic: "IS-IS Link State Database"
     }
   },
   {
     id: 17,
-    topic: "IP Addressing",
-    section: "Layer 3 Config",
-    question: "How does Fabric Engine manage IP address assignment?",
+    topic: "Nickname Verification",
+    section: "Troubleshooting",
+    question: "What would you check with show isis spbm nick-name, and why does it matter?",
     options: [
-      { text: "IPAM (IP Address Management) with DHCP integration", feedback: "Correct! Fabric includes comprehensive IPAM.", isCorrect: true },
-      { text: "Manual IP assignment on every device", feedback: "Fabric automates IP management.", isCorrect: false },
-      { text: "Only static IP addresses", feedback: "Fabric supports both static and dynamic.", isCorrect: false },
-      { text: "No IP address control", feedback: "IP management is a core Fabric function.", isCorrect: false }
+      { text: "It verifies SPBM nickname assignments; duplicate nicknames across nodes can cause fabric conflicts", feedback: "Correct! Each SPBM node needs a unique nickname, and this command helps confirm that assignment.", isCorrect: true },
+      { text: "It shows the switch's DNS hostname resolution", feedback: "DNS hostname resolution is unrelated — SPBM nicknames are a separate fabric identifier used in IS-IS.", isCorrect: false },
+      { text: "It configures a new VLAN nickname for VLAN naming purposes", feedback: "This is a show (verification) command, and SPBM nicknames identify fabric nodes, not VLANs.", isCorrect: false },
+      { text: "It reports PoE port nicknames used for cable labeling", feedback: "PoE and cable labeling have no relationship to SPBM nicknames, which are fabric node identifiers.", isCorrect: false }
     ],
-    explanation: "Fabric Engine includes IPAM capabilities for centralized IP address management and DHCP services.",
+    explanation: "show isis spbm nick-name lets you verify the SPBM nickname assigned to a node; since each node in the fabric needs a unique nickname, checking this helps rule out conflicts as a cause of fabric issues.",
     resources: {
-      videoTopic: "IP Address Management"
+      videoTopic: "SPBM Nickname Troubleshooting"
     }
   },
   {
     id: 18,
-    topic: "Routing Policies",
-    section: "Layer 3 Config",
-    question: "What can Fabric Engine routing policies define?",
+    topic: "Debugging Adjacency Formation",
+    section: "Troubleshooting",
+    question: "Which command provides debug-level detail specifically for SPBM IS-IS adjacency troubleshooting?",
     options: [
-      { text: "Traffic paths, next-hop selection, and routing protocols", feedback: "Correct! Policies define routing behavior.", isCorrect: true },
-      { text: "Only the destination IP addresses", feedback: "Routing is broader than destinations.", isCorrect: false },
-      { text: "Firewall block/allow rules", feedback: "Routing is distinct from security.", isCorrect: false },
-      { text: "Physical cable connections", feedback: "Routing is logical, not physical.", isCorrect: false }
+      { text: "show debug spbm isis adj", feedback: "Correct! This command surfaces debug information focused specifically on SPBM IS-IS adjacency formation.", isCorrect: true },
+      { text: "show isis spbm unicast-fib vlan 4052", feedback: "That command inspects the unicast FIB for a specific VLAN, not adjacency debug detail.", isCorrect: false },
+      { text: "show power controller", feedback: "That's a PoE hardware command, unrelated to IS-IS adjacency debugging.", isCorrect: false },
+      { text: "show tech-support", feedback: "show tech-support is a broad diagnostic bundle on Switch Engine devices; it isn't the targeted SPBM adjacency debug command.", isCorrect: false }
     ],
-    explanation: "Fabric Engine routing policies define how traffic is routed through the network infrastructure.",
+    explanation: "show debug spbm isis adj displays debug information specific to SPBM IS-IS adjacency configuration, helping isolate why an adjacency between two nodes is not forming.",
     resources: {
-      videoTopic: "Routing Policies"
+      videoTopic: "SPBM Adjacency Debugging"
     }
   },
   {
     id: 19,
-    topic: "Gateway Configuration",
-    section: "Layer 3 Config",
-    question: "How does Fabric Engine manage gateway settings?",
+    topic: "Unicast FIB Verification",
+    section: "Troubleshooting",
+    question: "What would show isis spbm unicast-fib vlan <vlan-id> help you verify?",
     options: [
-      { text: "Defining default gateways and gateway redundancy", feedback: "Correct! Gateways are critical for routing.", isCorrect: true },
-      { text: "Creating gates between network segments", feedback: "Gateways are logical, not physical.", isCorrect: false },
-      { text: "Blocking external network access", feedback: "Gateways enable access, not block it.", isCorrect: false },
-      { text: "Only supporting a single gateway per subnet", feedback: "Redundancy is supported and managed.", isCorrect: false }
+      { text: "The unicast forwarding information for a specific VLAN as computed by the SPBM topology", feedback: "Correct! This command lets you confirm how traffic for a given VLAN is being forwarded across the fabric.", isCorrect: true },
+      { text: "The number of PoE watts allocated to ports in that VLAN", feedback: "PoE allocation is unrelated to unicast FIB information for an SPBM VLAN.", isCorrect: false },
+      { text: "The list of administrative users allowed to manage that VLAN", feedback: "User administration is a separate topic from SPBM unicast forwarding data.", isCorrect: false },
+      { text: "The physical cable type connected to VLAN member ports", feedback: "Cable type is a Layer 1 physical detail, not something reported by a unicast FIB command.", isCorrect: false }
     ],
-    explanation: "Fabric Engine manages default gateway configuration and redundancy for network availability.",
+    explanation: "show isis spbm unicast-fib vlan <vlan-id> displays the unicast forwarding information base entries for a specific VLAN, useful for confirming that SPBM has correctly computed forwarding paths across the fabric.",
     resources: {
-      videoTopic: "Gateway Management"
+      videoTopic: "SPBM Unicast FIB Verification"
     }
   },
   {
     id: 20,
-    topic: "Subnet Management",
-    section: "Layer 3 Config",
-    question: "What does Fabric Engine offer for subnet management?",
+    topic: "Interface-Level IS-IS Checks",
+    section: "Troubleshooting",
+    question: "When narrowing down an adjacency problem to a specific link, which command shows IS-IS interface-level configuration and counters?",
     options: [
-      { text: "Subnet creation, sizing, and optimization", feedback: "Correct! Fabric manages subnet lifecycle.", isCorrect: true },
-      { text: "Only manual subnet creation", feedback: "Fabric automates subnet management.", isCorrect: false },
-      { text: "Preventing subnet changes", feedback: "Fabric enables flexible subnet management.", isCorrect: false },
-      { text: "No subnet-level controls", feedback: "Subnets are a fundamental management level.", isCorrect: false }
+      { text: "show isis interface and show isis int-l1-cntl-pkts", feedback: "Correct! These commands show interface-level IS-IS configuration and Level 1 control packet counters, useful for isolating a link-specific issue.", isCorrect: true },
+      { text: "show vlan and show fdb", feedback: "Those are Layer 2 VLAN and MAC learning commands, not IS-IS interface-level diagnostics.", isCorrect: false },
+      { text: "show power and show power budget", feedback: "Those report PoE power delivery, unrelated to IS-IS interface diagnostics.", isCorrect: false },
+      { text: "show mlag peer", feedback: "show mlag peer is used on Switch Engine MLAG deployments, not for IS-IS interface-level troubleshooting on Fabric Engine.", isCorrect: false }
     ],
-    explanation: "Fabric Engine provides tools for efficient subnet creation, allocation, and optimization.",
+    explanation: "show isis interface and show isis int-l1-cntl-pkts provide interface-specific IS-IS configuration and Level 1 control packet counters, which help isolate whether an adjacency problem is specific to one link versus a broader fabric-wide issue.",
     resources: {
-      videoTopic: "Subnet Management"
+      videoTopic: "Interface-Level IS-IS Diagnostics"
     }
   }
 ];

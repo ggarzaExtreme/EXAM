@@ -667,21 +667,25 @@
         .review-link:hover { border-color: var(--accent-2); background: var(--sel-bg); }
 
         /* ===== Home hero =====
-           Hero text is inset by the mode cards' border + padding so every text
-           left edge on the page shares one line. --card-pad is the single
-           source for both.
+           The hero aligns to the mode cards' OUTER edge, not to the text
+           inside them. The cards' borders are the strongest vertical line on
+           the page, so anything that starts 26px inside that line — as the
+           hero used to, when it was inset by the cards' padding — reads as
+           indented no matter how precisely it matches the card's inner text.
+           The rule spans the full card width for the same reason; it used to
+           be inset on the left but flush on the right.
 
            Optical alignment: DM Sans gives every flat-sided cap (E, B, P…) a
-           left side bearing of 0.0625em, so identical box edges still look
-           ragged when the type sizes differ — at 54px the hero's E started
-           3.4px inside its box while the 10px kicker below started 0.6px in,
-           and the headline read as indented. Pulling each block left by its
-           own side bearing lands all the ink on one line at every clamp
-           value. Anything that starts with a pointed cap (A, V, W) has a much
-           smaller bearing and is left alone. */
+           left side bearing of 0.0625em, so a box sitting exactly on the card
+           edge still paints its first stroke a few px to the right — 3.4px at
+           the hero's 54px. Each text block is pulled left by its own side
+           bearing so the ink, not the box, lands on the line, at every clamp
+           value. Anything starting with a pointed cap (A, V, W) has a much
+           smaller bearing and is left alone. The card's own kicker and title
+           get the same treatment so they line up with each other inside the
+           card. */
         .hero {
             padding: 14px 0 0;
-            padding-left: calc(var(--card-pad) + 1px);
         }
         .hero h1,
         .hero-kicker,
@@ -711,8 +715,7 @@
         }
         .hero-rule {
             height: 2px; border-radius: 2px;
-            /* left inset inside the shorthand so a later `margin` cannot reset it */
-            margin: 24px 0 26px calc(var(--card-pad) + 1px);
+            margin: 24px 0 26px;
             background: linear-gradient(90deg, #20004C, #5B059C 28%, #7519F9 62%, #7D76F2);
         }
 
@@ -770,10 +773,10 @@
         @media (max-width: 600px) {
             .content { padding: 20px 12px 40px; --card-pad: 20px; }
             .actionrow .btn { flex: 1 1 auto; }
-            .hero { padding: 14px 0 0; padding-left: calc(var(--card-pad) + 1px); }
+            .hero { padding: 14px 0 0; }
             /* tighter tracking keeps the overline on one line on a phone */
             .hero-kicker { font-size: 10px; letter-spacing: .12em; margin-bottom: 11px; }
-            .hero-rule { margin: 20px 0 20px calc(var(--card-pad) + 1px); }
+            .hero-rule { margin: 20px 0 20px; }
             .mode { gap: 12px; }
             .formcard { padding: 22px 18px 20px; }
         }

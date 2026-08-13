@@ -817,8 +817,8 @@
                         <div class="answer-distribution">
                             <h3 style="color: #333; margin-bottom: 6px;">Answer Distribution</h3>
                             <div class="chart-legend">
-                                <span><i class="swatch initial"></i>First answer (one per student)</span>
-                                <span><i class="swatch cumulative"></i>All submissions (incl. retries)</span>
+                                <span id="legendInitial"><i class="swatch initial"></i>First answer (one per student)</span>
+                                <span id="legendCumulative"><i class="swatch cumulative"></i><span id="legendCumulativeText">All submissions (incl. retries)</span></span>
                             </div>
                             <div id="answerChart"></div>
                         </div>
@@ -1247,6 +1247,12 @@
         function displayAnswerDistribution(cumulative, initial) {
             const chart = document.getElementById('answerChart');
 
+            // Only advertise the first-answer series when it is actually drawn
+            // (the deployed function may predate initial_distribution)
+            document.getElementById('legendInitial').style.display = initial ? 'inline-flex' : 'none';
+            document.getElementById('legendCumulativeText').textContent =
+                initial ? 'All submissions (incl. retries)' : 'Submissions (incl. retries)';
+
             if (!cumulative) {
                 chart.innerHTML = '<p style="color: #666; font-size: 14px;">Waiting for responses...</p>';
                 return;
@@ -1303,7 +1309,10 @@
             document.getElementById('oneRetry').textContent = r.needed_one_retry || 0;
             document.getElementById('multipleRetries').textContent = r.needed_multiple_retries || 0;
             document.getElementById('stillWorking').textContent = p.students_pending || 0;
-            document.getElementById('rosterSize').textContent = p.roster_size || 0;
+            // roster_size is absent on older deployed functions — show a dash
+            // rather than claiming zero students are in the session
+            document.getElementById('rosterSize').textContent =
+                p.roster_size === undefined ? '—' : p.roster_size;
         }
 
         function escapeHtml(str) {
@@ -1324,7 +1333,9 @@
             if (!students) {
                 // Older deployed function that doesn't return per-student data yet
                 head.style.display = 'none';
-                list.innerHTML = '<p style="color: #666; font-size: 14px;">Per-student responses need the latest Netlify functions deployed.</p>';
+                list.innerHTML = '<p style="color: #666; font-size: 14px; line-height: 1.5;">' +
+                    'Per-student names and answers become available once the updated Netlify ' +
+                    'functions are deployed. Everything below is live in the meantime.</p>';
                 countLabel.textContent = '';
                 return;
             }

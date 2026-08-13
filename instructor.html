@@ -57,21 +57,6 @@
             font-size: 12px;
         }
 
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
         .content {
             padding: 40px 30px;
         }
@@ -633,7 +618,7 @@
     <!-- ===== Theme layer (shared palettes with index.html) ===== -->
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=4">
+    <link rel="stylesheet" href="styles.css?v=5">
     <style>
         .container { max-width: 1240px; }
         .content { padding: 24px 18px 48px; background: transparent; }
@@ -713,13 +698,6 @@
             position: static !important; top: auto !important; right: auto !important;
             margin: 0 !important; display: flex; align-items: center;
         }
-        .logout-btn {
-            background: transparent; color: var(--gb-ink);
-            border: 1px solid var(--gb-line); border-radius: var(--radius);
-            padding: 6px 12px; font-size: 11.5px; font-family: inherit; font-weight: 700;
-        }
-        .logout-btn:hover { background: rgba(255,255,255,.10); }
-
         /* Panels that carried hardcoded light backgrounds inline */
         #createSessionContainer .info-box {
             background: var(--surface) !important;
@@ -953,7 +931,9 @@
             <span class="gb-ctx" id="gbContext">Instructor</span>
             <span class="gb-right">
                 <div class="header-user" id="headerUser" style="display:none;">
-                    <button class="logout-btn" onclick="logout()">Sign out</button>
+                    <button class="gb-btn" onclick="logout()">
+                        <svg class="ic" aria-hidden="true"><use href="#ic-power"></use></svg>Sign out
+                    </button>
                 </div>
                 <span class="gb-theme" role="group" aria-label="Colour theme">
                     <button type="button" data-theme-btn="extreme" aria-pressed="true">Extreme</button>
@@ -1538,7 +1518,13 @@
                 const p = result.participation || {};
                 const r = result.retry_stats || {};
                 const roster = p.roster_size;
-                const answered = p.total_responses || 0;
+                // "Answered n / roster" counts STUDENTS, not responses — a
+                // retry adds a response but not a person, so total_responses
+                // reads high (and can exceed the roster) once anyone retries.
+                const answered = Array.isArray(result.students)
+                    ? result.students.filter(s => s.status && s.status !== 'pending').length
+                    : (p.students_answered !== undefined ? p.students_answered
+                                                         : (p.total_responses || 0));
                 const correct = Array.isArray(result.students)
                     ? result.students.filter(s => s.status === 'correct').length
                     : (r.got_correct_first_attempt || 0) + (r.needed_one_retry || 0) +
@@ -2179,9 +2165,21 @@
                 : '<p class="no-data" style="padding:0">No topic data recorded on these submissions.</p>';
 
             // ---- Pre → Post movement ----
+            // Only meaningful when the two quizzes actually test the same
+            // topics. The post-class review is currently a satisfaction survey
+            // (Course Pace, Hands-on Labs), so against the pre-class knowledge
+            // check it shares no topic at all — and comparing their averages
+            // would report a large "improvement" that is really just the gap
+            // between a test score and a satisfaction rating. No shared topic,
+            // no card.
             const deltaCard = document.getElementById('deltaCard');
             const other = COUNTERPART[currentQuiz];
-            if (other && analytics.counterpart.length) {
+            const counterpartTopics = analytics.counterpart.length
+                ? new Set(topicAverages(analytics.counterpart).map(t => t.topic)) : new Set();
+            const comparable = analytics.counterpart.length &&
+                topicAverages(rows).some(t => counterpartTopics.has(t.topic));
+
+            if (other && comparable) {
                 const isPre = currentQuiz === 'pretraining';
                 const preRows = isPre ? rows : analytics.counterpart;
                 const postRows = isPre ? analytics.counterpart : rows;
@@ -2200,14 +2198,13 @@
                         <span class="bv">${preAvg}% → ${postAvg}%
                             <span class="${postAvg>preAvg?'delta-up':postAvg<preAvg?'delta-down':'delta-flat'}">
                                 ${postAvg>preAvg?'+':''}${postAvg-preAvg}</span></span>
-                    </div>` + (shared.length ? shared.map(t => {
+                    </div>` + shared.map(t => {
                         const d = postMap[t.topic] - t.pct;
                         return `<div class="bar-row wide">
                             <span class="bq">${escapeHtml(t.topic)}</span>
                             <span class="bv">${t.pct}% → ${postMap[t.topic]}%
                                 <span class="${d>0?'delta-up':d<0?'delta-down':'delta-flat'}">${d>0?'+':''}${d}</span></span>
-                        </div>`; }).join('')
-                      : '<p class="no-data" style="padding:0">No topics in common between the two sets.</p>');
+                        </div>`; }).join('');
                 deltaCard.style.display = 'block';
             } else {
                 deltaCard.style.display = 'none';

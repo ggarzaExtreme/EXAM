@@ -91,12 +91,12 @@
         }
 
         .login-screen h2 {
-            color: #333;
+            color: var(--ink);
             margin-bottom: 10px;
         }
 
         .login-screen p {
-            color: #666;
+            color: var(--ink-soft);
             margin-bottom: 30px;
             font-size: 14px;
             line-height: 1.6;
@@ -109,7 +109,7 @@
 
         .form-group label {
             display: block;
-            color: #333;
+            color: var(--ink);
             font-weight: 600;
             margin-bottom: 8px;
             font-size: 14px;
@@ -204,7 +204,7 @@
             background: none;
             border: none;
             border-bottom: 3px solid transparent;
-            color: #666;
+            color: var(--ink-soft);
             font-size: 15px;
             font-family: inherit;
             font-weight: 600;
@@ -264,16 +264,14 @@
         }
 
         .session-info {
-            background: #F0EDFF;
-            border-left: 4px solid #5B059C;
+            border-left: 3px solid var(--accent);
             padding: 20px;
             border-radius: 6px;
             margin-bottom: 20px;
         }
 
         .session-info h3 {
-            color: #5B059C;
-            margin-bottom: 10px;
+            color: var(--accent-2); margin-bottom: 10px;
             font-weight: 600;
         }
 
@@ -286,11 +284,11 @@
 
         .detail-item {
             font-size: 14px;
-            color: #555;
+            color: var(--ink-soft);
         }
 
         .detail-item strong {
-            color: #333;
+            color: var(--ink);
             font-weight: 600;
         }
 
@@ -315,7 +313,7 @@
             gap: 16px;
             margin-bottom: 18px;
             font-size: 12px;
-            color: #555;
+            color: var(--ink-soft);
         }
 
         .chart-legend span {
@@ -397,7 +395,7 @@
             text-align: center;
             font-size: 13px;
             font-weight: 700;
-            color: #555;
+            color: var(--ink-soft);
             min-width: 0;
         }
 
@@ -425,7 +423,7 @@
             justify-content: space-between;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: var(--ink);
         }
 
         .option-label .correctness {
@@ -476,7 +474,7 @@
         }
 
         .student-responses h3 {
-            color: #333;
+            color: var(--ink);
             margin-bottom: 15px;
             font-weight: 600;
         }
@@ -496,7 +494,7 @@
 
         .student-name {
             flex: 1;
-            color: #333;
+            color: var(--ink);
             font-weight: 600;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -546,7 +544,7 @@
         }
 
         .student-tries {
-            color: #666;
+            color: var(--ink-soft);
             font-size: 12px;
             min-width: 62px;
             text-align: right;
@@ -574,7 +572,7 @@
         }
 
         .retry-stats h3 {
-            color: #333;
+            color: var(--ink);
             margin-bottom: 15px;
             font-weight: 600;
         }
@@ -592,11 +590,11 @@
         }
 
         .stat-label {
-            color: #555;
+            color: var(--ink-soft);
         }
 
         .stat-value {
-            color: #333;
+            color: var(--ink);
             font-weight: 600;
         }
 
@@ -622,12 +620,12 @@
 
         .student-name {
             font-weight: 600;
-            color: #333;
+            color: var(--ink);
             margin-bottom: 8px;
         }
 
         .student-answer {
-            color: #555;
+            color: var(--ink-soft);
             font-size: 14px;
             margin-bottom: 8px;
         }
@@ -704,44 +702,47 @@
 
     <!-- ===== Theme layer (shared palettes with index.html) ===== -->
     <style>
-        :root, :root[data-theme="ops"] {
-            --bg:#000000; --surface:#0B0713; --surface-2:#140E20; --line:#221A33;
-            --ink:#FFFFFF; --ink-soft:#948CAB;
-            --accent:#7519F9; --accent-2:#9F8CFF; --btn-ink:#FFFFFF;
-            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.13);
-            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.11);
-            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
-            --wait-bg:rgba(255,255,255,.07); --sel-bg:rgba(117,25,249,.16);
-            --bar-i:#3A2A63; --bar-c:#7519F9;
+        :root, :root[data-theme="extreme"] {
+            --bg:#07050D; --surface:rgba(28,21,45,.82); --surface-2:rgba(40,30,64,.9);
+            --line:rgba(159,140,255,.24);
+            --ink:#FFFFFF; --ink-soft:#B4ACC9;
+            --accent:#7519F9; --accent-2:#A98BFF; --btn-ink:#FFFFFF;
+            --ok:#4FE39A; --ok-bg:rgba(79,227,154,.16);
+            --bad:#FF8792; --bad-bg:rgba(255,135,146,.15);
+            --warn:#FFD08A; --warn-bg:rgba(255,208,138,.15);
+            --wait-bg:rgba(255,255,255,.10); --sel-bg:rgba(117,25,249,.26);
+            --bar-i:#5B4A8C; --bar-c:#7519F9;
+            --modal:#181231;
+            --radius:3px;
+            --gb-bg:rgba(16,11,30,.86); --gb-ink:#FFFFFF; --gb-soft:#B4ACC9;
+            --gb-line:rgba(159,140,255,.26);
+        }
+        :root[data-theme="ops"] {
+            --bg:#0A0713; --surface:#171226; --surface-2:#221A38; --line:#352A4E;
+            --ink:#FFFFFF; --ink-soft:#ABA3C1;
+            --accent:#7519F9; --accent-2:#A98BFF; --btn-ink:#FFFFFF;
+            --ok:#4FE39A; --ok-bg:rgba(79,227,154,.16);
+            --bad:#FF8792; --bad-bg:rgba(255,135,146,.15);
+            --warn:#FFD08A; --warn-bg:rgba(255,208,138,.15);
+            --wait-bg:rgba(255,255,255,.10); --sel-bg:rgba(117,25,249,.24);
+            --bar-i:#4A3B70; --bar-c:#7519F9;
+            --modal:#171226;
             --radius:4px;
-            --gb-bg:#0B0713; --gb-ink:#FFFFFF; --gb-soft:#948CAB; --gb-line:#221A33;
+            --gb-bg:#120D20; --gb-ink:#FFFFFF; --gb-soft:#ABA3C1; --gb-line:#352A4E;
         }
         :root[data-theme="light"] {
-            --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F8F6FC; --line:#E4E0EE;
-            --ink:#14101C; --ink-soft:#6A6280;
+            --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F5F2FB; --line:#E0DBEE;
+            --ink:#14101C; --ink-soft:#635B79;
             --accent:#5B059C; --accent-2:#5B059C; --btn-ink:#FFFFFF;
             --ok:#0F7A52; --ok-bg:#E3F5EC;
             --bad:#B4232C; --bad-bg:#FBEAEB;
             --warn:#8A5A00; --warn-bg:#FFF6E0;
-            --wait-bg:#EFECF6; --sel-bg:#F2ECFB;
+            --wait-bg:#EDEAF6; --sel-bg:#F2ECFB;
             --bar-i:#CFC3F4; --bar-c:#5B059C;
+            --modal:#FFFFFF;
             --radius:10px;
             --gb-bg:#20004C; --gb-ink:#FFFFFF; --gb-soft:#CFC3F4; --gb-line:rgba(255,255,255,.22);
         }
-        :root[data-theme="net"] {
-            --bg:#000000; --surface:rgba(255,255,255,.05); --surface-2:rgba(255,255,255,.08);
-            --line:rgba(255,255,255,.12);
-            --ink:#FFFFFF; --ink-soft:#9A93B0;
-            --accent:#7519F9; --accent-2:#7D76F2; --btn-ink:#FFFFFF;
-            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.12);
-            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.10);
-            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
-            --wait-bg:rgba(255,255,255,.06); --sel-bg:rgba(117,25,249,.18);
-            --bar-i:rgba(125,118,242,.42); --bar-c:#7519F9;
-            --radius:2px;
-            --gb-bg:rgba(11,7,19,.72); --gb-ink:#FFFFFF; --gb-soft:#9A93B0; --gb-line:rgba(255,255,255,.12);
-        }
-
         body { background: var(--bg); color: var(--ink); padding: 0; }
         .network-graphic {
             position: fixed; inset: 0; width: 100%; height: 100%;
@@ -842,10 +843,51 @@
         .response-card { background: var(--surface); border-color: var(--line); color: var(--ink); }
         .no-data { color: var(--ink-soft); }
         .poll-controls label { color: var(--ink-soft) !important; }
+        /* Dialogs use the opaque --modal, never the translucent --surface, so
+           text stays readable over the Network Graphic */
         .modal-content, #createSessionModal > div {
-            background: var(--surface) !important; color: var(--ink);
+            background: var(--modal) !important; color: var(--ink);
             border: 1px solid var(--line);
+            box-shadow: 0 24px 70px rgba(0,0,0,.6);
         }
+        #createSessionModal { background: rgba(0,0,0,.72) !important; backdrop-filter: blur(3px); }
+        #createSessionModal h3, .modal-content h3 { color: var(--ink) !important; }
+        #createSessionModal p, .modal-content p { color: var(--ink-soft) !important; }
+
+        /* The sign-out button now lives inside the global bar, so the original
+           absolute positioning has to be undone or it floats over the tabs */
+        .header-user {
+            position: static !important; top: auto !important; right: auto !important;
+            margin: 0 !important; display: flex; align-items: center;
+        }
+        .logout-btn {
+            background: transparent; color: var(--gb-ink);
+            border: 1px solid var(--gb-line); border-radius: var(--radius);
+            padding: 6px 12px; font-size: 11.5px; font-family: inherit; font-weight: 700;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,.10); }
+
+        /* Panels that carried hardcoded light backgrounds inline. These win over
+           the inline attribute so every surface follows the theme. */
+        #createSessionContainer .info-box {
+            background: var(--surface) !important;
+            border: 1px solid var(--line) !important;
+            border-left: 3px solid var(--accent) !important;
+        }
+        #createSessionContainer .info-box h3 { color: var(--accent-2) !important; }
+        #createSessionContainer .info-box p { color: var(--ink-soft) !important; }
+        .dashboard-header h2[style], .tab-content h2[style],
+        .student-responses h3[style], .answer-distribution h3[style] { color: var(--ink) !important; }
+        .student-responses h3 span[style], .poll-controls label[style] { color: var(--ink-soft) !important; }
+        #endSessionBtn[style] {
+            background: transparent !important; color: var(--bad) !important;
+            border: 1px solid var(--bad) !important;
+        }
+        #endSessionBtn[style]:hover { background: var(--bad-bg) !important; }
+        .error-message { background: var(--bad-bg); color: var(--bad); }
+        .success-message { background: var(--ok-bg); color: var(--ok); }
+        .btn-secondary { background: transparent; }
+
         :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 
         @media (max-width: 600px) {
@@ -868,9 +910,9 @@
                     <button class="logout-btn" onclick="logout()">Sign out</button>
                 </div>
                 <span class="gb-theme" role="group" aria-label="Colour theme">
-                    <button type="button" data-theme-btn="ops" aria-pressed="true">Dark</button>
+                    <button type="button" data-theme-btn="extreme" aria-pressed="true">Extreme</button>
+                    <button type="button" data-theme-btn="ops" aria-pressed="false">Dark</button>
                     <button type="button" data-theme-btn="light" aria-pressed="false">Light</button>
-                    <button type="button" data-theme-btn="net" aria-pressed="false">Network</button>
                 </span>
             </span>
         </div>
@@ -909,7 +951,7 @@
                     <button class="tab-btn active" id="inclassTabBtn" onclick="switchTab('inclass')">🎓 In-Class Live Sessions</button>
                     <button class="tab-btn" id="historicalTabBtn" onclick="switchTab('historical')">📊 Student Submissions</button>
                     <div class="poll-controls">
-                        <label for="autoRefreshToggle" style="font-size: 13px; color: #555; font-weight: 600; cursor: pointer;">
+                        <label for="autoRefreshToggle" style="font-size: 13px; color: var(--ink-soft); font-weight: 600; cursor: pointer;">
                             <input type="checkbox" id="autoRefreshToggle" checked onchange="updatePollingSettings()" style="cursor: pointer; margin-right: 4px; vertical-align: middle;">Auto-refresh
                         </label>
                         <select id="pollIntervalSelect" onchange="updatePollingSettings()" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; font-family: inherit;">
@@ -924,7 +966,7 @@
                 <!-- In-Class Live Tab -->
                 <div id="inclassSection" class="tab-content active">
                     <div class="dashboard-header">
-                        <h2 style="color: #333;">In-Class Live Sessions</h2>
+                        <h2 style="color: var(--ink);">In-Class Live Sessions</h2>
                         <div class="controls">
                             <button class="btn" style="width: auto;" onclick="showCreateSessionModal()">+ New Session</button>
                             <button class="btn" style="width: auto; padding: 8px 20px;" onclick="refreshInClassData()" id="refreshLiveBtn">Refresh</button>
@@ -936,9 +978,9 @@
                     <div id="liveStatusMsg" style="display: none; margin-bottom: 20px; padding: 12px 15px; border-radius: 6px; font-size: 14px;"></div>
 
                     <div id="createSessionContainer">
-                        <div class="info-box" style="background: #F0EDFF; border-left: 4px solid #5B059C; padding: 20px; border-radius: 6px; text-align: center;">
-                            <h3 style="color: #5B059C; margin-bottom: 10px;">No Active Session</h3>
-                            <p style="color: #555; margin-bottom: 15px;">Create a new in-class session to begin monitoring student responses in real-time.</p>
+                        <div class="info-box" style="border-left: 3px solid var(--accent); padding: 20px; border-radius: 6px; text-align: center;">
+                            <h3 style="color: var(--accent-2); margin-bottom: 10px;">No Active Session</h3>
+                            <p style="color: var(--ink-soft); margin-bottom: 15px;">Create a new in-class session to begin monitoring student responses in real-time.</p>
                             <button class="btn" onclick="showCreateSessionModal()">Create New Session</button>
                         </div>
                     </div>
@@ -963,12 +1005,12 @@
                             <div class="session-controls">
                                 <button class="btn btn-secondary" id="prevQuestionBtn" onclick="previousQuestion()">← Previous</button>
                                 <button class="btn btn-secondary" id="nextQuestionBtn" onclick="nextQuestion()">▶ Start Quiz (Q1)</button>
-                                <button class="btn" style="background: #ef4444;" id="endSessionBtn" onclick="endSession()">End Session</button>
+                                <button class="btn" style="background: transparent;" id="endSessionBtn" onclick="endSession()">End Session</button>
                             </div>
                         </div>
 
                         <div class="student-responses">
-                            <h3>Student Responses <span id="studentAnsweredCount" style="font-weight: 400; font-size: 14px; color: #666;"></span></h3>
+                            <h3>Student Responses <span id="studentAnsweredCount" style="font-weight: 400; font-size: 14px; color: var(--ink-soft);"></span></h3>
                             <div class="student-row student-head">
                                 <span class="student-name">Student</span>
                                 <span class="student-answer">First</span>
@@ -980,7 +1022,7 @@
                         </div>
 
                         <div class="answer-distribution">
-                            <h3 style="color: #333; margin-bottom: 6px;">Answer Distribution</h3>
+                            <h3 style="color: var(--ink); margin-bottom: 6px;">Answer Distribution</h3>
                             <div class="chart-legend">
                                 <span id="legendInitial"><i class="swatch initial"></i>First answer (one per student)</span>
                                 <span id="legendCumulative"><i class="swatch cumulative"></i><span id="legendCumulativeText">All submissions (incl. retries)</span></span>
@@ -1021,7 +1063,7 @@
                 <!-- Student Submissions Tab -->
                 <div id="historicalSection" class="tab-content">
                     <div class="dashboard-header">
-                        <h2 style="color: #333;">Student Submissions</h2>
+                        <h2 style="color: var(--ink);">Student Submissions</h2>
                         <div class="controls">
                             <select id="quizSelect" onchange="changeQuiz()">
                                 <option value="">Select Quiz...</option>
@@ -1045,14 +1087,14 @@
     <!-- Create Session Modal -->
     <div id="createSessionModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; flex-direction: column;">
         <div style="background: white; border-radius: 12px; padding: 40px; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-            <h3 style="color: #333; font-size: 20px; margin-bottom: 15px; font-weight: 700;">Create New In-Class Session</h3>
+            <h3 style="color: var(--ink); font-size: 20px; margin-bottom: 15px; font-weight: 700;">Create New In-Class Session</h3>
 
             <div class="error-message" id="createSessionError"></div>
 
             <div class="form-group">
                 <label for="sessionClassId">Class ID</label>
                 <input type="text" id="sessionClassId" placeholder="e.g., class7 or fabric-jan15" style="text-transform: lowercase;">
-                <p style="font-size: 12px; color: #666; margin-top: 5px;">Students will enter this ID to join your session</p>
+                <p style="font-size: 12px; color: var(--ink-soft); margin-top: 5px;">Students will enter this ID to join your session</p>
             </div>
 
             <div class="form-group">
@@ -1380,11 +1422,11 @@
         // are never mistaken for the current one.
         function clearQuestionStats() {
             document.getElementById('answerChart').innerHTML =
-                '<p style="color: #666; font-size: 14px;">Waiting for responses...</p>';
+                '<p style="color: var(--ink-soft); font-size: 14px;">Waiting for responses...</p>';
             ['totalResponses', 'firstAttemptCorrect', 'oneRetry', 'multipleRetries', 'stillWorking', 'rosterSize']
                 .forEach(id => { document.getElementById(id).textContent = '0'; });
             document.getElementById('studentList').innerHTML =
-                '<p style="color: #666; font-size: 14px;">Loading students...</p>';
+                '<p style="color: var(--ink-soft); font-size: 14px;">Loading students...</p>';
             document.getElementById('studentAnsweredCount').textContent = '';
             const head = document.querySelector('.student-head');
             if (head) head.style.display = 'none';
@@ -1425,7 +1467,7 @@
                 initial ? 'All submissions (incl. retries)' : 'Submissions (incl. retries)';
 
             if (!cumulative) {
-                chart.innerHTML = '<p style="color: #666; font-size: 14px;">Waiting for responses...</p>';
+                chart.innerHTML = '<p style="color: var(--ink-soft); font-size: 14px;">Waiting for responses...</p>';
                 return;
             }
 
@@ -1504,7 +1546,7 @@
             if (!students) {
                 // Older deployed function that doesn't return per-student data yet
                 head.style.display = 'none';
-                list.innerHTML = '<p style="color: #666; font-size: 14px; line-height: 1.5;">' +
+                list.innerHTML = '<p style="color: var(--ink-soft); font-size: 14px; line-height: 1.5;">' +
                     'Per-student names and answers become available once the updated Netlify ' +
                     'functions are deployed. Everything below is live in the meantime.</p>';
                 countLabel.textContent = '';
@@ -1513,7 +1555,7 @@
 
             if (students.length === 0) {
                 head.style.display = 'none';
-                list.innerHTML = '<p style="color: #666; font-size: 14px;">No students have answered yet. Names appear here as soon as students submit their first answer.</p>';
+                list.innerHTML = '<p style="color: var(--ink-soft); font-size: 14px;">No students have answered yet. Names appear here as soon as students submit their first answer.</p>';
                 countLabel.textContent = '';
                 return;
             }

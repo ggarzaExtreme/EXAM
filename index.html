@@ -469,39 +469,46 @@
          specificity. Layouts sit on a black or white base per the brand
          guidelines - no full-page purple. -->
     <style>
-        :root, :root[data-theme="ops"] {
-            --bg:#000000; --surface:#0B0713; --surface-2:#140E20; --line:#221A33;
-            --ink:#FFFFFF; --ink-soft:#948CAB;
-            --accent:#7519F9; --accent-2:#9F8CFF; --btn-ink:#FFFFFF;
-            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.13);
-            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.11);
-            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
-            --wait-bg:rgba(255,255,255,.07); --sel-bg:rgba(117,25,249,.16);
+        /* Extreme is the default. Surfaces are always a clear step lighter than
+           the page so panels read as panels; --modal is deliberately opaque so
+           dialogs stay readable over the Network Graphic. */
+        :root, :root[data-theme="extreme"] {
+            --bg:#07050D; --surface:rgba(28,21,45,.82); --surface-2:rgba(40,30,64,.9);
+            --line:rgba(159,140,255,.24);
+            --ink:#FFFFFF; --ink-soft:#B4ACC9;
+            --accent:#7519F9; --accent-2:#A98BFF; --btn-ink:#FFFFFF;
+            --ok:#4FE39A; --ok-bg:rgba(79,227,154,.16);
+            --bad:#FF8792; --bad-bg:rgba(255,135,146,.15);
+            --warn:#FFD08A; --warn-bg:rgba(255,208,138,.15);
+            --wait-bg:rgba(255,255,255,.10); --sel-bg:rgba(117,25,249,.26);
+            --modal:#181231;
+            --radius:3px;
+            --gb-bg:rgba(16,11,30,.86); --gb-ink:#FFFFFF; --gb-soft:#B4ACC9;
+            --gb-line:rgba(159,140,255,.26);
+        }
+        :root[data-theme="ops"] {
+            --bg:#0A0713; --surface:#171226; --surface-2:#221A38; --line:#352A4E;
+            --ink:#FFFFFF; --ink-soft:#ABA3C1;
+            --accent:#7519F9; --accent-2:#A98BFF; --btn-ink:#FFFFFF;
+            --ok:#4FE39A; --ok-bg:rgba(79,227,154,.16);
+            --bad:#FF8792; --bad-bg:rgba(255,135,146,.15);
+            --warn:#FFD08A; --warn-bg:rgba(255,208,138,.15);
+            --wait-bg:rgba(255,255,255,.10); --sel-bg:rgba(117,25,249,.24);
+            --modal:#171226;
             --radius:4px;
-            --gb-bg:#0B0713; --gb-ink:#FFFFFF; --gb-soft:#948CAB; --gb-line:#221A33;
+            --gb-bg:#120D20; --gb-ink:#FFFFFF; --gb-soft:#ABA3C1; --gb-line:#352A4E;
         }
         :root[data-theme="light"] {
-            --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F8F6FC; --line:#E4E0EE;
-            --ink:#14101C; --ink-soft:#6A6280;
+            --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F5F2FB; --line:#E0DBEE;
+            --ink:#14101C; --ink-soft:#635B79;
             --accent:#5B059C; --accent-2:#5B059C; --btn-ink:#FFFFFF;
             --ok:#0F7A52; --ok-bg:#E3F5EC;
             --bad:#B4232C; --bad-bg:#FBEAEB;
             --warn:#8A5A00; --warn-bg:#FFF6E0;
-            --wait-bg:#EFECF6; --sel-bg:#F2ECFB;
+            --wait-bg:#EDEAF6; --sel-bg:#F2ECFB;
+            --modal:#FFFFFF;
             --radius:10px;
             --gb-bg:#20004C; --gb-ink:#FFFFFF; --gb-soft:#CFC3F4; --gb-line:rgba(255,255,255,.22);
-        }
-        :root[data-theme="net"] {
-            --bg:#000000; --surface:rgba(255,255,255,.05); --surface-2:rgba(255,255,255,.08);
-            --line:rgba(255,255,255,.12);
-            --ink:#FFFFFF; --ink-soft:#9A93B0;
-            --accent:#7519F9; --accent-2:#7D76F2; --btn-ink:#FFFFFF;
-            --ok:#3ED88A; --ok-bg:rgba(62,216,138,.12);
-            --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.10);
-            --warn:#FFC466; --warn-bg:rgba(255,196,102,.12);
-            --wait-bg:rgba(255,255,255,.06); --sel-bg:rgba(117,25,249,.18);
-            --radius:2px;
-            --gb-bg:rgba(11,7,19,.72); --gb-ink:#FFFFFF; --gb-soft:#9A93B0; --gb-line:rgba(255,255,255,.12);
         }
 
         body {
@@ -602,9 +609,20 @@
             background: var(--wait-bg); color: var(--ink-soft);
         }
         .chip.live { background: var(--ok-bg); color: var(--ok); }
-        .progbar { flex: 1; max-width: 160px; height: 4px; border-radius: 100px;
+        .progbar { flex: 1; max-width: 160px; height: 5px; border-radius: 100px;
             background: var(--line); overflow: hidden; }
-        .progbar i { display: block; height: 100%; background: var(--accent); }
+        .progbar i { display: block; height: 100%; background: var(--accent);
+            transition: width .3s ease; }
+
+        /* In-class: the student's browser is never told the total question
+           count, so progress is shown as questions seen rather than a
+           percentage of an unknown whole. */
+        .qsteps { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+        .qstep {
+            width: 16px; height: 5px; border-radius: 100px; background: var(--line);
+        }
+        .qstep.done { background: var(--accent-2); }
+        .qstep.now { background: var(--accent); box-shadow: 0 0 0 2px var(--sel-bg); }
 
         /* ===== Reserved feedback slot - height exists before content does,
                 so answering never moves the page ===== */
@@ -629,9 +647,35 @@
         .status-text { color: var(--ink-soft); }
         .status-text strong { color: var(--ink); }
 
+        /* ===== Options: the answer letter IS the control ===== */
         .option, .option-btn {
+            display: flex; align-items: center; gap: 14px;
             background: var(--surface); border: 1px solid var(--line);
             color: var(--ink); border-radius: var(--radius);
+            width: 100%; text-align: left;
+        }
+        /* the real radio stays focusable for keyboard and screen readers,
+           but the letter badge is what people see */
+        .option input[type="radio"] {
+            position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0;
+        }
+        .opt-letter {
+            flex: none; width: 30px; height: 30px; border-radius: 50%;
+            display: grid; place-items: center;
+            font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+            border: 1.5px solid var(--line); color: var(--ink-soft);
+            background: transparent; transition: background .15s, color .15s, border-color .15s;
+        }
+        .opt-text { flex: 1; line-height: 1.4; }
+        .option:hover .opt-letter, .option-btn:hover .opt-letter { border-color: var(--accent-2); color: var(--ink); }
+        .option input[type="radio"]:checked ~ .opt-letter,
+        .option-btn.selected .opt-letter,
+        .option.selected .opt-letter {
+            background: var(--accent); border-color: var(--accent); color: #FFFFFF;
+        }
+        .option:has(input:checked) { border-color: var(--accent); background: var(--sel-bg); }
+        .option input[type="radio"]:focus-visible ~ .opt-letter {
+            outline: 2px solid var(--accent-2); outline-offset: 2px;
         }
         .option:hover:not(.disabled), .option-btn:hover {
             border-color: var(--accent); background: var(--sel-bg);
@@ -686,11 +730,92 @@
 
         :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 
+        /* ===== Home hero ===== */
+        .hero { padding: 44px 0 6px; }
+        .hero-over {
+            font-size: 11px; font-weight: 700; letter-spacing: .18em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-size: clamp(38px, 8vw, 76px); font-weight: 700; line-height: .98;
+            letter-spacing: -.03em; color: var(--ink); margin: 0 0 22px;
+            text-wrap: balance;
+        }
+        .hero h1 .grad {
+            background: linear-gradient(96deg, #A98BFF 0%, #7519F9 48%, #7D76F2 100%);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .hero p {
+            font-size: clamp(15px, 2vw, 18px); color: var(--ink-soft);
+            max-width: 52ch; line-height: 1.5; margin: 0;
+        }
+        .hero-rule {
+            height: 2px; margin: 34px 0 30px; border-radius: 2px;
+            background: linear-gradient(90deg, #20004C, #5B059C 28%, #7519F9 62%, #7D76F2);
+        }
+
+        .modes { display: grid; gap: 14px; }
+        .mode {
+            position: relative; display: grid;
+            grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 20px;
+            width: 100%; text-align: left; cursor: pointer;
+            padding: 26px 26px 26px 30px; font-family: inherit;
+            background: var(--surface); color: var(--ink);
+            border: 1px solid var(--line); border-radius: var(--radius);
+            overflow: hidden; transition: border-color .18s, transform .18s, background .18s;
+        }
+        /* accent rail grows on hover - the only motion on the page */
+        .mode::before {
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+            background: linear-gradient(180deg, #7519F9, #7D76F2);
+            transform: scaleY(0); transform-origin: top; transition: transform .22s ease;
+        }
+        .mode:hover, .mode:focus-visible {
+            border-color: var(--accent-2); background: var(--surface-2);
+            transform: translateY(-2px);
+        }
+        .mode:hover::before, .mode:focus-visible::before { transform: scaleY(1); }
+        .mode-kicker {
+            display: block;
+            font-size: 10px; font-weight: 700; letter-spacing: .16em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 9px;
+        }
+        .mode-title {
+            display: block;
+            font-size: clamp(20px, 3vw, 27px); font-weight: 700; line-height: 1.1;
+            letter-spacing: -.015em; margin-bottom: 8px;
+        }
+        .mode-desc {
+            display: block;
+            font-size: 14px; color: var(--ink-soft); line-height: 1.45; max-width: 46ch;
+        }
+        .mode-meta {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px;
+        }
+        .mode-tag {
+            font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
+            text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
+            background: var(--wait-bg); color: var(--ink-soft);
+        }
+        .mode-arrow {
+            font-size: 26px; font-weight: 700; color: var(--accent-2);
+            transition: transform .22s ease; line-height: 1;
+        }
+        .mode:hover .mode-arrow, .mode:focus-visible .mode-arrow { transform: translateX(5px); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .mode, .mode::before, .mode-arrow { transition: none; }
+            .mode:hover { transform: none; }
+        }
+
         @media (max-width: 600px) {
             .globalbar { padding: 9px 12px; gap: 8px; }
             .gb-ctx { display: none; }
             .content { padding: 20px 12px 40px; }
             .actionrow .btn { flex: 1 1 auto; }
+            .hero { padding: 26px 0 2px; }
+            .hero-rule { margin: 24px 0 22px; }
+            .mode { padding: 20px 18px 20px 22px; gap: 12px; }
         }
     </style>
     <script src="theme.js"></script>
@@ -705,35 +830,61 @@
             <span class="gb-right">
                 <a href="instructor.html" class="gb-link">Instructor →</a>
                 <span class="gb-theme" role="group" aria-label="Colour theme">
-                    <button type="button" data-theme-btn="ops" aria-pressed="true">Dark</button>
+                    <button type="button" data-theme-btn="extreme" aria-pressed="true">Extreme</button>
+                    <button type="button" data-theme-btn="ops" aria-pressed="false">Dark</button>
                     <button type="button" data-theme-btn="light" aria-pressed="false">Light</button>
-                    <button type="button" data-theme-btn="net" aria-pressed="false">Network</button>
                 </span>
             </span>
-        </div>
-
-        <div class="page-title">
-            <h1>Networking Fundamentals Assessment</h1>
         </div>
 
         <div class="content">
             <!-- Mode Selection Screen -->
             <div class="screen active" id="modeSelectionScreen">
-                <h2 style="text-align: center; color: #333; margin-bottom: 30px;">How would you like to take the quiz?</h2>
+                <div class="hero">
+                    <p class="hero-over">Extreme Networks · Learning &amp; Development</p>
+                    <h1>Networking<br><span class="grad">Fundamentals.</span></h1>
+                    <p>
+                        Find out what you know before class, prove what stuck afterwards,
+                        or answer along with the room in a live session.
+                    </p>
+                </div>
 
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <button class="btn" onclick="selectMode('full')" style="text-align: left; padding: 20px;">
-                        📚 Full Assessment Quiz
-                        <div style="font-size: 12px; font-weight: 400; margin-top: 5px; opacity: 0.9;">
-                            Take a complete pre-class or post-class assessment
-                        </div>
+                <div class="hero-rule"></div>
+
+                <div class="modes">
+                    <button class="mode" onclick="selectMode('full')">
+                        <span>
+                            <span class="mode-kicker">Self-paced</span>
+                            <span class="mode-title">Full Assessment</span>
+                            <span class="mode-desc">
+                                Work through the whole question bank at your own speed.
+                                Every answer explains itself, and you finish with a score
+                                broken down by topic.
+                            </span>
+                            <span class="mode-meta">
+                                <span class="mode-tag">Pre-class</span>
+                                <span class="mode-tag">Post-class</span>
+                                <span class="mode-tag">Topic breakdown</span>
+                            </span>
+                        </span>
+                        <span class="mode-arrow" aria-hidden="true">→</span>
                     </button>
 
-                    <button class="btn" onclick="selectMode('inclass')" style="text-align: left; padding: 20px;">
-                        🎓 In-Class Live Quiz
-                        <div style="font-size: 12px; font-weight: 400; margin-top: 5px; opacity: 0.9;">
-                            Join a live session with your instructor (requires class ID)
-                        </div>
+                    <button class="mode" onclick="selectMode('inclass')">
+                        <span>
+                            <span class="mode-kicker">Live, with your class</span>
+                            <span class="mode-title">In-Class Session</span>
+                            <span class="mode-desc">
+                                Join with the class ID your instructor gives you. One question
+                                at a time, retry until you get it, and the room sees the results
+                                together.
+                            </span>
+                            <span class="mode-meta">
+                                <span class="mode-tag">Needs a class ID</span>
+                                <span class="mode-tag">Instructor-paced</span>
+                            </span>
+                        </span>
+                        <span class="mode-arrow" aria-hidden="true">→</span>
                     </button>
                 </div>
             </div>
@@ -859,6 +1010,7 @@
 
                 <div class="statusstrip">
                     <span class="question-counter" id="inclassQuestionCounter">Waiting for question…</span>
+                    <span class="qsteps" id="inclassSteps"></span>
                     <span class="right"><span class="status-text">Student: <strong id="inclassStudentName">Anonymous</strong></span></span>
                     <span class="status-text">Session: <strong id="inclassSessionId"></strong></span>
                     <span class="chip" id="attemptDisplay">Attempt 1</span>
@@ -1067,8 +1219,11 @@
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 const optionText = typeof option === 'string' ? option : option.text;
-                btn.textContent = String.fromCharCode(65 + idx) + ') ' + optionText;
-                btn.onclick = () => selectFullQuizOption(String.fromCharCode(65 + idx));
+                const letter = String.fromCharCode(65 + idx);
+                btn.innerHTML = '<span class="opt-letter">' + letter + '</span>' +
+                                '<span class="opt-text"></span>';
+                btn.querySelector('.opt-text').textContent = optionText;
+                btn.onclick = () => selectFullQuizOption(letter);
 
                 if (responses[fullQuizCurrentQuestion]?.selected === String.fromCharCode(65 + idx)) {
                     btn.classList.add('selected');
@@ -1297,6 +1452,8 @@
             document.getElementById('inclassSessionId').textContent = classId;
 
             setGlobalContext(studentName + ' · ' + classId);
+            seenQuestions = [];
+            renderSteps();
 
             // Reset sub-displays (may hold state from a previous session)
             document.getElementById('waitingForQuestion').style.display = 'block';
@@ -1404,11 +1561,32 @@
             }
         }
 
+        // Questions this student has been shown this session, in order
+        let seenQuestions = [];
+
+        function renderSteps() {
+            const el = document.getElementById('inclassSteps');
+            el.innerHTML = '';
+            seenQuestions.forEach((id, i) => {
+                const step = document.createElement('span');
+                const isNow = i === seenQuestions.length - 1;
+                step.className = 'qstep ' + (isNow ? 'now' : 'done');
+                step.title = 'Question ' + id;
+                el.appendChild(step);
+            });
+        }
+
         function displayQuestion(questionData) {
             document.getElementById('waitingForQuestion').style.display = 'none';
             document.getElementById('questionDisplay').style.display = 'block';
 
-            document.getElementById('inclassQuestionCounter').textContent = `Question: ${questionData.id}`;
+            if (seenQuestions[seenQuestions.length - 1] !== questionData.id) {
+                seenQuestions.push(questionData.id);
+            }
+            renderSteps();
+
+            document.getElementById('inclassQuestionCounter').textContent =
+                `Question ${questionData.id} · #${seenQuestions.length} this session`;
             document.getElementById('inclassTopicBadge').textContent = questionData.topic || 'General Knowledge';
             document.getElementById('inclassQuestionText').textContent = questionData.question;
 
@@ -1420,10 +1598,11 @@
                 const optionDiv = document.createElement('label');
                 optionDiv.className = 'option';
                 const optionText = typeof option === 'string' ? option : option.text;
-                optionDiv.innerHTML = `
-                    <input type="radio" name="answer" value="${index}">
-                    <span>${label}. ${optionText}</span>
-                `;
+                optionDiv.innerHTML =
+                    '<input type="radio" name="answer" value="' + index + '">' +
+                    '<span class="opt-letter" aria-hidden="true">' + label + '</span>' +
+                    '<span class="opt-text"></span>';
+                optionDiv.querySelector('.opt-text').textContent = optionText;
                 optionDiv.addEventListener('change', () => selectAnswer(index));
                 optionsContainer.appendChild(optionDiv);
             });

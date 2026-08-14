@@ -13,15 +13,31 @@
    ========================================================================= */
 
 /* ---------------------------------------------------------------- tokens --
-   --surface / --surface-2 may be translucent; --field and --modal never are,
-   because native select popups and dialogs composite over their own surface
-   rather than the page (translucent there reads as white-on-white).          */
+   Two tiers of surface, and the split is the rule:
+
+     --surface / --surface-2   CONTENT. Opaque in every theme. Anything a
+                               reader has to get words out of. On the Extreme
+                               theme these used to be 5%/8% white and the
+                               animated Network Graphic was legible straight
+                               through body text.
+     --chrome / --chrome-2     PAGE FURNITURE. Thin bands that carry no prose
+                               - status strips, action rows, the filter bar.
+                               Translucent on Extreme so the canvas still
+                               moves behind the page; identical to the content
+                               values on Dark and Light, which were already
+                               opaque and are unchanged by any of this.
+
+   --field and --modal are opaque for a different reason: native select popups
+   and dialogs composite over their own surface rather than the page, and
+   translucent there reads as white-on-white.                                */
 
 :root,
 :root[data-theme="extreme"] {
     --bg: #000000;
-    --surface: rgba(255, 255, 255, .05);
-    --surface-2: rgba(255, 255, 255, .08);
+    --surface: #121020;
+    --surface-2: #191527;
+    --chrome: rgba(255, 255, 255, .05);
+    --chrome-2: rgba(255, 255, 255, .08);
     --line: rgba(255, 255, 255, .12);
     --btn-2: rgba(117, 25, 249, .34);
     --btn-2-line: #8F63FF;
@@ -58,6 +74,8 @@
     --bg: #000000;
     --surface: #0B0713;
     --surface-2: #140E20;
+    --chrome: #0B0713;
+    --chrome-2: #140E20;
     --line: #221A33;
     --btn-2: #33176B;
     --btn-2-line: #8F63FF;
@@ -94,6 +112,8 @@
     --bg: #FFFFFF;
     --surface: #FFFFFF;
     --surface-2: #F5F2FB;
+    --chrome: #FFFFFF;
+    --chrome-2: #F5F2FB;
     --line: #E0DBEE;
     --btn-2: #EADCF8;
     --btn-2-line: #7B3FBF;
@@ -679,7 +699,7 @@ select:focus { border-color: var(--accent); outline: none; }
    rather than floating loose above the content.                            */
 
 .filter-bar {
-    background: var(--surface);
+    background: var(--chrome);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 14px 16px;

@@ -329,7 +329,7 @@
 
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="stylesheet" href="styles.css?v=18">
     <style>
         .container { max-width: 940px; }
         .content { padding: 26px 18px 48px; background: transparent; --card-pad: 26px; }
@@ -984,7 +984,7 @@
                         <span class="btn-label">Next</span>
                         <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-right"></use></svg>
                     </button>
-                    <button class="btn btn-primary right" id="submitBtn" onclick="finishQuiz()">
+                    <button class="btn btn-secondary right" id="submitBtn" onclick="finishQuiz()">
                         <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-check"></use></svg>
                         <span class="btn-label">Finish Quiz</span>
                     </button>
@@ -1395,6 +1395,28 @@
             document.getElementById('nextBtn').disabled = fullQuizCurrentQuestion >= quizData.length - 1;
             document.getElementById('fullQuizProgress').style.width =
                 Math.round(((fullQuizCurrentQuestion + 1) / quizData.length) * 100) + '%';
+            updateQuizEmphasis();
+        }
+
+        // Exactly one accented button at a time, on whichever control is the
+        // real next step right now:
+        //   nothing answered yet  -> neither; pick an answer first
+        //   answered, more to go  -> Next
+        //   answered, last one    -> Finish Quiz
+        // Finish Quiz is otherwise a normal secondary, so mid-quiz it stops
+        // competing with Next for attention while staying available.
+        function updateQuizEmphasis() {
+            const next = document.getElementById('nextBtn');
+            const finish = document.getElementById('submitBtn');
+            const answeredHere = !!responses[fullQuizCurrentQuestion];
+            const onLast = fullQuizCurrentQuestion >= quizData.length - 1;
+            const allAnswered = responses.length === quizData.length &&
+                responses.every(r => r !== null);
+
+            next.classList.toggle('is-ready', answeredHere && !onLast);
+            finish.classList.toggle('is-ready', allAnswered || (answeredHere && onLast));
+            finish.classList.toggle('btn-secondary', !(allAnswered || (answeredHere && onLast)));
+            finish.classList.toggle('btn-primary', allAnswered || (answeredHere && onLast));
         }
 
         function selectFullQuizOption(optionLetter) {
@@ -1415,6 +1437,7 @@
             document.querySelectorAll('#fullQuizOptionsContainer .option-btn').forEach((btn, idx) => {
                 btn.classList.toggle('selected', String.fromCharCode(65 + idx) === optionLetter);
             });
+            updateQuizEmphasis();
 
             // Test mode withholds the explanation until the run is submitted.
             if (assessmentMode !== 'practice') return;

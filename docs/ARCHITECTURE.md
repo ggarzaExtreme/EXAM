@@ -106,9 +106,15 @@
    - Verifies JWT signature
    - Validates quiz_type against whitelist
    - Applies smart filters:
-     - **Real-time mode:** past 5 minutes only, optionally filter by section
-     - **Historical mode:** past 7 days, full result set
+     - **`inclass_live` mode:** one live session by `class_id` — roster,
+       answer distribution and retry stats for the current question
+     - **Historical mode:** past 7 days, capped at 500 rows
    - Applies pagination (limit 50 default, max 500)
+
+   ⚠️ The dashboard's Student Submissions tab does **not** use this endpoint
+   for analytics — the 7-day/500-row cap is too tight. It calls
+   `export-submissions` with a `days_back` range and parses the CSV
+   client-side. `get-submissions` is used for the live session view.
    - Queries unified `submissions` table with service_role key
    - Returns paginated results with metadata
 5. Dashboard displays:
@@ -178,7 +184,7 @@ question on demand with a "Next Question" button (one API call per click).
 
 ### Quiz Data Bundling
 
-The `quiz_data_*.js` files are dual-format: they set `window.quizData` in the
+The `quiz-data/quiz_data_*.js` files are dual-format: they set `window.quizData` in the
 browser and `module.exports` in Node. The functions that grade or serve
 questions require them **statically** (a `QUIZ_DATA` map at module top) so
 Netlify's bundler packages them — dynamic `require()` paths are not traced and
@@ -283,7 +289,7 @@ used: it is whitelisted server-side.
 
 No longer a quiz in this tool. The Post-Class Review card on the student home
 screen links out to per-course SurveyMonkey surveys, listed in
-`POST_CLASS_SURVEYS` in index.html. `quiz_data_post_class.js` is still in the
+`POST_CLASS_SURVEYS` in index.html. `quiz-data/quiz_data_post_class.js` is still in the
 repo and still mapped in `quizDataFiles`, but nothing reaches it. Existing
 `post_class` rows remain readable in the instructor dashboard, which is why
 that option stays in the quiz dropdown.

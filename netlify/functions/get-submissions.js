@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken');
 
 // Static requires so Netlify's bundler packages the quiz data files with the function.
 const QUIZ_DATA = {
-  'pretraining': require('../../quiz_data_pre_class.js'),
-  'post_class': require('../../quiz_data_post_class.js'),
-  'fabric': require('../../quiz_data_fabric_engine.js'),
-  'switch': require('../../quiz_data_switch_engine.js')
+  'pretraining': require('../../quiz-data/quiz_data_pre_class.js'),
+  'post_class': require('../../quiz-data/quiz_data_post_class.js'),
+  'fabric': require('../../quiz-data/quiz_data_fabric_engine.js'),
+  'switch': require('../../quiz-data/quiz_data_switch_engine.js')
 };
 
 const ALLOWED_QUIZ_TYPES = ['pretraining', 'post_class', 'fabric', 'switch'];

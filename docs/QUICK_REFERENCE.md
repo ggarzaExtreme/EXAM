@@ -210,12 +210,12 @@ openssl rand -base64 32
 
 ## Quiz Type Values
 
-| Display Name | Value |
-|---|---|
-| Pre-Class Assessment | `pretraining` |
-| Post-Class Review | `post_class` |
-| Fabric Engine | `fabric` |
-| Switch Engine | `switch` |
+| Display Name | Value | Notes |
+|---|---|---|
+| Pre-Class Assessment | `pretraining` | `section` carries the run mode (`test`); practice runs are never submitted |
+| Fabric Engine | `fabric` | in-class |
+| Switch Engine | `switch` | in-class |
+| ~~Post-Class Review~~ | `post_class` | Retired. Post-class is a hosted survey now — see `POST_CLASS_SURVEYS` in index.html. Still whitelisted so existing rows stay readable. |
 
 ---
 
@@ -269,7 +269,7 @@ question_responses (             -- one row PER ATTEMPT (retries included)
 ## Common Tasks
 
 ### Add New Quiz Type
-1. Create quiz data file at repo root: `quiz_data_MY_TYPE.js`
+1. Create quiz data file at repo root: `quiz-data/quiz_data_MY_TYPE.js`
    (same format as the others: `const quizData = [...]` + the dual
    window/module export block at the bottom)
 2. Add to ALLOWED_QUIZ_TYPES in:
@@ -384,7 +384,7 @@ ORDER BY total DESC;
 4. Hard refresh browser (Ctrl+Shift+R) to see changes
 
 ### Function Changes (netlify/functions/) — AND quiz data changes
-1. Edit `netlify/functions/*.js` **or any `quiz_data_*.js`**
+1. Edit `netlify/functions/*.js` **or any `quiz-data/quiz_data_*.js`**
    (quiz data files are bundled into the functions at build time, so
    editing questions requires a function redeploy too — the GitHub Pages
    copy updates instantly, but server-side grading uses the bundled copy)
@@ -407,42 +407,28 @@ ORDER BY total DESC;
 | File | Purpose | Edit? |
 |------|---------|-------|
 | `sql/database-setup.sql` | Full schema (drop & rebuild) | Fresh setup |
-| `sql/migration-001-class-id-reuse.sql` | Migration for pre-existing DBs | Once if needed |
+| `sql/seed-demo-data.sql` | Sample data for demos (re-runnable) | Optional |
 | `netlify/functions/*.js` | Backend functions | For new features |
-| `index.html` | Student app (both quiz modes) | For UI changes |
+| `index.html` | Student app (all three modes) | For UI changes |
 | `instructor.html` | Instructor dashboard | For UI changes |
+| `styles.css` | Shared design system | Bump `?v=` on both pages after editing |
+| `theme.js` | Themes, canvas, `toast()` | Bump `?v=` after editing |
 | `config.js` | Netlify Functions URL | If site URL changes |
-| `quiz_data_*.js` | Questions (bundled into functions!) | Redeploy after edits |
+| `quiz-data/quiz_data_*.js` | Questions (bundled into functions!) | Redeploy after edits |
 | `package.json` | Dependencies | Rarely |
 
 ---
 
-## Key Differences from Old System
+## Conventions Worth Knowing
 
-| Aspect | Old | New |
-|--------|-----|-----|
-| Tables | 4 separate | 1 unified |
-| Submission param | `quiz_table` | `quiz_type` |
-| Token type | Random hex | JWT signed |
-| Token validation | Length check | Signature verify |
-| Get submissions | Full table scan | Smart filtering + pagination |
-| Pagination | None | limit/offset |
-| Real-time | 3-sec polls | 5-min window |
-| Export | None | CSV download |
-| Indexes | Per-table | Composite |
-
----
-
-## Feature Checklist (NEW)
-
-- ✅ JWT authentication (24-hour tokens)
-- ✅ Smart pagination (real-time vs historical)
-- ✅ Real-time mode (past 5 minutes)
-- ✅ Historical mode (past 7 days)
-- ✅ Section filtering (in-class quizzes)
-- ✅ CSV export (all quiz types)
-- ✅ Unified schema (easier maintenance)
-- ✅ Optimized indexes (better performance)
+| Convention | Why |
+|---|---|
+| `styles.css` and `theme.js` load with `?v=N` | The HTML deploys instantly via GitHub Pages, so a stale cached stylesheet would otherwise ship alongside fresh markup. Bump on both pages when either file changes. |
+| Buttons always name a role class | A bare `.btn` inherits the accent fill but not the accent border, so it looks subtly wrong beside a real primary. |
+| `.btn.is-ready` marks the next step | Exactly one button per row carries the solid accent at a time — see the quiz's Next / Finish Quiz handoff. |
+| No `window.confirm()` / `alert()` | Once a browser offers "prevent additional dialogs" and the user accepts, `confirm()` returns false forever and the button becomes a silent no-op. Use the two-step button confirm plus a toast. |
+| `--surface` opaque, `--chrome` translucent | If a surface holds prose it must be opaque, or the Extreme theme's animated canvas shows through the text. |
+| Analytics reads `export-submissions`, not `get-submissions` | `get-submissions` caps historical results at 7 days / 500 rows; export takes a date range and returns everything. It hands back CSV, parsed client-side. |
 
 ---
 

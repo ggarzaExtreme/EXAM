@@ -12,17 +12,20 @@ banks are course content and are named for their subject.
 ## Architecture Overview
 
 ```
-Students → index.html (mode selection)
-   ├── Full Assessment (pre/post class): all questions client-side,
-   │     one submission at the end → submit-responses
-   └── In-Class Live Quiz: joins by class ID, fetches the current question
-         on demand ("Next Question" button) → get-current-question /
-         submit-question-response
+Students → index.html (three modes)
+   ├── Pre-Class Knowledge Check: all questions client-side, one submission
+   │     at the end → submit-responses. Runs in Test or Practice mode.
+   ├── In-Class Session: joins by class ID, fetches the current question on
+   │     demand ("Next Question" button) → get-current-question /
+   │     submit-question-response
+   └── Post-Class Review: links out to hosted SurveyMonkey surveys.
+         No data is collected in this tool.
 
 Instructors → instructor.html
-   ├── Historical tab: past submissions → get-submissions
-   └── In-Class Live tab: create/end sessions, advance questions,
-         watch live answer distribution and retry stats
+   ├── In-Class Live Sessions: create/resume/end sessions, advance questions,
+   │     watch the roster, answer distribution and retry stats
+   └── Student Submissions: cohort analytics over past results →
+         export-submissions (CSV, parsed client-side)
 
 All API calls → Netlify Functions → Supabase (PostgreSQL + RLS)
 ```
@@ -31,11 +34,20 @@ All API calls → Netlify Functions → Supabase (PostgreSQL + RLS)
 
 ## Features
 
-**Full assessment mode (pre/post class)**
+**Pre-Class Knowledge Check**
 - One question at a time with Previous/Next navigation
-- Immediate per-option feedback and explanations
-- Results screen: score, readiness message, per-topic breakdown
-- Single submission to the database at the end
+- Two run modes chosen by the student:
+  - **Test** — no feedback during the run. Score, verdict and topic breakdown
+    on finishing; the question-by-question review unlocks on **Submit
+    Results**, which is also what sends the result to the instructor. The
+    review also opens if that submit fails, so a network problem never costs
+    a student their feedback.
+  - **Practice** — every answer is explained as it is picked, and **nothing is
+    recorded**. A practice score is open-book and would inflate the cohort
+    average if it were pooled with test results.
+- Results screen: score ring, verdict, per-topic breakdown weakest-first,
+  question-by-question review, and generated review links
+- Single submission at the end, tagged with the run mode
 
 **In-class live mode**
 - Instructor creates a session with a simple class ID (e.g. `class7`)
@@ -48,25 +60,40 @@ All API calls → Netlify Functions → Supabase (PostgreSQL + RLS)
 - Sessions can be resumed after a page refresh; class IDs are reusable after a
   session ends
 
+**Post-Class Review**
+- Links out to one hosted survey per course (SurveyMonkey)
+- Driven by `POST_CLASS_SURVEYS` in index.html — adding a course is one row
+- Nothing is collected in this tool, so course feedback stays separate from
+  assessment results
+
 **Platform**
+- Three colour themes (Extreme / Dark / Light), remembered per browser
 - Secure JWT-based instructor authentication (24-hour tokens)
-- CSV export for full-quiz submissions
+- CSV export, plus cohort analytics: topic mastery, hardest questions,
+  score distribution
+- Auto-refresh on the live view only — off by default, and it stops when the
+  tab is not showing or no session is live
 - IP-based rate limiting on submissions (500/day)
 - Responsive mobile-friendly design
 
 ## File Structure
 
 ```
-index.html                      Student app (mode selection, full quiz, in-class quiz)
-instructor.html                 Instructor dashboard (historical + in-class live tabs)
+index.html                      Student app (mode selection, pre-class quiz,
+                                in-class quiz, post-class survey links)
+instructor.html                 Instructor dashboard (live sessions + submissions)
 config.js                       Netlify Functions base URL
-quiz_data_pre_class.js          Pre-class assessment questions (32)
-quiz_data_post_class.js         Post-class review questions (10)
-quiz_data_fabric_engine.js      Fabric Engine in-class questions (20)
-quiz_data_switch_engine.js      Switch Engine in-class questions (20)
+styles.css                      Shared design system (themes, buttons, panels, toasts)
+theme.js                        Theme switching, Network Graphic canvas, toast()
+
+quiz-data/
+├── quiz_data_pre_class.js      Pre-class assessment questions (32)
+├── quiz_data_fabric_engine.js  Fabric Engine in-class questions (20)
+├── quiz_data_switch_engine.js  Switch Engine in-class questions (20)
+└── quiz_data_post_class.js     Retired — kept for reference, nothing loads it
 
 netlify/functions/
-├── submit-responses.js         Full-quiz submission handler (rate-limited)
+├── submit-responses.js         Pre-class submission handler (rate-limited)
 ├── authenticate-instructor.js  Instructor login (Supabase Auth → JWT)
 ├── get-submissions.js          Historical submissions + in-class live stats
 ├── export-submissions.js       CSV export
@@ -78,21 +105,23 @@ netlify/functions/
 
 sql/
 ├── database-setup.sql          Complete schema + RLS + grants (drop & rebuild)
-└── migration-001-class-id-reuse.sql  For DBs created before class-id reuse fix
+└── seed-demo-data.sql          Sample submissions + a live session, for demos
 
+scripts/
+└── gen_seed.py                 Regenerates sql/seed-demo-data.sql
+
+assets/                         Official logo lockups (white/black/colour)
 package.json                    Function dependencies (@supabase/supabase-js, jsonwebtoken)
 
-styles.css                      Shared design system (themes, buttons, panels)
-theme.js                        Theme switching + Network Graphic canvas
-assets/                         Official logo lockups (white/black/colour)
-
-md/
+docs/
 ├── DEPLOYMENT_GUIDE.md         Step-by-step setup
 ├── ARCHITECTURE.md             Technical deep-dive
 ├── DISPLAYS.md                 Inventory of every view and its purpose
 ├── ENVIRONMENT_VARIABLES.md    How to configure secrets
 └── QUICK_REFERENCE.md          API contracts, schema, common tasks
 ```
+
+`scratchpad/` is gitignored — local mockups and working files, never deployed.
 
 ## Quiz Data Format
 
@@ -124,7 +153,9 @@ server-side in `submit-question-response`.
 
 Four tables (see [sql/database-setup.sql](sql/database-setup.sql)):
 
-- **submissions** — one row per completed full quiz (score, topic_scores JSONB, responses JSONB)
+- **submissions** — one row per completed pre-class quiz (score, topic_scores
+  JSONB, responses JSONB). `section` carries the run mode (`test`) — practice
+  runs are never submitted.
 - **class_sessions** — one row per in-class session (class_id, instructor_id, quiz_type, current_question_id, is_active). class_id is unique **among active sessions only**, so IDs like `class7` are reusable.
 - **question_responses** — one row per in-class answer attempt (attempt_number, is_correct, final_answer) with UNIQUE(session_id, question_id, email, attempt_number)
 - **rate_limits** — per-IP daily submission counters
@@ -141,16 +172,17 @@ Four tables (see [sql/database-setup.sql](sql/database-setup.sql)):
 
 ## Deployment
 
-**Frontend** (`index.html`, `instructor.html`, `config.js`, `quiz_data_*.js`):
+**Frontend** (`index.html`, `instructor.html`, `config.js`, `quiz-data/quiz_data_*.js`):
 GitHub Pages — deploys on `git push`, no Netlify redeploy needed.
 
 **Backend** (`netlify/functions/*.js`): Netlify Functions — requires a Netlify
 redeploy when function code **or quiz data files** change (quiz data is bundled
 into the functions at build time via static requires).
 
-**Database**: Supabase. Fresh setup: run `sql/database-setup.sql` in the SQL
-Editor. Existing DB created before the class-id-reuse fix: run
-`sql/migration-001-class-id-reuse.sql` instead.
+**Database**: Supabase. Run `sql/database-setup.sql` in the SQL Editor — it
+drops and rebuilds every table, so treat it as a fresh setup rather than a
+migration. `sql/seed-demo-data.sql` optionally loads sample data for a
+walkthrough and can be re-run safely.
 
 **Secrets** (Netlify env vars): `SUPABASE_URL`, `SUPABASE_KEY` (service_role),
 `JWT_SECRET`.
@@ -160,5 +192,5 @@ Users. No code changes needed.
 
 ## Support
 
-See [md/QUICK_REFERENCE.md](md/QUICK_REFERENCE.md) for API contracts, schema,
+See [docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) for API contracts, schema,
 common tasks, and troubleshooting.

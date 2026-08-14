@@ -1475,8 +1475,8 @@
         async function loadQuizData(quizType) {
             try {
                 const fileName = {
-                    'fabric': 'quiz_data_fabric_engine.js',
-                    'switch': 'quiz_data_switch_engine.js'
+                    'fabric': 'quiz-data/quiz_data_fabric_engine.js',
+                    'switch': 'quiz-data/quiz_data_switch_engine.js'
                 }[quizType];
 
                 if (!fileName) {
@@ -1955,10 +1955,10 @@
 
         const PASS_MARK = 80;
         const QUIZ_FILES = {
-            pretraining: 'quiz_data_pre_class.js',
-            post_class: 'quiz_data_post_class.js',
-            fabric: 'quiz_data_fabric_engine.js',
-            switch: 'quiz_data_switch_engine.js'
+            pretraining: 'quiz-data/quiz_data_pre_class.js',
+            post_class: 'quiz-data/quiz_data_post_class.js',
+            fabric: 'quiz-data/quiz_data_fabric_engine.js',
+            switch: 'quiz-data/quiz_data_switch_engine.js'
         };
         const QUIZ_LABELS = {
             pretraining: 'Pre-Class Assessment',

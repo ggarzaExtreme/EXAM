@@ -3,10 +3,10 @@ const { createClient } = require('@supabase/supabase-js');
 // Static requires so Netlify's bundler packages the quiz data files with the function.
 // (Dynamic require() paths are not traced at build time and fail in production.)
 const QUIZ_DATA = {
-  'pretraining': require('../../quiz_data_pre_class.js'),
-  'post_class': require('../../quiz_data_post_class.js'),
-  'fabric': require('../../quiz_data_fabric_engine.js'),
-  'switch': require('../../quiz_data_switch_engine.js')
+  'pretraining': require('../../quiz-data/quiz_data_pre_class.js'),
+  'post_class': require('../../quiz-data/quiz_data_post_class.js'),
+  'fabric': require('../../quiz-data/quiz_data_fabric_engine.js'),
+  'switch': require('../../quiz-data/quiz_data_switch_engine.js')
 };
 
 const corsHeaders = {

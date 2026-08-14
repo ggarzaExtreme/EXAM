@@ -66,11 +66,20 @@ Upload these files to the root of your GitHub repo:
 /
 ├── index.html
 ├── instructor.html
-├── quiz_data_pre_class.js
-├── quiz_data_post_class.js
-├── quiz_data_fabric_engine.js
-└── quiz_data_switch_engine.js
+├── config.js
+├── styles.css
+├── theme.js
+├── assets/
+└── quiz-data/
+    ├── quiz_data_pre_class.js
+    ├── quiz_data_fabric_engine.js
+    ├── quiz_data_switch_engine.js
+    └── quiz_data_post_class.js      (retired; kept for reference)
 ```
+
+⚠️ The Netlify functions `require()` these by relative path
+(`../../quiz-data/...`). Moving or renaming the folder breaks the next deploy,
+not the current one — the deployed functions carry their own bundled copy.
 
 ✅ **No credentials needed in these files.**
 
@@ -228,7 +237,7 @@ git push origin main
 
 ✅ **Result:** Both HTML files on GitHub Pages call functions on Netlify. Frontend changes deploy instantly via GitHub—no Netlify redeploy needed!
 
-⚠️ **Note:** editing `quiz_data_*.js` question files DOES require a Netlify
+⚠️ **Note:** editing `quiz-data/quiz_data_*.js` question files DOES require a Netlify
 redeploy — the quiz data is bundled into the functions for server-side grading.
 
 ---
@@ -256,13 +265,12 @@ redeploy — the quiz data is bundled into the functions for server-side grading
 2. Login with:
    - Email: `instructor@extremenetworks.com`
    - Password: [the password from Step 1.3]
-3. Select quiz type from dropdown
-4. Choose viewing mode:
-   - **Historical:** View all submissions from past 7 days (paginated)
-   - **Real-time:** View submissions from past 5 minutes (for in-class monitoring)
-5. Click **Refresh** or use pagination controls
-6. You should see your test submission card
-7. Try **Export to CSV** button to download data
+3. Open the **Student Submissions** tab
+4. Pick your quiz in the dropdown — it loads straight away
+5. Set the range to **All time** if your test submission is older than the
+   default 30 days; **Refresh** re-pulls
+6. You should see your test submission in the table, and the KPI tiles above it
+7. Try **Export CSV** to download the raw rows
 
 ✅ Everything working!
 
@@ -306,18 +314,23 @@ redeploy — the quiz data is bundled into the functions for server-side grading
 
 All quizzes use the unified `submissions` table. To add a new quiz type:
 
-1. Create `quiz_data_YOUR_TYPE.js` with your questions
-2. Add option to `index.html`:
-   ```javascript
-   <option value="your_type">Your Quiz Name</option>
-   ```
-3. Add `your_type` to `ALLOWED_QUIZ_TYPES` in `submit-responses.js` (around line 4)
-4. Add same `your_type` to `ALLOWED_QUIZ_TYPES` in `get-submissions.js` (around line 4)
-5. Add same `your_type` to `ALLOWED_QUIZ_TYPES` in `export-submissions.js` (around line 4)
-6. Add option to instructor dashboard in `instructor.html`
-7. Commit and push changes
+1. Create `quiz-data/quiz_data_YOUR_TYPE.js` with your questions
+2. Add it to `quizDataFiles` in `index.html` and to both `QUIZ_FILES` maps in
+   `instructor.html`
+3. Add `your_type` to `ALLOWED_QUIZ_TYPES` in `submit-responses.js`,
+   `get-submissions.js` and `export-submissions.js`
+4. Add a static `require('../../quiz-data/quiz_data_YOUR_TYPE.js')` to the
+   `QUIZ_DATA` map in `get-current-question.js`, `get-submissions.js` and
+   `submit-question-response.js`
+5. Add the option to the quiz dropdown in `instructor.html`
+6. Commit, push, **and trigger a Netlify redeploy**
 
-⚠️ No database schema changes needed! The unified table handles all quiz types.
+⚠️ The requires in step 4 must be static string literals. Netlify's bundler
+cannot trace a path built at runtime, so a dynamic
+`require('../../quiz-data/' + type + '.js')` compiles fine and then throws
+"Cannot find module" in production. This has bitten before.
+
+⚠️ No database schema changes needed — the unified table handles all quiz types.
 
 ---
 
@@ -367,14 +380,18 @@ const RATE_LIMIT_PER_DAY = 500; // Change this number
 
 **Instructor view includes:**
 - Login with email/password (JWT-based sessions)
-- Two viewing modes:
-  - **Historical:** Last 7 days submissions (paginated, 50 per page)
-  - **Real-time:** Last 5 minutes submissions (for in-class monitoring)
-- Filter by section (for in-class quizzes)
-- Pagination controls for large result sets
-- Manual refresh button with cache clear
-- Color-coded scores (green ≥80%, red <80%)
-- CSV export for selected quiz type
+- Two tabs, one visible at a time:
+  - **In-Class Live Sessions** — create/resume/end a session, advance
+    questions, and watch the roster (first vs. current answer, retries,
+    who is still working), the answer distribution and retry stats.
+    Auto-refresh lives here, is **off by default**, and only runs while this
+    tab is showing and a session is live.
+  - **Student Submissions** — cohort analytics over a date range: KPI tiles,
+    score distribution, topic mastery weakest-first, most-missed questions,
+    and a sortable table. Manual refresh only.
+- Filter by student name or email
+- Colour-coded scores (green ≥80%, amber ≥60%, red below)
+- CSV export for the selected quiz and date range
 
 ---
 

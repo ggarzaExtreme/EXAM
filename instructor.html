@@ -131,13 +131,33 @@
             border-bottom-color: var(--accent);
         }
 
+        /* Auto-refresh, inside the live session card and under the controls it
+           automates. Separated by a rule so it reads as a setting rather than
+           another action. */
         .poll-controls {
-            margin-left: auto;
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding-bottom: 8px;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+            padding-top: 13px;
+            border-top: 1px solid var(--line);
         }
+        .poll-toggle {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: var(--ink-soft);
+            cursor: pointer; margin: 0;
+        }
+        .poll-toggle input {
+            width: 16px; height: 16px; margin: 0; flex: none;
+            accent-color: var(--accent); cursor: pointer;
+        }
+        #pollIntervalSelect { padding: 6px 30px 6px 11px; font-size: 12.5px; }
+        .poll-state {
+            font-size: 11px; font-weight: 700; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--ink-soft);
+        }
+        .poll-state.on { color: var(--ok); }
 
         /* Tab panels: only the active one is shown */
         .tab-content {
@@ -600,7 +620,7 @@
     <!-- ===== Theme layer (shared palettes with index.html) ===== -->
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=16">
+    <link rel="stylesheet" href="styles.css?v=17">
     <style>
         .container { max-width: 1240px; }
         .content { padding: 24px 18px 48px; background: transparent; }
@@ -663,7 +683,6 @@
 
         .response-card { background: var(--surface); border-color: var(--line); color: var(--ink); }
         .no-data { color: var(--ink-soft); }
-        .poll-controls label { color: var(--ink-soft) !important; }
 
         /* ===== Dialogs: opaque --modal, never the translucent --surface ===== */
         .modal-content, #createSessionModal > div {
@@ -690,7 +709,7 @@
         #createSessionContainer .info-box p { color: var(--ink-soft) !important; }
         .dashboard-header h2[style], .tab-content h2[style],
         .student-responses h3[style], .answer-distribution h3[style] { color: var(--ink) !important; }
-        .student-responses h3 span[style], .poll-controls label[style] { color: var(--ink-soft) !important; }
+        .student-responses h3 span[style] { color: var(--ink-soft) !important; }
 
         /* ===== Session controls: layout only, roles come from styles.css ===== */
         .session-controls {
@@ -976,17 +995,6 @@
                     <button class="tab-btn" id="historicalTabBtn" onclick="switchTab('historical')">
                         <svg class="ic" aria-hidden="true"><use href="#ic-chart"></use></svg>Student Submissions
                     </button>
-                    <div class="poll-controls">
-                        <label for="autoRefreshToggle" style="font-size: 13px; color: var(--ink-soft); font-weight: 600; cursor: pointer;">
-                            <input type="checkbox" id="autoRefreshToggle" checked onchange="updatePollingSettings()" style="cursor: pointer; margin-right: 4px; vertical-align: middle;">Auto-refresh
-                        </label>
-                        <select id="pollIntervalSelect" onchange="updatePollingSettings()" style="padding: 4px 8px; font-size: 13px;">
-                            <option value="3000">every 3s</option>
-                            <option value="5000" selected>every 5s</option>
-                            <option value="10000">every 10s</option>
-                            <option value="30000">every 30s</option>
-                        </select>
-                    </div>
                 </div>
 
                 <!-- In-Class Live Tab -->
@@ -1060,6 +1068,24 @@
                                     <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-power"></use></svg>
                                     <span class="btn-label">End Session</span>
                                 </button>
+                            </div>
+
+                            <!-- Auto-refresh lives with the view it refreshes. Off by
+                                 default: it is the only thing in the dashboard that
+                                 spends API calls without anyone pressing a button. -->
+                            <div class="poll-controls">
+                                <label class="poll-toggle" for="autoRefreshToggle">
+                                    <input type="checkbox" id="autoRefreshToggle" onchange="updatePollingSettings()">
+                                    <span>Auto-refresh this view</span>
+                                </label>
+                                <select id="pollIntervalSelect" onchange="updatePollingSettings()"
+                                        aria-label="Auto-refresh interval">
+                                    <option value="3000">every 3s</option>
+                                    <option value="5000" selected>every 5s</option>
+                                    <option value="10000">every 10s</option>
+                                    <option value="30000">every 30s</option>
+                                </select>
+                                <span class="poll-state" id="pollState">Off — use Refresh</span>
                             </div>
                         </div>
 
@@ -1318,7 +1344,10 @@
             document.getElementById('inclassSection').classList.toggle('active', tab === 'inclass');
             document.getElementById('historicalSection').classList.toggle('active', tab === 'historical');
 
-            // Refresh the newly shown tab immediately (its poll loop takes over from here)
+            // Re-evaluate the timer on every tab change: leaving the live tab
+            // must stop it, since the submissions view is manual-refresh only.
+            startAutoRefresh();
+
             if (tab === 'inclass') {
                 refreshInClassData();
             } else if (currentQuiz) {
@@ -1400,6 +1429,10 @@
             document.getElementById('activeQuizType').textContent =
                 (QUIZ_LABELS[activeQuizType] || activeQuizType).replace(' In-Class', '');
             setGlobalContext('Instructor · ' + activeClassId + ' · ' + activeQuizType);
+
+            // A live session now exists, so auto-refresh is allowed to run if
+            // the instructor has switched it on.
+            startAutoRefresh();
 
             // Start from a clean panel — never show a previous session's numbers
             clearQuestionStats();
@@ -1571,6 +1604,9 @@
         // Returns the dashboard to the "No Active Session" state.
         function resetInClassUI() {
             activeSessionId = null;
+            // stop the timer before the rest of the teardown, so no tick can
+            // fire against a session that is already gone
+            startAutoRefresh();
             activeClassId = null;
             activeQuizType = null;
             quizData = null;
@@ -2290,11 +2326,13 @@
             };
         }
 
+        // The interval is remembered between visits; the on/off state is not.
+        // Auto-refresh is the only thing here that spends API calls without a
+        // deliberate press, so every session starts with it off.
         function restorePollSettings() {
             try {
                 const saved = JSON.parse(localStorage.getItem(POLL_SETTINGS_KEY));
                 if (!saved) return;
-                document.getElementById('autoRefreshToggle').checked = saved.enabled !== false;
                 const select = document.getElementById('pollIntervalSelect');
                 if ([...select.options].some(o => o.value === String(saved.interval))) {
                     select.value = String(saved.interval);
@@ -2307,24 +2345,39 @@
             startAutoRefresh();
         }
 
+        // Single source of truth for "should the timer be running right now".
+        // Auto-refresh only ever drives the live session view, so it needs the
+        // toggle on, that tab showing, AND a session actually live. Anything
+        // else and the timer would be spending calls on nothing.
+        function pollShouldRun() {
+            return getPollSettings().enabled && currentTab === 'inclass' && !!activeSessionId;
+        }
+
         function startAutoRefresh() {
-            // One interval per tab; each only fires while its tab is visible
-            // and its prerequisite exists (a selected quiz / an active session).
-            // The Refresh buttons always work regardless of these settings.
             if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
             if (livePollingInterval) { clearInterval(livePollingInterval); livePollingInterval = null; }
 
-            const settings = getPollSettings();
-            if (!settings.enabled) return;  // manual mode: Refresh buttons only
+            const on = pollShouldRun();
+            renderPollState(on);
+            if (!on) return;
 
-            // The submissions tab is historical by nature and now pulls a whole
-            // date range, so it is not polled on a timer - use its Refresh
-            // button. Only the live session view auto-refreshes.
             livePollingInterval = setInterval(() => {
-                if (currentTab === 'inclass') {
-                    refreshInClassData();
-                }
-            }, settings.interval);
+                // Re-check on every tick: the tab can change or the session can
+                // end between ticks, and a stale timer would keep polling a
+                // session that no longer exists.
+                if (!pollShouldRun()) { startAutoRefresh(); return; }
+                refreshInClassData();
+            }, getPollSettings().interval);
+        }
+
+        function renderPollState(on) {
+            const el = document.getElementById('pollState');
+            if (!el) return;
+            const enabled = getPollSettings().enabled;
+            el.textContent = on ? 'On'
+                : enabled ? 'Paused — no live session'
+                : 'Off — use Refresh';
+            el.classList.toggle('on', !!on);
         }
 
         window.addEventListener('load', () => {

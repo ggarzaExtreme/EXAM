@@ -329,7 +329,7 @@
 
     <!-- Shared design system: theme tokens, icons, logo, global bar, buttons,
          fields, panels. Page-specific styles below override it. -->
-    <link rel="stylesheet" href="styles.css?v=18">
+    <link rel="stylesheet" href="styles.css?v=20">
     <style>
         .container { max-width: 940px; }
         .content { padding: 26px 18px 48px; background: transparent; --card-pad: 26px; }
@@ -370,6 +370,20 @@
         .qstep.now { background: var(--accent); box-shadow: 0 0 0 2px var(--sel-bg); }
 
         /* ===== Reserved feedback slot - height exists before content does ===== */
+        /* ===== Question card =====
+           Question, answers and the feedback slot are one object, so the
+           question is not loose text on the page. The fill is opaque on
+           purpose: on the Extreme theme the answer rows used --surface at 5%
+           white and the animated Network Graphic drifted through the answer
+           text. The card blocks it for every row at once. */
+        .qcard {
+            background: var(--field);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+        }
+        .qcard .question-text { margin-bottom: 18px; }
+
         .fbslot { margin-top: 16px; min-height: 96px; }
         .fbslot.empty {
             border: 1px dashed var(--line); border-radius: var(--radius);
@@ -390,10 +404,15 @@
         .status-text { color: var(--ink-soft); }
         .status-text strong { color: var(--ink); }
 
-        /* ===== Options: the answer letter IS the control ===== */
+        /* ===== Options: the answer letter IS the control =====
+           --opt rather than --surface: --surface is 5% white on the Extreme
+           theme, so the animated Network Graphic was legible straight through
+           the answer text. --opt is opaque in every theme and a step away from
+           the question card's own fill, so a row still reads as its own
+           object inside the card. */
         .option, .option-btn {
             display: flex; align-items: center; gap: 14px;
-            background: var(--surface); border: 1px solid var(--line);
+            background: var(--opt); border: 1px solid var(--field-line);
             color: var(--ink); border-radius: var(--radius);
             width: 100%; text-align: left;
         }
@@ -404,7 +423,7 @@
             flex: none; width: 30px; height: 30px; border-radius: 50%;
             display: grid; place-items: center;
             font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums;
-            border: 1.5px solid var(--line); color: var(--ink-soft);
+            border: 1.5px solid var(--field-line); color: var(--ink-soft);
             background: transparent; transition: background .15s, color .15s, border-color .15s;
         }
         .opt-text { flex: 1; line-height: 1.4; }
@@ -990,22 +1009,26 @@
                     </button>
                 </div>
 
+                <!-- Topic sits with the counter: it is metadata about which
+                     question you are on, the same as the number. -->
                 <div class="statusstrip">
                     <span class="question-counter" id="fullQuizCounter"></span>
+                    <span class="topic-badge" id="fullQuizTopicBadge"></span>
                     <div class="progbar"><i id="fullQuizProgress" style="width:0%"></i></div>
                     <span class="right"><span class="status-text">Student: <strong id="fullQuizStudentName">Anonymous</strong></span></span>
                     <span class="chip" id="fullQuizAssessmentType">Pre-Class</span>
                 </div>
 
-                <span class="topic-badge" id="fullQuizTopicBadge"></span>
-                <div class="question-text" id="fullQuizQuestionText"></div>
-                <div class="options" id="fullQuizOptionsContainer"></div>
+                <div class="qcard">
+                    <div class="question-text" id="fullQuizQuestionText"></div>
+                    <div class="options" id="fullQuizOptionsContainer"></div>
 
-                <div class="fbslot empty" id="fullQuizSlot">
-                    <span id="fullQuizSlotHint">Pick an answer to see the explanation</span>
-                    <div class="feedback-screen" id="fullQuizFeedback">
-                        <div class="feedback-header" id="fullQuizFeedbackHeader"></div>
-                        <div class="feedback-text" id="fullQuizFeedbackText"></div>
+                    <div class="fbslot empty" id="fullQuizSlot">
+                        <span id="fullQuizSlotHint">Pick an answer to see the explanation</span>
+                        <div class="feedback-screen" id="fullQuizFeedback">
+                            <div class="feedback-header" id="fullQuizFeedbackHeader"></div>
+                            <div class="feedback-text" id="fullQuizFeedbackText"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1093,6 +1116,7 @@
 
                 <div class="statusstrip">
                     <span class="question-counter" id="inclassQuestionCounter">Waiting for question…</span>
+                    <span class="topic-badge" id="inclassTopicBadge" hidden></span>
                     <span class="qsteps" id="inclassSteps"></span>
                     <span class="right"><span class="status-text">Student: <strong id="inclassStudentName">Anonymous</strong></span></span>
                     <span class="status-text">Session: <strong id="inclassSessionId"></strong></span>
@@ -1106,8 +1130,7 @@
                 </div>
 
                 <!-- Question State -->
-                <div id="questionDisplay" style="display: none;">
-                    <span class="topic-badge" id="inclassTopicBadge"></span>
+                <div id="questionDisplay" class="qcard" style="display: none;">
                     <div class="question-text" id="inclassQuestionText"></div>
                     <div class="options" id="inclassOptionsContainer"></div>
                     <div class="fbslot empty" id="inclassSlot">
@@ -1804,6 +1827,7 @@
             document.getElementById('inclassCheckControls').style.display = '';
             setBtnLabel('nextQuestionBtn', 'Check for Question');
             document.getElementById('inclassSubmitBtn').disabled = true;
+            document.getElementById('inclassTopicBadge').hidden = true;
 
             sessionWasActive = false;
             checkForQuestion(false);  // one initial check on join
@@ -1930,7 +1954,9 @@
 
             document.getElementById('inclassQuestionCounter').textContent =
                 `Question ${questionData.id} · #${seenQuestions.length} this session`;
-            document.getElementById('inclassTopicBadge').textContent = questionData.topic || 'General Knowledge';
+            const inclassBadge = document.getElementById('inclassTopicBadge');
+            inclassBadge.textContent = questionData.topic || 'General Knowledge';
+            inclassBadge.hidden = false;   // lives in the strip now, hidden until a question loads
             document.getElementById('inclassQuestionText').textContent = questionData.question;
 
             const optionsContainer = document.getElementById('inclassOptionsContainer');

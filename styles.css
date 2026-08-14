@@ -31,6 +31,7 @@
     --btn-off-line: rgba(255, 255, 255, .22);
     --btn-off-ink: #9C94B0;
     --field-line: rgba(255, 255, 255, .38);
+    --opt: #262032;
     --ink: #FFFFFF;
     --ink-soft: #9A93B0;
     --accent: #7519F9;
@@ -66,6 +67,7 @@
     --btn-off-line: #3A2F52;
     --btn-off-ink: #8F87A3;
     --field-line: #63549B;
+    --opt: #241C3E;
     --ink: #FFFFFF;
     --ink-soft: #948CAB;
     --accent: #7519F9;
@@ -101,6 +103,7 @@
     --btn-off-line: #D5CDE8;
     --btn-off-ink: #6E667F;
     --field-line: #9184C6;
+    --opt: #F5F2FB;
     --ink: #14101C;
     --ink-soft: #635B79;
     --accent: #5B059C;

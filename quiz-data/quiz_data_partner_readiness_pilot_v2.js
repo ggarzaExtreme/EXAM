@@ -1279,7 +1279,7 @@ const quizDataV2 = [
   },
   {
     "id": 19,
-    "question": "Host A is 10.10.1.20/24 and Host B is 10.10.2.30/24. Host A has gateway 10.10.1.1. Which local device will Host A address the first Ethernet frame to when sending to Host B?",
+    "question": "Host A is 10.10.1.20/24 and Host B is 10.10.2.30/24. Host A has gateway 10.10.1.1. Which MAC address will Host A put as the destination when forwarding traffic to Host B?",
     "answers": [
       {
         "text": "The MAC address of gateway 10.10.1.1",
@@ -1569,7 +1569,7 @@ const quizDataV2 = [
   },
   {
     "id": 23,
-    "question": "Users in one large Layer 2 network experience excessive broadcast traffic. Which design change most directly limits the scope of those broadcasts?",
+    "question": "Users in one large Layer 2 network experience excessive broadcast traffic. Which design change most directly limits the impact of those broadcasts?",
     "answers": [
       {
         "text": "Segment devices into appropriate VLANs and IP subnets",
@@ -1713,10 +1713,10 @@ const quizDataV2 = [
   },
   {
     "id": 25,
-    "question": "Two physical links are operating as one logical link through link aggregation. One member link fails. What is the intended result?",
+    "question": "Two physical links are operating as one logical link through link aggregation. One physical link fails. What is the intended result?",
     "answers": [
       {
-        "text": "Traffic continues over the remaining operational member or members",
+        "text": "Traffic continues over the remaining operational link",
         "id": "a"
       },
       {
@@ -1784,10 +1784,10 @@ const quizDataV2 = [
   },
   {
     "id": 26,
-    "question": "End-user devices use a shared virtual gateway address backed by two gateway-capable network devices. Why is this design used?",
+    "question": "End-user devices use virtual gateway IP address that is shared by two routers. Why is this design used?",
     "answers": [
       {
-        "text": "To preserve gateway availability if one device fails",
+        "text": "To preserve gateway availability if one router fails",
         "id": "a"
       },
       {
@@ -1856,10 +1856,10 @@ const quizDataV2 = [
   },
   {
     "id": 27,
-    "question": "A device is connected redundantly to two network devices. One upstream device fails, and connectivity is lost even though the other physical link remains up. What should be investigated first?",
+    "question": "A device is connected redundantly to two switches. One upstream switch fails, and connectivity is lost even though the other physical link remains up. What should be investigated first?",
     "answers": [
       {
-        "text": "Whether the resiliency design correctly supports traffic on the surviving path",
+        "text": "Whether the resiliency design correctly supports traffic on the surviving switch",
         "id": "a"
       },
       {
@@ -1933,7 +1933,7 @@ const quizDataV2 = [
     "question": "Two customers share the same physical network equipment but require separate routing tables and isolated traffic. Which concept most directly supports this requirement?",
     "answers": [
       {
-        "text": "Virtual routing and forwarding, or VRF",
+        "text": "Virtual Routing and Forwarding, or VRF",
         "id": "a"
       },
       {
@@ -1945,7 +1945,7 @@ const quizDataV2 = [
         "id": "c"
       },
       {
-        "text": "Link aggregation",
+        "text": "Link Aggregation",
         "id": "d"
       }
     ],
@@ -2002,7 +2002,7 @@ const quizDataV2 = [
   },
   {
     "id": 29,
-    "question": "You have used SSH to reach a switch CLI and want to verify whether interface 12 is administratively enabled and physically linked. What is the best next action?",
+    "question": "You have used SSH to reach a switch CLI and want to verify whether interface 12 is enabled and working. What is the best next action?",
     "answers": [
       {
         "text": "Run a non-disruptive command that displays interface status",
@@ -2013,7 +2013,7 @@ const quizDataV2 = [
         "id": "b"
       },
       {
-        "text": "Upgrade the switch before collecting any evidence",
+        "text": "Upgrade the switch",
         "id": "c"
       },
       {
@@ -2074,10 +2074,10 @@ const quizDataV2 = [
   },
   {
     "id": 30,
-    "question": "A switch CLI prompt changes after the technician enters a configuration context. What does this most likely indicate?",
+    "question": "A switch CLI prompt changes after the technician enters a configuration mode. What does this most likely indicate?",
     "answers": [
       {
-        "text": "Subsequent commands may change device configuration rather than only display information",
+        "text": "Further commands may change device configuration rather than only display information",
         "id": "a"
       },
       {

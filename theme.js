@@ -13,7 +13,7 @@
 
 (function () {
     var THEMES = ['extreme', 'ops', 'light'];
-    var DEFAULT_THEME = 'extreme';
+    var DEFAULT_THEME = 'light';
     var STORAGE_KEY = 'assessmentTheme';
     var netCanvas = null;
     var netRaf = null;

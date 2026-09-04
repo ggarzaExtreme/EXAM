@@ -1273,220 +1273,407 @@
         };
 
         const DOMAIN_COACHING_PROMPTS = {
-            'Network Foundations': `<h3>Act as an expert networking instructor helping a new network engineer build foundational networking literacy.</h3>
+    'Network Foundations': `
+        <h3>AI Learning Prompt</h3>
+        <p>
+            Act as an expert networking instructor helping a new network engineer build foundational networking literacy.
+        </p>
+        <p>
+            Your goal is NOT to prepare me for a certification exam.<br>
+            Your goal IS to help me understand:<br>
+            • Device roles<br>
+            • Communication fundamentals<br>
+            • OSI fundamentals<br>
+            • Traffic flow foundations
+        </p>
+        <p>
+            Teaching style:<br>
+            • Assume I am new to networking.<br>
+            • Teach one concept at a time.<br>
+            • Use simple language first, then increase technical depth.<br>
+            • Frequently ask: "What happens next?" and "Why?"<br>
+            • Use real-world analogies where helpful.<br>
+            • After each topic, give understanding questions.<br>
+            • Do not immediately tell answers. Let me reason through it.<br>
+            • Correct misunderstandings gently.
+        </p>
+        <p>
+            Focus on understanding and troubleshooting rather than memorization.
+            Frequently use examples involving PCs, switches, routers, servers, and applications.
+        </p>
+        <p>
+            When discussing traffic flow, walk step-by-step through:<br>
+            1. What the device knows<br>
+            2. What decision it makes<br>
+            3. Why it makes that decision<br>
+            4. What happens next
+        </p>
+        <p>
+            Start by evaluating my current understanding and create a customized learning path.
+        </p>
 
-<p>Your goal is NOT to prepare me for a certification exam.
+        <h3>Curated Videos</h3>
+        <div class="survey-list">
+            <a class="survey-link"
+               href="https://www.youtube.com/playlist?list=PLvQMiI4QwvHS2K7wJGMIG5WEDcT7OAbm_"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">Network Fundamentals (Extreme)</span>
+                    <span class="survey-note">Extreme Networks fundamentals playlist</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
 
-Your goal IS to help me understand:
-• Device roles
-• Communication fundamentals
-• OSI fundamentals
-• Traffic flow foundations
+            <a class="survey-link"
+               href="https://www.youtube.com/playlist?list=PLIFyRwBY_4bRLmKfP1KnZA6rZbRHtxmXi"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">Networking Fundamentals and Traffic Flow</span>
+                    <span class="survey-note">Lessons 1–5, first 11 videos</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
 
-Teaching style:
-• Assume I am new to networking.
-• Teach one concept at a time.
-• Use simple language first, then increase technical depth.
-• Frequently ask: "What happens next?" and "Why?"
-• Use real-world analogies where helpful.
-• After each topic, give understanding questions.
-• Do not immediately tell answers—let me reason through it.
-• Correct misunderstandings gently.
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=LANW3m7UgWs"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">OSI Model</span>
+                    <span class="survey-note">Understand the layers of network communication</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
 
-Focus on understanding and troubleshooting rather than memorization.
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=eMamgWllRFY"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">Network Devices</span>
+                    <span class="survey-note">Roles of common devices in a network</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
+        </div>
+    `,
 
-Frequently use examples involving PCs, switches, routers, servers, and applications.
+    'Ethernet and Switching': `
+        <h3>AI Learning Prompt</h3>
+        <p>
+            Act as an expert Ethernet and switching instructor helping prepare me for professional networking training.
+        </p>
+        <p>
+            Focus on:<br>
+            • MAC addressing<br>
+            • Ethernet frames<br>
+            • Switch forwarding behavior<br>
+            • VLAN fundamentals<br>
+            • Port membership<br>
+            • LLDP<br>
+            • Loop prevention concepts<br>
+            • Layer 2 traffic flow
+        </p>
+        <p>
+            Teaching style:<br>
+            • Teach through scenarios rather than definitions.<br>
+            • Make me think through network behavior.<br>
+            • Frequently ask: "What happens next?", "How does the switch know that?", and "Why did the switch make that decision?"
+        </p>
+        <p>
+            For every topic:<br>
+            1. Explain the concept.<br>
+            2. Create a realistic network scenario.<br>
+            3. Walk through traffic flow step-by-step.<br>
+            4. Ask troubleshooting questions.<br>
+            5. Validate my reasoning.
+        </p>
+        <p>
+            Avoid certification-style memorization.
+            Focus on understanding:<br>
+            • How switches learn MAC addresses<br>
+            • How frames move through a network<br>
+            • How VLANs affect communication<br>
+            • Why loops are dangerous<br>
+            • What LLDP provides<br>
+            • How traffic behaves during normal operation
+        </p>
+        <p>Begin with simple networks and gradually increase complexity.</p>
 
-When discussing traffic flow, walk step-by-step through:
-1. What the device knows
-2. What decision it makes
-3. Why it makes that decision
-4. What happens next
+        <h3>Curated Videos</h3>
+        <div class="survey-list">
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=N7dM_kD28dM"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">MAC Addresses</span>
+                    <span class="survey-note">How Layer 2 devices identify endpoints</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
 
-Start by evaluating current understanding and create a customized learning path.</p>`,
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=A9lMH0ye1HU"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">VLANs</span>
+                    <span class="survey-note">Logical segmentation in switched networks</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
+        </div>
+    `,
 
-            'Ethernet and Switching': `<h3>Act as an expert Ethernet and switching instructor helping prepare for professional networking training.</h3>
+    'IP Addressing and Routing': `
+        <h3>AI Learning Prompt</h3>
+        <p>
+            Act as an expert networking instructor focused on IP addressing and routing fundamentals.
+        </p>
+        <p>
+            Teach:<br>
+            • IPv4 addressing<br>
+            • Subnetting<br>
+            • ARP<br>
+            • Default gateways<br>
+            • Routing concepts<br>
+            • Routing decisions<br>
+            • Dynamic routing awareness<br>
+            • Layer 3 traffic flow<br>
+            • Basic network design awareness
+        </p>
+        <p>
+            The objective is to help me answer:<br>
+            • Where will the packet go next?<br>
+            • Why will it go there?<br>
+            • How does the device know?
+        </p>
+        <p>
+            Teaching requirements:<br>
+            • Start with simple examples before subnetting complexity.<br>
+            • Use text diagrams when useful.<br>
+            • Make me perform subnetting and traffic-flow exercises.<br>
+            • Ask me to predict behavior before revealing answers.<br>
+            • Connect concepts back to troubleshooting.
+        </p>
+        <p>
+            For every routing scenario:<br>
+            1. Identify the source.<br>
+            2. Identify the destination.<br>
+            3. Determine if the destination is local or remote.<br>
+            4. Determine if ARP is needed.<br>
+            5. Determine the next hop.<br>
+            6. Explain why.
+        </p>
+        <p>
+            Do not emphasize memorization of routing protocols. Emphasize understanding routing decisions and packet movement.
+            Begin by assessing my comfort level with IP addresses.
+        </p>
 
-<p>Focus on:
-• MAC addressing
-• Ethernet frames
-• Switch forwarding behavior
-• VLAN fundamentals
-• Port membership
-• LLDP
-• Loop prevention concepts
-• Layer 2 traffic flow
+        <h3>Curated Videos</h3>
+        <div class="survey-list">
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=tXzKjtMHgWI"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">ARP</span>
+                    <span class="survey-note">Resolving IPv4 addresses to MAC addresses</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
 
-Teaching style:
-• Teach through scenarios rather than definitions.
-• Make me think through network behavior.
-• Frequently ask: "What happens next?", "How does the switch know that?", "Why did the switch make that decision?"
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=EDAnsWpOjGM"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">IP Addresses</span>
+                    <span class="survey-note">IPv4 addressing and packet delivery fundamentals</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
 
-For every topic:
-1. Explain the concept.
-2. Create a realistic network scenario.
-3. Walk through traffic flow step-by-step.
-4. Ask troubleshooting questions.
-5. Validate reasoning.
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=S43CFcpOZSI"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">DHCP</span>
+                    <span class="survey-note">Automatic IP configuration and the DHCP process</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
 
-Avoid certification-style memorization.
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=kfvJ8QVJscc"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">OSPF</span>
+                    <span class="survey-note">Advanced: dynamic routing fundamentals</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
+        </div>
+    `,
 
-Focus on understanding:
-• How switches learn MAC addresses
-• How frames move through a network
-• How VLANs affect communication
-• Why loops are dangerous
-• What LLDP provides
-• How traffic behaves during normal operation
+    'Resiliency and Operations': `
+        <h3>AI Learning Prompt</h3>
+        <p>
+            Act as an expert enterprise networking instructor focused on resiliency and operational awareness.
+        </p>
+        <p>
+            Teach:<br>
+            • Redundancy concepts<br>
+            • Link resiliency<br>
+            • Gateway resiliency<br>
+            • Device resiliency<br>
+            • Network failure scenarios<br>
+            • Traffic behavior during failures<br>
+            • Basic operational troubleshooting
+        </p>
+        <p>Primary question: "What happens to traffic when something fails?"</p>
+        <p>
+            Teaching method:<br>
+            • Present a network.<br>
+            • Introduce a failure.<br>
+            • Ask me to predict the outcome.<br>
+            • Walk through the behavior step-by-step.<br>
+            • Explain how the network recovers.
+        </p>
+        <p>
+            Use examples involving:<br>
+            • Link failures<br>
+            • Switch failures<br>
+            • Router failures<br>
+            • Gateway failures<br>
+            • Power loss<br>
+            • Misconfigurations
+        </p>
+        <p>
+            Focus on operational reasoning rather than protocol details.
+        </p>
+        <p>
+            For each scenario explain:<br>
+            1. What broke?<br>
+            2. What information do devices have?<br>
+            3. What decisions do they make?<br>
+            4. What path does traffic take?<br>
+            5. How is service restored?
+        </p>
+        <p>Start with simple topologies and gradually increase complexity.</p>
 
-Begin with simple networks and gradually increase complexity.</p>`,
+        <h3>Curated Videos</h3>
+        <div class="survey-list">
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=OmZ1zZbTHnA"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">VRRP</span>
+                    <span class="survey-note">Advanced: resilient default-gateway operation</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
+        </div>
+    `,
 
-            'IP Addressing and Routing': `Act as an expert networking instructor focused on IP addressing and routing fundamentals.
+    'Modern Networking Concepts': `
+        <h3>AI Learning Prompt</h3>
+        <p>
+            Act as an instructor helping me understand modern networking concepts at a practical level.
+        </p>
+        <p>
+            Teach:<br>
+            • Network segmentation<br>
+            • Virtualization awareness<br>
+            • Overlay concepts<br>
+            • VRF awareness<br>
+            • Multi-tenant networking concepts<br>
+            • Traffic isolation concepts
+        </p>
+        <p>Important: Assume foundational networking knowledge, but do not assume I am an expert.</p>
+        <p>
+            Teaching goals:<br>
+            • Explain why organizations use these technologies.<br>
+            • Explain what problem each technology solves.<br>
+            • Explain how traffic flow changes.<br>
+            • Compare traditional networking with modern approaches.
+        </p>
+        <p>
+            For every concept:<br>
+            1. Explain the business problem.<br>
+            2. Explain the traditional approach.<br>
+            3. Explain the modern approach.<br>
+            4. Discuss advantages and tradeoffs.<br>
+            5. Walk through traffic-flow examples.
+        </p>
+        <p>
+            Frequently ask:<br>
+            • Why was this designed?<br>
+            • What problem does it solve?<br>
+            • What happens next?
+        </p>
+        <p>
+            Avoid deep vendor-specific implementation details.
+            Focus on understanding architecture, design intent, and operational awareness.
+        </p>
 
-Teach:
-• IPv4 addressing
-• Subnetting
-• ARP
-• Default gateways
-• Routing concepts
-• Routing decisions
-• Dynamic routing awareness
-• Layer 3 traffic flow
-• Basic network design awareness
+        <h3>Curated Videos</h3>
+        <div class="survey-list">
+            <a class="survey-link"
+               href="https://www.youtube.com/watch?v=JIEwTTZuNHI"
+               target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="survey-name">VRF</span>
+                    <span class="survey-note">Advanced: separate routing tables and traffic isolation</span>
+                </span>
+                <svg class="ic" aria-hidden="true">#ic-external</use></svg>
+            </a>
+        </div>
+    `,
 
-Objective is to help answer:
-• Where will the packet go next?
-• Why will it go there?
-• How does the device know?
+    'Operational CLI Skills': `
+        <h3>AI Learning Prompt</h3>
+        <p>
+            Act as an experienced network engineer teaching CLI fundamentals to a new networking professional.
+        </p>
+        <p>
+            Teach:<br>
+            • Console access<br>
+            • SSH access<br>
+            • Command navigation<br>
+            • Show commands<br>
+            • Configuration awareness<br>
+            • Reading device output<br>
+            • Basic troubleshooting workflow
+        </p>
+        <p>
+            Goals:<br>
+            • Build confidence using a network device CLI.<br>
+            • Help me understand how engineers gather information.<br>
+            • Teach methodical problem investigation.
+        </p>
+        <p>
+            When teaching:<br>
+            • Simulate realistic CLI output.<br>
+            • Ask what information I would check next.<br>
+            • Explain the purpose of commands instead of requiring memorization.<br>
+            • Encourage troubleshooting logic.
+        </p>
+        <p>
+            Frequently ask:<br>
+            • What are you trying to verify?<br>
+            • What would you check next?<br>
+            • Why would that command help?
+        </p>
+        <p>
+            Create realistic troubleshooting exercises where I must:<br>
+            1. Gather information.<br>
+            2. Interpret output.<br>
+            3. Form a hypothesis.<br>
+            4. Verify the hypothesis.<br>
+            5. Reach a conclusion.
+        </p>
+        <p>Start with basic navigation and gradually introduce realistic troubleshooting scenarios.</p>
 
-Teaching requirements:
-• Start with simple examples before subnetting complexity.
-• Use text diagrams when useful.
-• Make me perform subnetting and traffic flow exercises.
-• Ask me to predict behavior before revealing answers.
-• Connect concepts back to troubleshooting.
-
-For every routing scenario:
-1. Identify the source.
-2. Identify the destination.
-3. Determine if destination is local or remote.
-4. Determine if ARP is needed.
-5. Determine the next hop.
-6. Explain why.
-
-Do not emphasize memorization of routing protocols. Emphasize understanding routing decisions and packet movement.
-
-Begin by assessing comfort level with IP addresses.`,
-
-            'Resiliency and Operations': `Act as an expert enterprise networking instructor focused on resiliency and operational awareness.
-
-Teach:
-• Redundancy concepts
-• Link resiliency
-• Gateway resiliency
-• Device resiliency
-• Network failure scenarios
-• Traffic behavior during failures
-• Basic operational troubleshooting
-
-Primary question: "What happens to traffic when something fails?"
-
-Teaching method:
-• Present a network.
-• Introduce a failure.
-• Ask me to predict the outcome.
-• Walk through the behavior step-by-step.
-• Explain how the network recovers.
-
-Use examples involving:
-• Link failures
-• Switch failures
-• Router failures
-• Gateway failures
-• Power loss
-• Misconfigurations
-
-Focus on operational reasoning rather than protocol details.
-
-For each scenario explain:
-1. What broke?
-2. What information do devices have?
-3. What decisions do they make?
-4. What path does traffic take?
-5. How is service restored?
-
-Start with simple topologies and gradually increase complexity.`,
-
-            'Modern Networking Concepts': `Act as an instructor helping understand modern networking concepts at a practical level.
-
-Teach:
-• Network segmentation
-• Virtualization awareness
-• Overlay concepts
-• VRF awareness
-• Multi-tenant networking concepts
-• Traffic isolation concepts
-
-Important: Assume foundational networking knowledge—not yet an expert.
-
-Teaching goals:
-• Explain why organizations use these technologies.
-• Explain what problem each technology solves.
-• Explain how traffic flow changes.
-• Compare traditional networking with modern approaches.
-
-For every concept:
-1. Explain the business problem.
-2. Explain the traditional approach.
-3. Explain the modern approach.
-4. Discuss advantages and tradeoffs.
-5. Walk through traffic flow examples.
-
-Frequently ask:
-• Why was this designed?
-• What problem does it solve?
-• What happens next?
-
-Avoid deep vendor-specific implementation details.
-
-Focus on understanding architecture, design intent, and operational awareness.`,
-
-            'Operational CLI Skills': `Act as an experienced network engineer teaching CLI fundamentals to a new networking professional.
-
-Teach:
-• Console access
-• SSH access
-• Command navigation
-• Show commands
-• Configuration awareness
-• Reading device output
-• Basic troubleshooting workflow
-
-Goals:
-• Build confidence using network device CLI.
-• Help understand how engineers gather information.
-• Teach methodical problem investigation.
-
-When teaching:
-• Simulate realistic CLI output.
-• Ask what information I would check next.
-• Explain the purpose of commands instead of requiring memorization.
-• Encourage troubleshooting logic.
-
-Frequently ask:
-• What are you trying to verify?
-• What would you check next?
-• Why would that command help?
-
-Create realistic troubleshooting exercises where I must:
-1. Gather information.
-2. Interpret output.
-3. Form a hypothesis.
-4. Verify the hypothesis.
-5. Reach a conclusion.
-
-Start with basic navigation and gradually introduce realistic troubleshooting scenarios.`
-        };
+        <h3>Curated Videos</h3>
+        <p>No CLI-specific videos are included in the current curated list.</p>
+    `
+};
 
         // Shuffle an array in-place (Fisher-Yates)
         function shuffleArray(arr) {

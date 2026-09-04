@@ -2077,18 +2077,17 @@ Start with basic navigation and gradually introduce realistic troubleshooting sc
             reviewCount.textContent = allDomainsSorted.length + ' domains';
             reviewList.innerHTML = allDomainsSorted.map(d => `
                 <details class="domain-acc">
-                    <summary>
-                        <span class="da-name">${escapeHtml(d.name)}</span>
-                        <span class="da-frac">${d.correct}/${d.total}</span>
-                        <span class="da-pct" style="color:${bandColour(d.pct)}">${d.pct}%</span>
-                    </summary>
-                    <div class="da-objectives" style="padding: 12px 14px;">
-                        <p style="color: var(--ink-soft); font-size: 13px; margin: 0; white-space: pre-wrap; line-height: 1.5;">
-                            ${escapeHtml(DOMAIN_COACHING_PROMPTS[d.name] || 'Resources coming soon.')}
-                        </p>
-                    </div>
+                <summary>
+                    <span class="da-name">${escapeHtml(d.name)}</span>
+                    <span class="da-frac">${d.correct}/${d.total}</span>
+                    <span class="da-pct" style="color:${bandColour(d.pct)}">${d.pct}%</span>
+                </summary>
+
+                <div class="da-objectives coaching-content" style="padding:12px 14px;">
+                    ${DOMAIN_COACHING_PROMPTS[d.name] || '<p>Resources coming soon.</p>'}
+                </div>
                 </details>
-            `).join('');
+                `).join('');
 
             // ----- Answer review + the submit affordance, per mode -----
             buildAnswerReview();

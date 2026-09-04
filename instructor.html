@@ -787,6 +787,35 @@
         .bar-row .bq em { font-style: normal; color: var(--ink-soft); font-size: 11.5px; display: block;
             margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+        /* Domain accordion: domain is the primary grouping (~6 rows), each
+           expandable to its objectives so the cohort view never dumps 30
+           rows on the instructor at once. Native <details>, no JS state. */
+        .domain-acc {
+            border: 1px solid var(--line); border-radius: var(--radius);
+            margin-bottom: 8px; overflow: hidden;
+        }
+        .domain-acc:last-child { margin-bottom: 0; }
+        .domain-acc summary {
+            display: grid; grid-template-columns: 14px minmax(96px, 26%) 1fr auto;
+            gap: 12px; align-items: center; padding: 10px 12px; cursor: pointer;
+            list-style: none; background: var(--surface-2); font-size: 13px;
+        }
+        .domain-acc summary::-webkit-details-marker { display: none; }
+        .domain-acc summary .chev {
+            width: 7px; height: 7px;
+            border-right: 2px solid var(--ink-soft); border-bottom: 2px solid var(--ink-soft);
+            transform: rotate(-45deg); transition: transform .15s ease;
+        }
+        .domain-acc[open] summary .chev { transform: rotate(45deg); }
+        .domain-acc summary .bl { color: var(--ink); font-weight: 700; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis; }
+        .domain-acc summary .bt { height: 8px; border-radius: 100px; background: var(--line); overflow: hidden; }
+        .domain-acc summary .bt i { display: block; height: 100%; border-radius: 100px; }
+        .domain-acc summary .bv { font-weight: 700; font-variant-numeric: tabular-nums;
+            min-width: 74px; text-align: right; color: var(--ink); font-size: 12.5px; }
+        .domain-acc .da-body { padding: 6px 12px 10px; }
+        .domain-acc .da-body .bar-row { padding-left: 14px; }
+
         .an-tablewrap { overflow-x: auto; }
         .an-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .an-table th {
@@ -982,6 +1011,13 @@
                     <button class="btn btn-primary btn-full" onclick="login()">
                         <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-right"></use></svg>
                         <span class="btn-label">Sign In</span>
+                    </button>
+
+                    <!-- Local dev only: never rendered off localhost -->
+                    <button class="btn btn-secondary btn-full" id="mockLoginBtn"
+                            onclick="loginWithMockData()" style="display:none; margin-top:10px;">
+                        <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-refresh"></use></svg>
+                        <span class="btn-label">Continue with mock data (local test)</span>
                     </button>
                 </div>
             </div>
@@ -1186,7 +1222,7 @@
                                 <div id="scoreDist"></div>
                             </div>
                             <div class="an-card">
-                                <h3>Topic Mastery <span>weakest first</span></h3>
+                                <h3>Domain Mastery <span>click a domain for objectives</span></h3>
                                 <div id="topicMastery"></div>
                             </div>
                         </div>
@@ -1266,6 +1302,11 @@
 
     <script src="config.js"></script>
     <script>
+        // Local-only test harness: lets Student Submissions be reviewed without
+        // a live Supabase/Netlify backend. Strictly gated on hostname so it can
+        // never activate on the deployed site, even with ?mock in the URL.
+        const MOCK_MODE = ['localhost', '127.0.0.1'].includes(location.hostname);
+
         let sessionToken = null;
         let currentQuiz = null;
         let autoRefreshInterval = null;
@@ -1311,6 +1352,21 @@
             } catch (error) {
                 showError(errorDiv, 'Login failed: ' + error.message);
             }
+        }
+
+        // Local dev only (see MOCK_MODE): skips real auth, drops straight into
+        // Student Submissions with fabricated v2-schema rows so the tab can be
+        // reviewed without Supabase/Netlify running.
+        async function loginWithMockData() {
+            sessionToken = 'mock-local-token';
+            document.getElementById('loginScreen').classList.remove('active');
+            document.getElementById('dashboardScreen').classList.add('active');
+            document.getElementById('headerUser').style.display = 'block';
+            document.getElementById('gbContext').textContent = 'Instructor · Mock data (local)';
+
+            switchTab('historical');
+            document.getElementById('quizSelect').value = 'pretraining';
+            await changeQuiz();
         }
 
         function showError(element, message) {
@@ -1955,7 +2011,7 @@
 
         const PASS_MARK = 80;
         const QUIZ_FILES = {
-            pretraining: 'quiz-data/quiz_data_pre_class.js',
+            pretraining: 'quiz-data/quiz_data_partner_readiness_pilot_v2.js',
             post_class: 'quiz-data/quiz_data_post_class.js',
             fabric: 'quiz-data/quiz_data_fabric_engine.js',
             switch: 'quiz-data/quiz_data_switch_engine.js'
@@ -1968,7 +2024,7 @@
         };
         const COUNTERPART = { pretraining: 'post_class', post_class: 'pretraining' };
 
-        let analytics = { rows: [], counterpart: [], quizText: {}, sort: { key: 'date', dir: -1 } };
+        let analytics = { rows: [], counterpart: [], quizText: {}, objectiveDomain: {}, sort: { key: 'date', dir: -1 } };
 
         // RFC-style CSV: quoted fields, doubled quotes, embedded commas/newlines
         function parseCsv(text) {
@@ -1996,6 +2052,10 @@
         }
 
         async function fetchSubmissions(quizType, daysBack) {
+            if (MOCK_MODE && sessionToken === 'mock-local-token') {
+                return fetchSubmissionsMock(quizType);
+            }
+
             const body = { token: sessionToken, quiz_type: quizType };
             if (daysBack > 0) body.days_back = daysBack;
 
@@ -2039,24 +2099,89 @@
             }).filter(r => r.total > 0 || r.correct > 0);
         }
 
-        // Question text for the "hardest questions" list. Loaded without
-        // disturbing the in-class session's own quizData binding.
-        async function loadQuizText(quizType) {
+        // Local dev only (see MOCK_MODE): fabricated cohort of submissions
+        // shaped exactly like fetchSubmissions()'s real return value, built
+        // from the actual quiz file so objective names and question ids stay
+        // in sync with whatever the pilot currently contains.
+        const MOCK_STUDENTS = [
+            { name: 'Alex Rivera',  skill: 0.92 },
+            { name: 'Jordan Lee',   skill: 0.78 },
+            { name: 'Priya Nair',   skill: 0.55 },
+            { name: 'Sam Okafor',   skill: 0.34 },
+            { name: 'Taylor Brooks',skill: 0.88 },
+            { name: 'Morgan Diaz',  skill: 0.63 },
+            { name: 'Casey Kim',    skill: 0.45 },
+            { name: 'Riley Chen',   skill: 0.71 }
+        ];
+
+        async function fetchSubmissionsMock(quizType) {
             const file = QUIZ_FILES[quizType];
-            if (!file) return {};
+            if (!file) return [];
+            const res = await fetch(file + '?t=' + Date.now());
+            if (!res.ok) return [];
+            const code = await res.text();
+            const prev = window.quizData;
+            delete window.quizData;
+            new Function(code)();
+            const data = Array.isArray(window.quizData) ? window.quizData : [];
+            window.quizData = prev;
+            if (!data.length) return [];
+
+            return MOCK_STUDENTS.map((student, i) => {
+                const topics = {};
+                const responses = data.map(q => {
+                    const isCorrect = Math.random() < student.skill;
+                    const ids = (q.answers || []).map(a => a.id);
+                    const wrongId = ids.find(id => id !== q.correctAnswer) || q.correctAnswer;
+                    const key = q.objective || q.topic || 'Uncategorized';
+                    if (!topics[key]) topics[key] = { correct: 0, total: 0 };
+                    topics[key].total++;
+                    if (isCorrect) topics[key].correct++;
+                    return { question_id: q.id, selected: isCorrect ? q.correctAnswer : wrongId, isCorrect };
+                });
+                const correct = responses.filter(r => r.isCorrect).length;
+                return {
+                    date: new Date(Date.now() - i * 36e5 * 7),
+                    name: student.name,
+                    email: student.name.toLowerCase().replace(' ', '.') + '@example.com',
+                    total: data.length,
+                    correct,
+                    pct: Math.round(correct / data.length * 100),
+                    duration: 12 + Math.round(Math.random() * 18),
+                    section: 'test',
+                    topics,
+                    responses
+                };
+            });
+        }
+
+        // Question text for the "hardest questions" list, plus an
+        // objective->domain map so cohort topic_scores (keyed by objective,
+        // per the submitted schema) can be rolled up to ~6 domains for
+        // display. Loaded without disturbing the in-class quizData binding.
+        async function loadQuizText(quizType) {
+            const empty = { byId: {}, objectiveDomain: {} };
+            const file = QUIZ_FILES[quizType];
+            if (!file) return empty;
             try {
                 const res = await fetch(file + '?t=' + Date.now());
-                if (!res.ok) return {};
+                if (!res.ok) return empty;
                 const code = await res.text();
                 const prev = window.quizData;
                 delete window.quizData;
                 new Function(code)();
                 const data = Array.isArray(window.quizData) ? window.quizData : [];
                 window.quizData = prev;      // restore in-class state
-                const map = {};
-                data.forEach(q => { map[q.id] = { question: q.question, topic: q.topic }; });
-                return map;
-            } catch (e) { return {}; }
+                const byId = {}, objectiveDomain = {};
+                // v2 questions carry `objective`, not `topic` — fall back for
+                // any legacy v1 quiz files still routed through this map.
+                data.forEach(q => {
+                    const topic = q.objective || q.topic || 'Uncategorized';
+                    byId[q.id] = { question: q.question, topic };
+                    objectiveDomain[topic] = q.domain || 'Uncategorized';
+                });
+                return { byId, objectiveDomain };
+            } catch (e) { return empty; }
         }
 
         async function changeQuizRange() { await refreshData(); }
@@ -2082,7 +2207,9 @@
                     catch (e) { /* comparison is optional */ }
                 }
 
-                analytics.quizText = await loadQuizText(currentQuiz);
+                const quizMeta = await loadQuizText(currentQuiz);
+                analytics.quizText = quizMeta.byId;
+                analytics.objectiveDomain = quizMeta.objectiveDomain;
 
                 if (analytics.rows.length === 0) {
                     status.textContent = 'No ' + (QUIZ_LABELS[currentQuiz] || currentQuiz) +
@@ -2139,6 +2266,23 @@
             })).sort((x, y) => x.pct - y.pct || x.topic.localeCompare(y.topic));
         }
 
+        // Rolls objective-level averages up to domain level using the
+        // quiz file's objective->domain map, so the cohort view shows ~6
+        // domains (drill-down: objectives) instead of a flat 30-row list.
+        function domainAverages(topics, objectiveDomain) {
+            const acc = {};
+            topics.forEach(t => {
+                const domain = objectiveDomain[t.topic] || 'Uncategorized';
+                if (!acc[domain]) acc[domain] = { correct: 0, total: 0 };
+                acc[domain].correct += t.correct;
+                acc[domain].total += t.total;
+            });
+            return Object.entries(acc).map(([domain, a]) => ({
+                domain, correct: a.correct, total: a.total,
+                pct: a.total ? Math.round(a.correct / a.total * 100) : 0
+            })).sort((x, y) => x.pct - y.pct || x.domain.localeCompare(y.domain));
+        }
+
         function bandColour(pct) {
             const s = getComputedStyle(document.documentElement);
             if (pct >= PASS_MARK) return s.getPropertyValue('--ok').trim() || '#3ED88A';
@@ -2182,15 +2326,31 @@
                     <span class="bv">${counts[i]}${rows.length ? ' · ' + Math.round(counts[i]/rows.length*100) + '%' : ''}</span>
                 </div>`).join('');
 
-            // ---- Topic mastery ----
+            // ---- Domain mastery (objectives nested as the drill-down) ----
             const topics = topicAverages(rows);
-            document.getElementById('topicMastery').innerHTML = topics.length
-                ? topics.map(t => `
-                    <div class="bar-row">
-                        <span class="bl" title="${escapeHtml(t.topic)}">${escapeHtml(t.topic)}</span>
-                        <span class="bt"><i style="width:${Math.max(t.pct,2)}%;background:${bandColour(t.pct)}"></i></span>
-                        <span class="bv" style="color:${bandColour(t.pct)}">${t.pct}%</span>
-                    </div>`).join('')
+            const domains = domainAverages(topics, analytics.objectiveDomain);
+            document.getElementById('topicMastery').innerHTML = domains.length
+                ? domains.map(d => {
+                    const objs = topics.filter(t =>
+                        (analytics.objectiveDomain[t.topic] || 'Uncategorized') === d.domain);
+                    return `
+                        <details class="domain-acc" ${d.pct < PASS_MARK ? 'open' : ''}>
+                            <summary>
+                                <span class="chev"></span>
+                                <span class="bl" title="${escapeHtml(d.domain)}">${escapeHtml(d.domain)}</span>
+                                <span class="bt"><i style="width:${Math.max(d.pct,2)}%;background:${bandColour(d.pct)}"></i></span>
+                                <span class="bv" style="color:${bandColour(d.pct)}">${d.pct}%</span>
+                            </summary>
+                            <div class="da-body">
+                                ${objs.map(t => `
+                                    <div class="bar-row">
+                                        <span class="bl" title="${escapeHtml(t.topic)}">${escapeHtml(t.topic)}</span>
+                                        <span class="bt"><i style="width:${Math.max(t.pct,2)}%;background:${bandColour(t.pct)}"></i></span>
+                                        <span class="bv" style="color:${bandColour(t.pct)}">${t.pct}%</span>
+                                    </div>`).join('')}
+                            </div>
+                        </details>`;
+                }).join('')
                 : '<p class="no-data" style="padding:0">No topic data recorded on these submissions.</p>';
 
             // ---- Pre → Post movement ----
@@ -2382,6 +2542,8 @@
 
         window.addEventListener('load', () => {
             restorePollSettings();
+
+            if (MOCK_MODE) document.getElementById('mockLoginBtn').style.display = '';
 
             // Sortable submissions table: click a header to sort, click again to flip
             document.querySelectorAll('#submissionsTable th[data-sort]').forEach(th => {

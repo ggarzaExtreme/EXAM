@@ -562,6 +562,68 @@
         .topic-row .tr-bar { height: 7px; border-radius: 100px; background: var(--line); overflow: hidden; }
         .topic-row .tr-bar i { display: block; height: 100%; border-radius: 100px; }
 
+        /* Domain accordion: domain is the primary grouping, objectives are a
+           collapsed-by-default drill-down so a 30-row list never dumps on
+           the reader at once. Native <details> — no JS state needed. */
+        .domain-acc {
+            border: 1px solid var(--line); border-radius: var(--radius);
+            margin-bottom: 10px; overflow: hidden;
+        }
+        .domain-acc:last-child { margin-bottom: 0; }
+        .domain-acc summary {
+            display: flex; align-items: center; gap: 10px; padding: 13px 14px;
+            cursor: pointer; list-style: none; background: var(--surface-2);
+        }
+        .domain-acc summary::-webkit-details-marker { display: none; }
+        .domain-acc summary::before {
+            content: ""; width: 7px; height: 7px; flex: none;
+            border-right: 2px solid var(--ink-soft); border-bottom: 2px solid var(--ink-soft);
+            transform: rotate(-45deg); transition: transform .15s ease; margin-left: 2px;
+        }
+        .domain-acc[open] summary::before { transform: rotate(45deg); }
+        .domain-acc .da-name { font-size: 14px; font-weight: 700; color: var(--ink); }
+        .domain-acc .da-frac {
+            margin-left: auto; font-size: 12px; color: var(--ink-soft);
+            font-variant-numeric: tabular-nums;
+        }
+        .domain-acc .da-pct {
+            font-size: 13px; font-weight: 700; min-width: 42px; text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .domain-acc .da-objectives { padding: 4px 14px 12px; }
+        .domain-obj-row {
+            display: flex; align-items: center; gap: 10px; padding: 8px 0 8px 17px;
+            border-top: 1px solid var(--line); font-size: 13px;
+        }
+        .domain-obj-row:first-child { border-top: none; }
+        .domain-obj-row .dor-name { color: var(--ink-soft); }
+        .domain-obj-row .dor-pct {
+            margin-left: auto; font-weight: 700; font-variant-numeric: tabular-nums;
+        }
+
+        /* AI Learning Prompt button group: icon + button together on right */
+        .dor-button-group {
+            display: flex; align-items: center; gap: 6px; margin-left: auto;
+        }
+        .dor-status-icon {
+            font-weight: 700; font-size: 14px; flex: none;
+        }
+        .domain-obj-row button {
+            padding: 6px 12px; font-size: 12px;
+            font-weight: 600; border-radius: 4px; border: 1px solid var(--line);
+            background: var(--surface-2); color: var(--accent-2); cursor: pointer;
+            transition: all .2s ease; flex: none;
+        }
+        .domain-obj-row button:hover {
+            background: var(--accent-2); color: white; border-color: var(--accent-2);
+        }
+        .domain-obj-row button.strong {
+            background: var(--bad); border-color: var(--bad); color: white;
+        }
+        .domain-obj-row button.strong:hover {
+            background: var(--bad); opacity: 0.85;
+        }
+
         .review-item {
             display: flex; align-items: center; gap: 12px; padding: 12px 0;
             border-bottom: 1px solid var(--line);
@@ -705,6 +767,19 @@
         .mode-arrow .ic { width: 24px; height: 24px; stroke-width: 1.6; }
         .mode:hover .mode-arrow, .mode:focus-visible .mode-arrow { transform: translateX(5px); }
 
+        /* Coming-soon card: same shell, no hover motion, no click. */
+        .mode:disabled {
+            cursor: default; opacity: .55;
+        }
+        .mode:disabled:hover, .mode:disabled:focus-visible {
+            border-color: var(--line); background: var(--surface); transform: none;
+        }
+        .mode:disabled:hover::before, .mode:disabled:focus-visible::before { transform: scaleY(0); }
+        .mode:disabled .mode-arrow { display: none; }
+        .mode-tag.mode-tag-soon {
+            background: var(--accent-2); color: var(--surface);
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .mode, .mode::before, .mode-arrow { transition: none; }
             .mode:hover { transform: none; }
@@ -724,6 +799,7 @@
 
 
     <script src="theme.js?v=2"></script>
+    <!-- Cache buster: 2026-09-03-17:30 v2-quiz-update -->
 </head>
 <body>
     <!-- Icon sprite. Single line weight, no fills, currentColor - per the
@@ -807,7 +883,6 @@
                 <svg class="ic" aria-hidden="true"><use href="#ic-home"></use></svg>
                 <span class="btn-label">Home</span>
             </button>
-            <img class="gb-logo" src="assets/logo-white.svg" alt="Extreme Networks">
             <span class="gb-ctx" id="gbContext"></span>
             <span class="gb-right">
                 <a href="instructor.html" class="gb-link" title="Open the instructor dashboard">
@@ -850,7 +925,7 @@
                         <span class="mode-arrow" aria-hidden="true"><svg class="ic"><use href="#ic-right"></use></svg></span>
                     </button>
 
-                    <button class="mode" onclick="selectMode('inclass')">
+                    <button class="mode" disabled aria-disabled="true" title="In development — not available yet">
                         <span>
                             <span class="mode-kicker">Live, with your class</span>
                             <span class="mode-title">In-Class Session</span>
@@ -860,6 +935,7 @@
                                 together.
                             </span>
                             <span class="mode-meta">
+                                <span class="mode-tag mode-tag-soon">Coming soon</span>
                                 <span class="mode-tag">Needs a class ID</span>
                                 <span class="mode-tag">Instructor-paced</span>
                             </span>
@@ -1074,8 +1150,15 @@
                 </div>
 
                 <div class="res-section">
-                    <h3>Topic Breakdown <span>weakest first</span></h3>
+                    <h3>Your Results <span>tap a domain for objectives</span></h3>
                     <div id="topicResults"></div>
+                </div>
+
+                <!-- All Topics: curated knowledge/videos by domain. Placeholder
+                     content; user will fill in links and resources later. -->
+                <div class="res-section" id="reviewSection">
+                    <h3>All Topics <span id="reviewCount"></span></h3>
+                    <div id="reviewList"></div>
                 </div>
 
                 <!-- Question-by-question review. Practice mode has already shown
@@ -1088,15 +1171,6 @@
                         <p>Submit your results to see which questions you missed and why.</p>
                     </div>
                     <div id="answerReviewList"></div>
-                </div>
-
-                <div class="res-section" id="reviewSection">
-                    <h3>What To Review <span id="reviewCount"></span></h3>
-                    <p class="res-note">
-                        Each link opens a YouTube search for that topic. Swap in your own
-                        material any time by changing <code>reviewUrl()</code>.
-                    </p>
-                    <div id="reviewList"></div>
                 </div>
             </div>
 
@@ -1182,11 +1256,61 @@
 
         const STORAGE_KEY = 'networkingAssessmentData';
         const quizDataFiles = {
-            'pretraining': 'quiz-data/quiz_data_pre_class.js',
+            'pretraining': 'quiz-data/quiz_data_partner_readiness_pilot_v2.js',
             'post_class': 'quiz-data/quiz_data_post_class.js',   // retained; no longer reachable
             'fabric': 'quiz-data/quiz_data_fabric_engine.js',
             'switch': 'quiz-data/quiz_data_switch_engine.js'
         };
+
+        // Domain sort order from schema
+        const DOMAIN_ORDER = {
+            'Network Foundations': 0,
+            'Ethernet and Switching': 1,
+            'IP Addressing and Routing': 2,
+            'Resiliency and Operations': 3,
+            'Modern Networking Concepts': 4,
+            'Operational CLI Skills': 5
+        };
+
+        // Shuffle an array in-place (Fisher-Yates)
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Normalize v2 schema questions to v1 format for UI compatibility
+        function normalizeQuestionForUI(q) {
+            if (!q) return q;
+
+            // If it's already v1 format (has options property), return as-is
+            if (q.options) return q;
+
+            // v2 format: convert to v1
+            const options = (q.answers || []).map(a => ({
+                text: a.text,
+                id: a.id,
+                isCorrect: a.id === q.correctAnswer
+            }));
+            // Shuffle options once per question so they're random but consistent
+            shuffleArray(options);
+            return {
+                id: q.id,
+                question: q.question,
+                domain: q.domain || 'Network Foundations',
+                topic: q.objective || q.primaryType || 'Unknown',
+                type: q.primaryType || 'Unknown',
+                masteryLevel: q.masteryLevel,
+                competencies: q.competencies || [],
+                options: options,
+                correctAnswer: q.correctAnswer,
+                explanation: q.explanation,
+                answerFeedback: q.answerFeedback,
+                remediation: q.remediation
+            };
+        }
 
         // ---- Post-class feedback surveys -------------------------------------
         // The post-class review is a hosted survey now, not a quiz in this tool.
@@ -1238,6 +1362,9 @@
                 if (!window.quizData || !Array.isArray(window.quizData)) {
                     throw new Error('Quiz data not properly loaded');
                 }
+
+                // Normalize questions for UI compatibility (v1 or v2)
+                window.quizData = window.quizData.map(normalizeQuestionForUI);
             } catch (error) {
                 throw new Error('Failed to load quiz data: ' + error.message);
             }
@@ -1386,7 +1513,8 @@
             const question = quizData[fullQuizCurrentQuestion];
 
             document.getElementById('fullQuizCounter').textContent = `Question ${fullQuizCurrentQuestion + 1} of ${quizData.length}`;
-            document.getElementById('fullQuizTopicBadge').textContent = question.topic;
+            // Show domain (v2) or topic (v1), not raw objective
+            document.getElementById('fullQuizTopicBadge').textContent = question.domain || question.topic || 'Network Foundations';
             document.getElementById('fullQuizQuestionText').textContent = question.question;
 
             const container = document.getElementById('fullQuizOptionsContainer');
@@ -1469,15 +1597,28 @@
             const header = document.getElementById('fullQuizFeedbackHeader');
             const text = document.getElementById('fullQuizFeedbackText');
 
+            // Try v2 answerFeedback first, fall back to v1/explanation
+            let feedbackText = question.explanation || '';
+            if (question.answerFeedback && question.answerFeedback[optionLetter]) {
+                const answerFb = question.answerFeedback[optionLetter];
+                if (isCorrect) {
+                    feedbackText = answerFb.correct || question.explanation || 'Correct!';
+                } else {
+                    feedbackText = answerFb.wrong || question.explanation || 'Incorrect';
+                    if (answerFb.misconception) {
+                        feedbackText += '\n\nMisconception: ' + answerFb.misconception;
+                    }
+                }
+            }
+
             if (isCorrect) {
                 header.innerHTML = '✓ Correct!';
                 header.style.color = '#2DCA73';
-                text.textContent = typeof selectedOption === 'object' ? selectedOption.feedback : question.explanation;
             } else {
                 header.innerHTML = '✗ Incorrect';
                 header.style.color = '#E63946';
-                text.textContent = typeof selectedOption === 'object' ? selectedOption.feedback : question.explanation;
             }
+            text.textContent = feedbackText;
 
             setFeedbackVisible('fullQuizSlot', 'fullQuizSlotHint', 'fullQuizFeedback', true);
         }
@@ -1510,21 +1651,6 @@
             return styles.getPropertyValue('--bad').trim() || '#FF6B7A';
         }
 
-        // The quiz data carries a videoTopic label per question, which is more
-        // specific than the bare topic name and makes a better search term.
-        function reviewTerm(topic) {
-            const q = (window.quizData || []).find(
-                q => q.topic === topic && q.resources && q.resources.videoTopic);
-            return (q && q.resources.videoTopic) || topic;
-        }
-
-        // Review links are generated rather than curated: a YouTube search for
-        // the topic, so they keep working as the question bank changes.
-        function reviewUrl(topic) {
-            return 'https://www.youtube.com/results?search_query=' +
-                   encodeURIComponent(reviewTerm(topic));
-        }
-
         // Two-step confirm on the button rather than window.confirm(). Once
         // Chrome offers "prevent additional dialogs" and the student ticks it,
         // confirm() returns false forever and Finish Quiz becomes a button that
@@ -1549,19 +1675,45 @@
             pendingFinishConfirm = false;
             setBtnLabel('submitBtn', 'Finish Quiz');
 
-            // Calculate final scores and topic breakdown from scratch
+            // Calculate final scores and objective breakdown from scratch
+            // Use objective (v2) or topic (v1) for grouping
             let totalCorrect = 0;
             topicScores = {};
+            const competencyScores = {};
+            const domainScores = {};
+            const objectiveDomain = {};   // objective name -> its one domain
             quizData.forEach((question, idx) => {
                 const r = responses[idx];
-                if (!topicScores[question.topic]) {
-                    topicScores[question.topic] = { correct: 0, total: 0 };
+                const groupKey = question.objective || question.topic || 'Uncategorized';
+                const domainKey = question.domain || 'Uncategorized';
+                objectiveDomain[groupKey] = domainKey;
+
+                if (!topicScores[groupKey]) {
+                    topicScores[groupKey] = { correct: 0, total: 0 };
                 }
-                topicScores[question.topic].total++;
+                topicScores[groupKey].total++;
+
+                if (!domainScores[domainKey]) {
+                    domainScores[domainKey] = { correct: 0, total: 0 };
+                }
+                domainScores[domainKey].total++;
+
                 if (r && r.isCorrect) {
                     totalCorrect++;
-                    topicScores[question.topic].correct++;
+                    topicScores[groupKey].correct++;
+                    domainScores[domainKey].correct++;
                 }
+
+                // A question can tag more than one competency, so it counts
+                // toward each one's total — competencies are informational,
+                // not a partition of the 30 questions like objectives are.
+                (question.competencies || []).forEach(comp => {
+                    if (!competencyScores[comp]) {
+                        competencyScores[comp] = { correct: 0, total: 0 };
+                    }
+                    competencyScores[comp].total++;
+                    if (r && r.isCorrect) competencyScores[comp].correct++;
+                });
             });
 
             const percentage = Math.round((totalCorrect / responses.length) * 100);
@@ -1606,52 +1758,121 @@
             }
             verdict.style.color = bandColour(percentage);
 
-            // ----- Topic breakdown, weakest first -----
-            const topics = Object.entries(topicScores)
-                .map(([topic, s]) => ({
-                    topic,
+            // ----- Objective breakdown (feeds the domain drill-down below) -----
+            const objectives = Object.entries(topicScores)
+                .map(([obj, s]) => ({
+                    name: obj,
+                    domain: objectiveDomain[obj] || 'Uncategorized',
                     correct: s.correct,
                     total: s.total,
                     pct: Math.round((s.correct / s.total) * 100)
-                }))
-                .sort((a, b) => a.pct - b.pct || a.topic.localeCompare(b.topic));
+                }));
 
-            document.getElementById('topicResults').innerHTML = topics.map(t => `
-                <div class="topic-row">
-                    <div class="tr-top">
-                        <span class="tr-name">${escapeHtml(t.topic)}</span>
-                        <span class="tr-frac">${t.correct}/${t.total}</span>
-                        <span class="tr-pct" style="color:${bandColour(t.pct)}">${t.pct}%</span>
-                    </div>
-                    <div class="tr-bar"><i style="width:${Math.max(t.pct, 2)}%;background:${bandColour(t.pct)}"></i></div>
-                </div>
-            `).join('');
+            // ----- Domain breakdown: the primary grouping (~6 rows instead
+            // of 30). Each domain is a collapsible accordion — auto-open
+            // when it needs attention, collapsed when it's solid — with its
+            // objectives nested inside as the detail view. -----
+            const domains = Object.entries(domainScores)
+                .map(([name, s]) => ({
+                    name,
+                    correct: s.correct,
+                    total: s.total,
+                    pct: Math.round((s.correct / s.total) * 100)
+                }));
 
-            // ----- What to review: topics under 80%, with placeholder links -----
-            const weak = topics.filter(t => t.pct < 80);
+            // Build objective → questions map for AI prompt aggregation
+            const objToQuestions = {};
+            quizData.forEach((q, idx) => {
+                const obj = q.objective || q.topic || 'Uncategorized';
+                if (!objToQuestions[obj]) objToQuestions[obj] = [];
+                objToQuestions[obj].push({ ...q, responseIdx: idx });
+            });
+
+            const domainAccordion = d => {
+                const objs = objectives.filter(o => o.domain === d.name)
+                    .sort((a, b) => a.pct - b.pct);
+                return `
+                    <details class="domain-acc" ${d.pct < 80 ? 'open' : ''}>
+                        <summary>
+                            <span class="da-name">${escapeHtml(d.name)}</span>
+                            <span class="da-frac">${d.correct}/${d.total}</span>
+                            <span class="da-pct" style="color:${bandColour(d.pct)}">${d.pct}%</span>
+                        </summary>
+                        <div class="da-objectives">
+                            ${objs.map(o => {
+                                const qsWithObj = objToQuestions[o.name] || [];
+                                const prompts = qsWithObj
+                                    .map(q => q.remediation?.aiCoachingPrompt)
+                                    .filter(p => p);
+                                const allCorrect = qsWithObj.every((q, idx) =>
+                                    responses[q.responseIdx] && responses[q.responseIdx].isCorrect);
+                                const btnStyle = allCorrect
+                                    ? 'btn btn-secondary'
+                                    : 'btn btn-secondary' + (o.pct < 60 ? ' strong' : '');
+                                const statusIcon = allCorrect ? '✓' : '✕';
+                                return `
+                                    <div class="domain-obj-row">
+                                        <span class="dor-name">${escapeHtml(o.name)}</span>
+                                        ${prompts.length > 0 ? `
+                                            <div class="dor-button-group">
+                                                <span class="dor-status-icon" style="color: ${allCorrect ? 'var(--ok)' : 'var(--bad)'};">${statusIcon}</span>
+                                                <button class="${btnStyle}" onclick="showAIPrompt('${escapeHtml(o.name).replace(/'/g, "\\'")}', ${JSON.stringify(prompts).replace(/"/g, '&quot;')})">
+                                                    AI Learning Prompt
+                                                </button>
+                                            </div>` : ''}
+                                    </div>`;
+                            }).join('')}
+                        </div>
+                    </details>`;
+            };
+
+            // Split into strong (>=80%) and needs improvement (<80%), sorted by domain index
+            const strongDomains = domains.filter(d => d.pct >= 80).sort((a, b) =>
+                (DOMAIN_ORDER[a.name] ?? 99) - (DOMAIN_ORDER[b.name] ?? 99));
+            const weakDomains = domains.filter(d => d.pct < 80).sort((a, b) =>
+                (DOMAIN_ORDER[a.name] ?? 99) - (DOMAIN_ORDER[b.name] ?? 99));
+
+            let html = '';
+            if (strongDomains.length > 0) {
+                html += '<div style="margin-bottom: 20px;"><h4 style="color: var(--ok); margin: 0 0 10px; font-size: 13px; font-weight: 700; text-transform: uppercase;">Strong Areas</h4>';
+                html += strongDomains.map(domainAccordion).join('');
+                html += '</div>';
+            }
+
+            if (weakDomains.length > 0) {
+                html += '<div><h4 style="color: var(--warn); margin: 0 0 10px; font-size: 13px; font-weight: 700; text-transform: uppercase;">Needs Improvement</h4>';
+                html += weakDomains.map(domainAccordion).join('');
+                html += '</div>';
+            }
+
+            document.getElementById('topicResults').innerHTML = html || '<p class="res-note">All domains mastered!</p>';
+
+            // ----- Competency breakdown (hidden on learner results page,
+            // kept on instructor dashboard) -----
+            // Competency Results section removed from learner results page per UX review
+
+            // ----- All Topics: all domains with curated knowledge/video
+            // placeholder areas. User will fill in links and resources later. -----
             const reviewList = document.getElementById('reviewList');
             const reviewCount = document.getElementById('reviewCount');
+            const allDomainsSorted = [...domains].sort((a, b) =>
+                (DOMAIN_ORDER[a.name] ?? 99) - (DOMAIN_ORDER[b.name] ?? 99));
 
-            if (weak.length === 0) {
-                reviewCount.textContent = 'nothing outstanding';
-                reviewList.innerHTML =
-                    '<p class="res-note" style="margin:0">You cleared 80% or better on every topic. Nothing flagged for review.</p>';
-                document.querySelector('#reviewSection .res-note').style.display = 'none';
-            } else {
-                reviewCount.textContent = weak.length + (weak.length === 1 ? ' topic' : ' topics');
-                document.querySelector('#reviewSection .res-note').style.display = '';
-                reviewList.innerHTML = weak.map(t => `
-                    <div class="review-item">
-                        <span class="ri-body">
-                            <span class="ri-topic">${escapeHtml(t.topic)}</span>
-                            <span class="ri-detail">${t.correct}/${t.total} correct · ${t.pct}% — ${escapeHtml(reviewTerm(t.topic))}</span>
-                        </span>
-                        <a class="review-link" href="${escapeHtml(reviewUrl(t.topic))}"
-                           target="_blank" rel="noopener noreferrer"
-                           title="Search YouTube for ${escapeHtml(reviewTerm(t.topic))}">Review <svg class="ic ic-sm" aria-hidden="true"><use href="#ic-external"></use></svg></a>
+            reviewCount.textContent = allDomainsSorted.length + ' domains';
+            reviewList.innerHTML = allDomainsSorted.map(d => `
+                <details class="domain-acc">
+                    <summary>
+                        <span class="da-name">${escapeHtml(d.name)}</span>
+                        <span class="da-frac">${d.correct}/${d.total}</span>
+                        <span class="da-pct" style="color:${bandColour(d.pct)}">${d.pct}%</span>
+                    </summary>
+                    <div class="da-objectives" style="padding: 12px 14px;">
+                        <p style="color: var(--ink-soft); font-size: 13px; margin: 0;">
+                            Curated knowledge and video resources coming soon.
+                        </p>
                     </div>
-                `).join('');
-            }
+                </details>
+            `).join('');
 
             // ----- Answer review + the submit affordance, per mode -----
             buildAnswerReview();
@@ -1718,6 +1939,53 @@
             document.getElementById('answerReviewList').style.display = visible ? '' : 'none';
             document.getElementById('answerReviewLocked').style.display = visible ? 'none' : '';
             document.getElementById('answerReviewNote').style.display = visible ? '' : 'none';
+        }
+
+        // Show AI Learning Prompt modal for an objective
+        function showAIPrompt(objName, prompts) {
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('aiPromptModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'aiPromptModal';
+                modal.style.cssText = `
+                    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.5); display: flex; align-items: center;
+                    justify-content: center; z-index: 1000; padding: 20px;
+                `;
+                document.body.appendChild(modal);
+            }
+
+            // Create modal content
+            const content = `
+                <div style="background: var(--surface); border-radius: var(--radius);
+                            max-width: 600px; width: 100%; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; color: var(--ink);">${escapeHtml(objName)}</h3>
+                        <button onclick="document.getElementById('aiPromptModal').style.display='none'"
+                                style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--ink-soft);">×</button>
+                    </div>
+                    <div style="background: var(--surface-2); padding: 16px; border-radius: 6px;
+                                font-family: monospace; font-size: 13px; line-height: 1.6;
+                                color: var(--ink); max-height: 400px; overflow-y: auto;">
+                        ${(Array.isArray(prompts) ? prompts : []).map((p, i) => `
+                            <div style="${i > 0 ? 'margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);' : ''}">
+                                ${escapeHtml(p)}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <p style="font-size: 12px; color: var(--ink-soft); margin-top: 12px; margin-bottom: 0;">
+                        💡 Copy this text and paste it into your learning tool for personalized feedback.
+                    </p>
+                </div>
+            `;
+            modal.innerHTML = content;
+            modal.style.display = 'flex';
+
+            // Close on background click
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.style.display = 'none';
+            };
         }
 
         let submittingResults = false;

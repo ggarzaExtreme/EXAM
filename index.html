@@ -1779,7 +1779,7 @@ const DOMAIN_COACHING_PROMPTS = {
                 if (isCorrect) {
                     feedbackText = answerFb.correct || question.explanation || 'Correct!';
                 } else {
-                    feedbackText = answerFb.wrong || question.explanation || 'Incorrect';
+                    feedbackText = answerFb.wrong || 'Incorrect';
                     if (answerFb.misconception) {
                         feedbackText += '\n\nMisconception: ' + answerFb.misconception;
                     }

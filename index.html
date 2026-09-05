@@ -1272,6 +1272,15 @@
             'Operational CLI Skills': 5
         };
 
+        const DOMAIN_AI_PROMPTS = {
+            'Network Foundations': `Act as an Extreme Networks instructor helping a new network engineer build foundational networking skills.<br><br>Your goal IS to help me understand:<br>• Device roles<br>• Communication fundamentals<br>• OSI fundamentals<br>• Traffic flow foundations<br><br>Teaching style:<br>• Assume I am new to networking.<br>• Teach one concept at a time.<br>• Use simple language first, then increase technical depth.<br>• Frequently ask: "What happens next?" and "Why?"<br>• Use real-world analogies where helpful.<br>• After each topic, give understanding questions.<br>• Do not immediately tell answers. Let me reason through it.<br>• Correct misunderstandings gently.<br><br>Focus on understanding and troubleshooting rather than memorization.<br>Frequently use examples involving PCs, switches, routers, servers, and applications.<br><br>When discussing traffic flow, walk step-by-step through:<br>1. What the device knows<br>2. What decision it makes<br>3. Why it makes that decision<br>4. What happens next<br><br>Start by evaluating my current understanding and create a customized learning path.`,
+            'Ethernet and Switching': `Act as an Extreme Networks instructor helping a new network engineer build foundational networking skills.<br><br>Focus on:<br>• MAC addressing<br>• Ethernet frames<br>• Switch forwarding behavior<br>• VLAN fundamentals<br>• Port membership<br>• LLDP<br>• Loop prevention concepts<br>• Layer 2 traffic flow<br><br>Teaching style:<br>• Teach through scenarios rather than definitions.<br>• Make me think through basic network behavior.<br>• Frequently ask: "What happens next?", "How does the switch know that?", and "Why did the switch make that decision?"<br><br>For every topic:<br>1. Explain the concept.<br>2. Create a realistic network scenario.<br>3. Walk through traffic flow step-by-step.<br>4. Ask troubleshooting questions.<br>5. Validate my reasoning.<br><br>Avoid certification-style memorization.<br>Focus on understanding:<br>• How switches learn MAC addresses<br>• How frames move through a network<br>• How VLANs affect communication<br>• Why loops are dangerous<br>• What LLDP provides<br>• How traffic behaves during normal operation<br><br>Begin with simple networks and gradually increase complexity.`,
+            'IP Addressing and Routing': `Act as an Extreme Networks instructor helping a new network engineer build foundational networking skills.<br><br>Teach:<br>• IPv4 addressing<br>• Subnetting<br>• ARP<br>• Default gateways<br>• Routing concepts<br>• Routing decisions<br>• Dynamic routing awareness<br>• Layer 3 traffic flow<br>• Basic network design awareness<br><br>The objective is to help me answer:<br>• Where will the packet go next?<br>• Why will it go there?<br>• How does the device know?<br><br>Teaching requirements:<br>• Start with simple examples before subnetting complexity.<br>• Use text diagrams when useful.<br>• Make me perform subnetting and traffic-flow exercises.<br>• Ask me to predict behavior before revealing answers.<br>• Connect concepts back to troubleshooting.<br><br>For every routing scenario:<br>1. Identify the source.<br>2. Identify the destination.<br>3. Determine if the destination is local or remote.<br>4. Determine if ARP is needed.<br>5. Determine the next hop.<br>6. Explain why.<br><br>Do not emphasize memorization of routing protocols. Emphasize understanding routing decisions and packet movement.<br>Begin by assessing my comfort level with IP addresses.`,
+            'Resiliency and Operations': `Act as an Extreme Networks instructor focused on teaching common resiliency and operational awareness concepts.<br><br>Teach:<br>• Redundancy concepts<br>• Link resiliency<br>• Gateway resiliency<br>• Device resiliency<br>• Network failure scenarios<br>• Traffic behavior during failures<br>• Basic operational troubleshooting<br><br>Primary question: "What happens to traffic when something fails?"<br><br>Teaching method:<br>• Present a network.<br>• Introduce a failure.<br>• Ask me to predict the outcome.<br>• Walk through the behavior step-by-step.<br>• Explain how the network recovers.<br><br>Use examples involving:<br>• Link failures<br>• Switch failures<br>• Router failures<br>• Gateway failures<br>• Power loss<br>• Misconfigurations<br><br>Focus on operational reasoning rather than protocol details.<br><br>For each scenario explain:<br>1. What broke?<br>2. What information do devices have?<br>3. What decisions do they make?<br>4. What path does traffic take?<br>5. How is service restored?<br><br>Start with simple topologies and gradually increase complexity.`,
+            'Modern Networking Concepts': `Act as an Extreme Networks instructor helping me understand basic modern networking concepts at a practical level.<br><br>Teach:<br>• Network segmentation<br>• Virtualization awareness<br>• Overlay concepts<br>• VRF awareness<br>• Multi-tenant networking concepts<br>• Traffic isolation concepts<br><br>Do not assume I am an expert, simple analogies can be helpful.<br><br>Teaching goals:<br>• Explain why organizations use these technologies.<br>• Explain what problem each technology solves.<br>• Explain how traffic flow changes.<br>• Compare traditional networking with modern approaches.<br><br>For every concept:<br>1. Explain the business problem.<br>2. Explain the traditional approach.<br>3. Explain the modern approach.<br>4. Discuss advantages and tradeoffs.<br>5. Walk through traffic-flow examples.<br><br>Frequently ask:<br>• Why was this designed?<br>• What problem does it solve?<br>• What happens next?<br><br>Avoid deep vendor-specific implementation details.<br>Focus on understanding basic architecture, design intent, and operational awareness.`,
+            'Operational CLI Skills': `Act as an Extreme Networks instructor teaching CLI fundamentals to a new networking engineer.<br><br>Teach:<br>• Basics of Console/SSH/Telnet access<br>• Generic CLI Navigation<br>• Configuration Awareness<br><br>Goals:<br>• Build confidence using a network device CLI.<br>• Help me understand how engineers gather information.<br>• Teach methodical problem investigation.<br><br>When teaching:<br>• Simulate realistic CLI output using Extreme Networks Switch Engine or Fabric Engine.<br>• Ask what general information I would check next.<br>• Explain the purpose of commands instead of requiring memorization of any specific command or keyword.<br>• Encourage troubleshooting logic.<br><br>Frequently ask:<br>• What are you trying to verify?<br>• What would you check next?<br>• Why would that help?<br><br>Create simple troubleshooting exercises where I must:<br>1. Gather information.<br>2. Interpret output.<br>3. Form a hypothesis.<br>4. Verify the hypothesis.<br>5. Reach a conclusion.<br><br>Start with basic navigation and gradually introduce realistic troubleshooting scenarios.`
+        };
+
 const DOMAIN_COACHING_PROMPTS = {
     'Network Foundations': `
         <h2>Curated Videos</h2>
@@ -1318,38 +1327,7 @@ const DOMAIN_COACHING_PROMPTS = {
             </a>
         </div>
         <br>
-        <h2>AI Learning Prompt</h2>
-        <br>
-        <p style="font-size: 12px;">
-            Act as an Extreme Networks instructor helping a new network engineer build foundational networking skills.<br>
-            <br>
-            Your goal IS to help me understand:<br>
-            • Device roles<br>
-            • Communication fundamentals<br>
-            • OSI fundamentals<br>
-            • Traffic flow foundations<br>
-            <br>
-            Teaching style:<br>
-            • Assume I am new to networking.<br>
-            • Teach one concept at a time.<br>
-            • Use simple language first, then increase technical depth.<br>
-            • Frequently ask: "What happens next?" and "Why?"<br>
-            • Use real-world analogies where helpful.<br>
-            • After each topic, give understanding questions.<br>
-            • Do not immediately tell answers. Let me reason through it.<br>
-            • Correct misunderstandings gently.<br>
-            <br>
-            Focus on understanding and troubleshooting rather than memorization.<br>
-            Frequently use examples involving PCs, switches, routers, servers, and applications.<br>
-            <br>
-            When discussing traffic flow, walk step-by-step through:<br>
-            1. What the device knows<br>
-            2. What decision it makes<br>
-            3. Why it makes that decision<br>
-            4. What happens next<br>
-            <br>
-            Start by evaluating my current understanding and create a customized learning path.<br>
-        </p>
+        <button onclick="showDomainAIPrompt('Network Foundations')" style="background: var(--accent); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">AI Learning Prompt</button>
     `,
     'Ethernet and Switching': `
         <h2>Curated Videos</h2>
@@ -1376,44 +1354,7 @@ const DOMAIN_COACHING_PROMPTS = {
             </a>
         </div>
         <br>
-        <h2>AI Learning Prompt</h2>
-        <br>
-        <p style="font-size: 12px;">
-            Act as an Extreme Networks instructor helping a new network engineer build foundational networking skills.<br>
-            <br>
-            Focus on:<br>
-            • MAC addressing<br>
-            • Ethernet frames<br>
-            • Switch forwarding behavior<br>
-            • VLAN fundamentals<br>
-            • Port membership<br>
-            • LLDP<br>
-            • Loop prevention concepts<br>
-            • Layer 2 traffic flow<br>
-            <br>
-            Teaching style:<br>
-            • Teach through scenarios rather than definitions.<br>
-            • Make me think through basic network behavior.<br>
-            • Frequently ask: "What happens next?", "How does the switch know that?", and "Why did the switch make that decision?"<br>
-            <br>
-            For every topic:<br>
-            1. Explain the concept.<br>
-            2. Create a realistic network scenario.<br>
-            3. Walk through traffic flow step-by-step.<br>
-            4. Ask troubleshooting questions.<br>
-            5. Validate my reasoning.<br>
-            <br>
-            Avoid certification-style memorization.<br>
-            Focus on understanding:<br>
-            • How switches learn MAC addresses<br>
-            • How frames move through a network<br>
-            • How VLANs affect communication<br>
-            • Why loops are dangerous<br>
-            • What LLDP provides<br>
-            • How traffic behaves during normal operation<br>
-            <br>
-            Begin with simple networks and gradually increase complexity.<br>
-        </p>
+        <button onclick="showDomainAIPrompt('Ethernet and Switching')" style="background: var(--accent); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">AI Learning Prompt</button>
     `,
     'IP Addressing and Routing': `
         <h2>Curated Videos</h2>
@@ -1460,45 +1401,7 @@ const DOMAIN_COACHING_PROMPTS = {
             </a>
         </div>
         <br>
-        <h2>AI Learning Prompt</h2>
-        <br>
-        <p style="font-size: 12px;">
-            Act as an Extreme Networks instructor helping a new network engineer build foundational networking skills.<br>
-            <br>
-            Teach:<br>
-            • IPv4 addressing<br>
-            • Subnetting<br>
-            • ARP<br>
-            • Default gateways<br>
-            • Routing concepts<br>
-            • Routing decisions<br>
-            • Dynamic routing awareness<br>
-            • Layer 3 traffic flow<br>
-            • Basic network design awareness<br>
-            <br>
-            The objective is to help me answer:<br>
-            • Where will the packet go next?<br>
-            • Why will it go there?<br>
-            • How does the device know?<br>
-            <br>
-            Teaching requirements:<br>
-            • Start with simple examples before subnetting complexity.<br>
-            • Use text diagrams when useful.<br>
-            • Make me perform subnetting and traffic-flow exercises.<br>
-            • Ask me to predict behavior before revealing answers.<br>
-            • Connect concepts back to troubleshooting.<br>
-            <br>
-            For every routing scenario:<br>
-            1. Identify the source.<br>
-            2. Identify the destination.<br>
-            3. Determine if the destination is local or remote.<br>
-            4. Determine if ARP is needed.<br>
-            5. Determine the next hop.<br>
-            6. Explain why.<br>
-            <br>
-            Do not emphasize memorization of routing protocols. Emphasize understanding routing decisions and packet movement.<br>
-            Begin by assessing my comfort level with IP addresses.<br>
-        </p>
+        <button onclick="showDomainAIPrompt('IP Addressing and Routing')" style="background: var(--accent); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">AI Learning Prompt</button>
     `,
     'Resiliency and Operations': `
         <h2>Curated Videos</h2>
@@ -1515,48 +1418,7 @@ const DOMAIN_COACHING_PROMPTS = {
             </a>
         </div>
         <br>
-        <h2>AI Learning Prompt</h2>
-        <br>
-        <p style="font-size: 12px;">
-            Act as an Extreme Networks instructor focused on teaching common resiliency and operational awareness concepts.<br>
-            <br>
-            Teach:<br>
-            • Redundancy concepts<br>
-            • Link resiliency<br>
-            • Gateway resiliency<br>
-            • Device resiliency<br>
-            • Network failure scenarios<br>
-            • Traffic behavior during failures<br>
-            • Basic operational troubleshooting<br>
-            <br>
-            Primary question: "What happens to traffic when something fails?"<br>
-            <br>
-            Teaching method:<br>
-            • Present a network.<br>
-            • Introduce a failure.<br>
-            • Ask me to predict the outcome.<br>
-            • Walk through the behavior step-by-step.<br>
-            • Explain how the network recovers.<br>
-            <br>
-            Use examples involving:<br>
-            • Link failures<br>
-            • Switch failures<br>
-            • Router failures<br>
-            • Gateway failures<br>
-            • Power loss<br>
-            • Misconfigurations<br>
-            <br>
-            Focus on operational reasoning rather than protocol details.<br>
-            <br>
-            For each scenario explain:<br>
-            1. What broke?<br>
-            2. What information do devices have?<br>
-            3. What decisions do they make?<br>
-            4. What path does traffic take?<br>
-            5. How is service restored?<br>
-            <br>
-            Start with simple topologies and gradually increase complexity.<br>
-        </p>
+        <button onclick="showDomainAIPrompt('Resiliency and Operations')" style="background: var(--accent); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">AI Learning Prompt</button>
     `,
     'Modern Networking Concepts': `
         <h2>Curated Videos</h2>
@@ -1573,42 +1435,7 @@ const DOMAIN_COACHING_PROMPTS = {
             </a>
         </div>
         <br>
-        <h2>AI Learning Prompt</h2>
-        <br>
-        <p style="font-size: 12px;">
-            Act as an Extreme Networks instructor helping me understand basic modern networking concepts at a practical level.<br>
-            <br>
-            Teach:<br>
-            • Network segmentation<br>
-            • Virtualization awareness<br>
-            • Overlay concepts<br>
-            • VRF awareness<br>
-            • Multi-tenant networking concepts<br>
-            • Traffic isolation concepts<br>
-            <br>
-            Do not assume I am an expert, simple analogies can be helpful.<br>
-            <br>
-            Teaching goals:<br>
-            • Explain why organizations use these technologies.<br>
-            • Explain what problem each technology solves.<br>
-            • Explain how traffic flow changes.<br>
-            • Compare traditional networking with modern approaches.<br>
-            <br>
-            For every concept:<br>
-            1. Explain the business problem.<br>
-            2. Explain the traditional approach.<br>
-            3. Explain the modern approach.<br>
-            4. Discuss advantages and tradeoffs.<br>
-            5. Walk through traffic-flow examples.<br>
-            <br>
-            Frequently ask:<br>
-            • Why was this designed?<br>
-            • What problem does it solve?<br>
-            • What happens next?<br>
-            <br>
-            Avoid deep vendor-specific implementation details.<br>
-            Focus on understanding basic architecture, design intent, and operational awareness.<br>
-        </p>
+        <button onclick="showDomainAIPrompt('Modern Networking Concepts')" style="background: var(--accent); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">AI Learning Prompt</button>
     `,
     'Operational CLI Skills': `
         <h2>Curated Videos</h2>
@@ -1617,41 +1444,7 @@ const DOMAIN_COACHING_PROMPTS = {
             <p style="font-size: 12px;">No CLI-specific videos are included in the current curated list.</p>
         </div>
         <br>
-        <h2>AI Learning Prompt</h2>
-        <br>
-        <p style="font-size: 12px;">
-            Act as an Extreme Networks instructor teaching CLI fundamentals to a new networking engineer.<br>
-            <br>
-            Teach:<br>
-            • Basics of Console/SSH/Telnet access<br>
-            • Generic CLI Navigation<br>
-            • Configuration Awareness<br>
-            <br>
-            Goals:<br>
-            • Build confidence using a network device CLI.<br>
-            • Help me understand how engineers gather information.<br>
-            • Teach methodical problem investigation.<br>
-            <br>
-            When teaching:<br>
-            • Simulate realistic CLI output using Extreme Networks Switch Engine or Fabric Engine.<br>
-            • Ask what general information I would check next.<br>
-            • Explain the purpose of commands instead of requiring memorization of any specific command or keyword.<br>
-            • Encourage troubleshooting logic.<br>
-            <br>
-            Frequently ask:<br>
-            • What are you trying to verify?<br>
-            • What would you check next?<br>
-            • Why would that help?<br>
-            <br>
-            Create simple troubleshooting exercises where I must:<br>
-            1. Gather information.<br>
-            2. Interpret output.<br>
-            3. Form a hypothesis.<br>
-            4. Verify the hypothesis.<br>
-            5. Reach a conclusion.<br>
-            <br>
-            Start with basic navigation and gradually introduce realistic troubleshooting scenarios.<br>
-        </p>
+        <button onclick="showDomainAIPrompt('Operational CLI Skills')" style="background: var(--accent); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">AI Learning Prompt</button>
     `
 };
         // Shuffle an array in-place (Fisher-Yates)
@@ -2354,6 +2147,52 @@ const DOMAIN_COACHING_PROMPTS = {
                                 ${escapeHtml(p)}
                             </div>
                         `).join('')}
+                    </div>
+                    <p style="font-size: 12px; color: var(--ink-soft); margin-top: 12px; margin-bottom: 0;">
+                        💡 Copy/Paste this text into any AI platform (Google, ChatGPT, Claude, etc.) for personalized feedback.
+                    </p>
+                </div>
+            `;
+            modal.innerHTML = content;
+            modal.style.display = 'flex';
+
+            // Close on background click
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.style.display = 'none';
+            };
+        }
+
+        // Show AI Learning Prompt for a domain
+        function showDomainAIPrompt(domainName) {
+            const prompt = DOMAIN_AI_PROMPTS[domainName];
+            if (!prompt) return;
+
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('aiPromptModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'aiPromptModal';
+                modal.style.cssText = `
+                    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.5); display: flex; align-items: center;
+                    justify-content: center; z-index: 1000; padding: 20px;
+                `;
+                document.body.appendChild(modal);
+            }
+
+            // Create modal content
+            const content = `
+                <div style="background: var(--surface); border-radius: var(--radius);
+                            max-width: 600px; width: 100%; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; color: var(--ink);">${escapeHtml(domainName)}</h3>
+                        <button onclick="document.getElementById('aiPromptModal').style.display='none'"
+                                style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--ink-soft);">×</button>
+                    </div>
+                    <div style="background: var(--surface-2); padding: 16px; border-radius: 6px;
+                                font-size: 13px; line-height: 1.6;
+                                color: var(--ink); max-height: 400px; overflow-y: auto;">
+                        <p style="font-size: 12px; margin: 0; white-space: pre-wrap;">${prompt}</p>
                     </div>
                     <p style="font-size: 12px; color: var(--ink-soft); margin-top: 12px; margin-bottom: 0;">
                         💡 Copy/Paste this text into any AI platform (Google, ChatGPT, Claude, etc.) for personalized feedback.

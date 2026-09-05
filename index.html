@@ -1700,12 +1700,13 @@ const DOMAIN_COACHING_PROMPTS = {
                 btn.className = 'option-btn';
                 const optionText = typeof option === 'string' ? option : option.text;
                 const letter = String.fromCharCode(65 + idx);
+                const optionId = typeof option === 'object' ? option.id : String.fromCharCode(65 + idx);
                 btn.innerHTML = '<span class="opt-letter">' + letter + '</span>' +
                                 '<span class="opt-text"></span>';
                 btn.querySelector('.opt-text').textContent = optionText;
-                btn.onclick = () => selectFullQuizOption(letter);
+                btn.onclick = () => selectFullQuizOption(optionId);
 
-                if (responses[fullQuizCurrentQuestion]?.selected === String.fromCharCode(65 + idx)) {
+                if (responses[fullQuizCurrentQuestion]?.selected === optionId) {
                     btn.classList.add('selected');
                 }
 
@@ -1745,14 +1746,13 @@ const DOMAIN_COACHING_PROMPTS = {
             finish.classList.toggle('btn-primary', allAnswered || (answeredHere && onLast));
         }
 
-        function selectFullQuizOption(optionLetter) {
+        function selectFullQuizOption(optionId) {
             const question = quizData[fullQuizCurrentQuestion];
-            const optionIndex = optionLetter.charCodeAt(0) - 65;
-            const selectedOption = question.options[optionIndex];
+            const selectedOption = question.options.find(opt => (typeof opt === 'object' ? opt.id : opt) === optionId);
             const isCorrect = typeof selectedOption === 'object' ? selectedOption.isCorrect : false;
 
             responses[fullQuizCurrentQuestion] = {
-                selected: optionLetter,
+                selected: optionId,
                 isCorrect: isCorrect,
                 question_id: question.id
             };
@@ -1761,7 +1761,8 @@ const DOMAIN_COACHING_PROMPTS = {
 
             // Highlight the choice regardless of mode
             document.querySelectorAll('#fullQuizOptionsContainer .option-btn').forEach((btn, idx) => {
-                btn.classList.toggle('selected', String.fromCharCode(65 + idx) === optionLetter);
+                const btnId = typeof question.options[idx] === 'object' ? question.options[idx].id : String.fromCharCode(65 + idx);
+                btn.classList.toggle('selected', btnId === optionId);
             });
             updateQuizEmphasis();
 
@@ -1774,12 +1775,12 @@ const DOMAIN_COACHING_PROMPTS = {
 
             // Try v2 answerFeedback first, fall back to v1/explanation
             let feedbackText = question.explanation || '';
-            if (question.answerFeedback && question.answerFeedback[optionLetter]) {
-                const answerFb = question.answerFeedback[optionLetter];
+            if (question.answerFeedback && question.answerFeedback[optionId]) {
+                const answerFb = question.answerFeedback[optionId];
                 if (isCorrect) {
                     feedbackText = answerFb.correct || question.explanation || 'Correct!';
                 } else {
-                    feedbackText = answerFb.wrong || 'Incorrect';
+                    feedbackText = answerFb.wrong || question.explanation || 'Incorrect';
                     if (answerFb.misconception) {
                         feedbackText += '\n\nMisconception: ' + answerFb.misconception;
                     }

@@ -1321,9 +1321,8 @@ const DOMAIN_COACHING_PROMPTS = {
         <h2>AI Learning Prompt</h2>
         <br>
         <p style="font-size: 12px;">
-            Act as an expert networking instructor helping a new network engineer build foundational networking literacy.<br>
+            Act as an Extreme Networks instructor helping a new network engineer build foundational networking skills.<br>
             <br>
-            Your goal is NOT to prepare me for a certification exam.<br>
             Your goal IS to help me understand:<br>
             • Device roles<br>
             • Communication fundamentals<br>
@@ -1380,7 +1379,7 @@ const DOMAIN_COACHING_PROMPTS = {
         <h2>AI Learning Prompt</h2>
         <br>
         <p style="font-size: 12px;">
-            Act as an expert Ethernet and switching instructor helping prepare me for professional networking training.<br>
+            Act as an Extreme Networks instructor helping a new network engineer build foundational networking skills.<br>
             <br>
             Focus on:<br>
             • MAC addressing<br>
@@ -1394,7 +1393,7 @@ const DOMAIN_COACHING_PROMPTS = {
             <br>
             Teaching style:<br>
             • Teach through scenarios rather than definitions.<br>
-            • Make me think through network behavior.<br>
+            • Make me think through basic network behavior.<br>
             • Frequently ask: "What happens next?", "How does the switch know that?", and "Why did the switch make that decision?"<br>
             <br>
             For every topic:<br>
@@ -1464,7 +1463,7 @@ const DOMAIN_COACHING_PROMPTS = {
         <h2>AI Learning Prompt</h2>
         <br>
         <p style="font-size: 12px;">
-            Act as an expert networking instructor focused on IP addressing and routing fundamentals.<br>
+            Act as an Extreme Networks instructor helping a new network engineer build foundational networking skills.<br>
             <br>
             Teach:<br>
             • IPv4 addressing<br>
@@ -1519,7 +1518,7 @@ const DOMAIN_COACHING_PROMPTS = {
         <h2>AI Learning Prompt</h2>
         <br>
         <p style="font-size: 12px;">
-            Act as an expert enterprise networking instructor focused on resiliency and operational awareness.<br>
+            Act as an Extreme Networks instructor focused on teaching common resiliency and operational awareness concepts.<br>
             <br>
             Teach:<br>
             • Redundancy concepts<br>
@@ -1577,7 +1576,7 @@ const DOMAIN_COACHING_PROMPTS = {
         <h2>AI Learning Prompt</h2>
         <br>
         <p style="font-size: 12px;">
-            Act as an instructor helping me understand modern networking concepts at a practical level.<br>
+            Act as an Extreme Networks instructor helping me understand basic modern networking concepts at a practical level.<br>
             <br>
             Teach:<br>
             • Network segmentation<br>
@@ -1587,7 +1586,7 @@ const DOMAIN_COACHING_PROMPTS = {
             • Multi-tenant networking concepts<br>
             • Traffic isolation concepts<br>
             <br>
-            Important: Assume foundational networking knowledge, but do not assume I am an expert.<br>
+            Do not assume I am an expert, simple analogies can be helpful.<br>
             <br>
             Teaching goals:<br>
             • Explain why organizations use these technologies.<br>
@@ -1608,7 +1607,7 @@ const DOMAIN_COACHING_PROMPTS = {
             • What happens next?<br>
             <br>
             Avoid deep vendor-specific implementation details.<br>
-            Focus on understanding architecture, design intent, and operational awareness.<br>
+            Focus on understanding basic architecture, design intent, and operational awareness.<br>
         </p>
     `,
     'Operational CLI Skills': `
@@ -1621,16 +1620,12 @@ const DOMAIN_COACHING_PROMPTS = {
         <h2>AI Learning Prompt</h2>
         <br>
         <p style="font-size: 12px;">
-            Act as an experienced network engineer teaching CLI fundamentals to a new networking professional.<br>
+            Act as an Extreme Networks instructor teaching CLI fundamentals to a new networking engineer.<br>
             <br>
             Teach:<br>
-            • Console access<br>
-            • SSH access<br>
-            • Command navigation<br>
-            • Show commands<br>
-            • Configuration awareness<br>
-            • Reading device output<br>
-            • Basic troubleshooting workflow<br>
+            • Basics of Console/SSH/Telnet access<br>
+            • Generic CLI Navigation<br>
+            • Configuration Awareness<br>
             <br>
             Goals:<br>
             • Build confidence using a network device CLI.<br>
@@ -1638,17 +1633,17 @@ const DOMAIN_COACHING_PROMPTS = {
             • Teach methodical problem investigation.<br>
             <br>
             When teaching:<br>
-            • Simulate realistic CLI output.<br>
-            • Ask what information I would check next.<br>
-            • Explain the purpose of commands instead of requiring memorization.<br>
+            • Simulate realistic CLI output using Extreme Networks Switch Engine or Fabric Engine.<br>
+            • Ask what general information I would check next.<br>
+            • Explain the purpose of commands instead of requiring memorization of any specific command or keyword.<br>
             • Encourage troubleshooting logic.<br>
             <br>
             Frequently ask:<br>
             • What are you trying to verify?<br>
             • What would you check next?<br>
-            • Why would that command help?<br>
+            • Why would that help?<br>
             <br>
-            Create realistic troubleshooting exercises where I must:<br>
+            Create simple troubleshooting exercises where I must:<br>
             1. Gather information.<br>
             2. Interpret output.<br>
             3. Form a hypothesis.<br>
